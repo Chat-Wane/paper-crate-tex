@@ -1,0 +1,66 @@
+
+\section{Message delivery protocol}
+\label{sec:messagedelivery}
+This section provides the additional algorithms of the messaging between
+peers. The distributed collaborative editor \EDITORNAME{} uses these protocols
+to ensure that operations are eventually integrated, only once, and the
+deletion of an element is always integrated after its insertion.
+
+\begin{algorithm}[h]
+  \input{input/updatealgorithm.tex}
+  \caption{\label{algo:delivery}Delivery protocol}
+\end{algorithm}
+
+Algorithm~\ref{algo:delivery} describes the delivery protocol running at each
+peer. It highlights the optimistic replication scheme of CRDTs by dividing the
+operations between the local update and the received update.  Since different
+implementations are possible, the functions relative to the interval structure
+are left aside. Semantically, the $r[i].add$ function adds the value in
+parameters to the vector of intervals. The $r[i].last$ function gets the
+highest value of the vector of intervals. The function $alloc$ is an
+aggregation of $allocPath$ and $allocDis$. The function $unique$ extracts the
+unique site identifier and counter from a triple.
+
+Line~\ref{line:unique} prevents the application from multiple
+receptions. Without any causality tracking mechanism, a CRDT for sequences is
+not able to provide the idempotency property of CRDTs. Without idempotency, the
+replicas may diverge. Indeed, the remote part of the delete operations removes
+information from the data structure. When the causality tracking implicitly
+keeps the summary of all operations, it implies that a non-existing element
+cannot be mistaken for an element inserted then deleted.
+
+\begin{asparadesc}
+\item[Example \EXAMPLE{}:] The following example depicts the need to integrate
+  the operation only once in presence of potential duplication of messages. A
+  first peer generates two operations with the unique element $e$ ($insert(e)
+  \rightarrow delete(e)$). When the $insert(e)$ operation arrives to a second
+  peer, it is delivered. Similarly, when the $delete(e)$ operation arrives and
+  sees the element $e$ in the replicated structure, it is delivered, leading to
+  the removal of the element $e$. However, somehow, a copy of the $insert$
+  message arrives to the second peer. Since the element $e$ does not exist in
+  the structure any more, this peer will assume that it receives this operation
+  for the first time and will apply it. Since the first peer does not
+  necessarily receive the copy of the $insert$ message, or receives the copy
+  before performing the $delete(e)$ operation, the replicas of the two peers
+  may become divergent.
+\end{asparadesc}
+
+
+As stated in Section~\ref{sec:preliminaries}, CRDTs require a reliable
+broadcast to provide strong eventual consistency. Nevertheless, \EDITORNAME{}
+uses a gossip dissemination protocol which scales in number of peers, yet
+unreliable.
+
+\begin{algorithm}[h]
+  \input{input/antientropyalgo.tex}
+  \caption{\label{algo:antientropy}Anti-entropy protocol}
+\end{algorithm}
+
+Algorithm~\ref{algo:antientropy} depicts the anti-entropy event added to the
+main delivery algorithm. This algorithm guarantees that all the operations will
+be eventually delivered to all peers.  A peer $p_j$ unevenly sends a message
+containing its interval version vector to another peer $p_i$ triggering the
+event $antiEntropy$. The function $diff$ calculates the differences between the
+interval version vectors (from $p_i$ and $p_j$). The function $retrieve$
+searches for each spotted difference and sends it back to $p_j$. Being costly,
+this protocol starts rarely.

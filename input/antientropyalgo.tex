@@ -1,0 +1,32 @@
+
+\small
+
+\algrenewcommand{\algorithmiccomment}[1]{\hskip2em$\rhd$ #1}
+
+\algblockdefx[received]{received}{endReceived}
+  [0] {\textbf{RECEIVED UPDATE:}}
+
+\algblockdefx[onRemoteBis]{onRemoteBis}{endOnRemoteBis}
+  [0] {\textbf{on} antiEntropy (args):}
+  [0] {}
+
+\newcommand{\LINEFOR}[2]{%
+  \algorithmicfor\ {#1}\ \algorithmicdo\ {#2} %
+  }
+
+\newcommand{\LINEIFTHEN}[2]{%
+  \algorithmicif\ {#1}\ \algorithmicthen\ {#2} %
+  }
+
+\newcommand{\INDSTATE}[1][1]{\State\hspace{\algorithmicindent}}
+
+\begin{algorithmic}[1]
+  \received
+  \State \textbf{on} antiEntropy ($args$):
+  \INDSTATE \textbf{let} $ivv \leftarrow args$;
+  \INDSTATE \textbf{let} $deltas \leftarrow diff(r,\,ivv)$;
+  \INDSTATE \LINEFOR {($\delta$ \textbf{in} $deltas$)}
+            {$sendTo(p_j,\, retrieve(\delta))$;}
+  \endReceived
+  
+\end{algorithmic}

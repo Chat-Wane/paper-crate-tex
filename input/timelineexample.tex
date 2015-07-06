@@ -1,0 +1,54 @@
+\begin{tikzpicture}[scale=1.1]
+  
+  \draw (-10pt,0pt) node[anchor=east]{$p_1$};
+  \draw (-10pt,-30pt) node[anchor=east]{$p_2$};
+  \draw (-10pt,-60pt) node[anchor=east]{$p_3$};
+
+  \draw[->] (-10pt,0pt) -- (190pt,0pt);
+  \draw[->] (-10pt,-30pt) -- (190pt,-30pt);
+  \draw[->] (-10pt,-60pt) -- (190pt,-60pt);
+
+  \scriptsize
+  \draw (10pt,1pt) node[anchor=south]{[$\{\};\{\};\{\}]$} --
+  (10pt,-1pt);
+  \draw (10pt,-29pt) node[anchor=south]{[$\{\};\{\};\{\}]$} --
+  (10pt,-31pt);
+  \draw (10pt,-59pt) node[anchor=south]{[$\{\};\{\};\{\}]$} --
+  (10pt,-61pt);
+
+  \draw[->,densely dashdotted] (30pt,0pt) -- (40pt,-60pt);
+  \draw[->,densely dashdotted] (50pt,0pt) -- (60pt,-30pt);
+  \draw[->,densely dashdotted] (50pt,0pt) -- (60pt,-60pt);
+
+
+  \draw (82pt,-29pt) node[anchor=south]{[$\{2\};\{\};\{\}]$} --
+  (82pt,-31pt);
+  \draw (82pt,-59pt) node[anchor=south]{[$\{1,2\};\{\};\{\}]$} --
+  (82pt,-61pt);
+
+  \draw [->,densely dashdotted] (30pt,0pt) to[out=35,in=135] (125pt,0pt)
+  to[out=-45,in=125] (145pt,-30pt);
+
+  \draw[fill=white] (30pt,0pt) circle (1.5pt);
+  \draw[fill=white] (50pt,0pt) circle (1.5pt);
+
+  \draw[->,densely dashdotted] (105pt,-60pt)--(115pt,-30pt);
+  \draw[->,densely dashdotted] (105pt,-60pt)--(115pt,0pt);
+
+  \draw[fill=black] (105pt,-60pt) circle (1.5pt);
+  
+  \draw[->,densely dashdotted]
+  (115pt,-30pt)to[out=-35,in=-145]node[anchor=north]{wait}(155pt,-30pt);
+
+
+  \draw (175pt,1pt) node[anchor=south]{$[\{1,2\};\{\};\{\}]$}-- (175pt,-1pt);
+  \draw (175pt,-29pt) node[anchor=south]{$[\{1,2\};\{\};\{\}]$}--(175pt,-31pt);
+  \draw (175pt,-59pt) node[anchor=south]{$[\{1,2\};\{\};\{\}]$}--(175pt,-61pt);
+  
+  \draw[->,densely dashdotted] (155pt,-69pt) -- (163pt,-69pt)
+  node[anchor=west]{messages};
+  \draw[fill=white] (160pt,-75pt)node[anchor=west]{$insert$}circle (1.5pt);
+  \draw[fill=black] (160pt,-82pt)
+  node[anchor=west]{$delete(p_1,1)$} circle (1.5pt);
+
+\end{tikzpicture}

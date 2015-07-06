@@ -1,0 +1,72 @@
+
+\small
+\algrenewcommand{\algorithmiccomment}[1]{\hskip2em$\rhd$ #1}
+
+\algblockdefx[initially]{initially}{endInitially}
+  [0] {\textbf{INITIALLY:}} 
+
+\algblockdefx[local]{local}{endLocal}
+  [0] {\textbf{LOCAL UPDATE:}}
+
+\algblockdefx[received]{received}{endReceived}
+  [0] {\textbf{RECEIVED UPDATE:}}
+
+\algblockdefx[onInsert]{onLocal}{endOnLocal}
+  [0] {\textbf{on} insert (args):}
+  [0] {\textbf{on} delete (args):} 
+
+\algblockdefx[onRemote]{onRemote}{endOnRemote}
+  [0] {\textbf{on} insert (args):}
+  [0] {\textbf{on} delete (args):} 
+
+\newcommand{\LINEFOR}[2]{%
+  \algorithmicfor\ {#1}\ \algorithmicdo\ {#2} %
+  }
+
+\newcommand{\LINEIFTHEN}[2]{%
+  \algorithmicif\ {#1}\ \algorithmicthen\ {#2} %
+  }
+
+\newcommand{\INDSTATE}[1][1]{\State\hspace{\algorithmicindent}}
+
+\begin{algorithmic}[1]
+  \State \textbf{let} $r$ the old ivv on peer $p_i$
+  \State \textbf{let} $s$ the new ivv on peer $p_i$
+  \State \textbf{let} $m$ the incoming message from peer $p_j$
+  \State \textbf{let} $\langle type,\, args \rangle$ the specification of $m$
+
+  \Statex
+  \initially
+    \State \LINEFOR{$k$ \textbf{from} $0$ \textbf{to} $|r| - 1$}
+    {$s[k] \leftarrow \varnothing$;}
+  \endInitially
+  
+  \local
+    \State \LINEFOR{$k$ \textbf{from} $0$ \textbf{to} $|r|- 1$}
+    {$s[k] \leftarrow r[k]$;}
+    \onLocal
+    \State $s[i] \leftarrow r[i].add(r[i].last() + 1)$;
+    \State $broadcast('insert',\,alloc(args))$;
+    \endOnLocal
+    \INDSTATE $broadcast('delete',\,args)$;
+  \endLocal
+  
+  \received
+    \State \LINEFOR{$k$ \textbf{from} $0$ \textbf{to} $|r|-1$}
+    {$s[k]\leftarrow r[k]$;}
+    \onRemote
+    \State \textbf{let} $\langle src,\,cnt \rangle \leftarrow unique(args)$;
+    \If  {\label{line:unique}$(\neg(r[src].contains(cnt)))$}
+      \State $s[src] \leftarrow r[src].add(cnt)$;
+      \State $deliver(m)$;
+    \EndIf
+    \endOnRemote
+    \INDSTATE \textbf{let} $\langle src,\,cnt \rangle \leftarrow unique(args)$;
+    \INDSTATE \textbf{if} $(r[src].contains(cnt))))$
+      \INDSTATE \hspace{\algorithmicindent}\textbf{then} $deliver(m)$;
+      \INDSTATE \hspace{\algorithmicindent}\textbf{else} $delay(m)$;
+      \label{line:delay}
+  
+  \endReceived
+  
+\end{algorithmic}

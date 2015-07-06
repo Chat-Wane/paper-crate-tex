@@ -1,0 +1,25 @@
+
+\small
+\algrenewcommand{\algorithmiccomment}[1]{\hskip2em$\rhd$ #1}
+\newcommand*{\comment}[1]{$\rhd$ #1}
+
+\newcommand{\LINEIFTHEN}[2]{%
+  \algorithmicif\ {#1}\ \algorithmicthen\ {#2} %
+  }
+
+  \begin{algorithmic}[1]
+    \State \textbf{let} $site$ \hfill \comment{the unique site identifier}
+    \State \textbf{let} $counter \leftarrow 0$ \hfill \comment{a local counter}
+    \Statex
+    \Function{allocDis}{$p \in \mathcal{I},\, path\in\mathcal{P},\, q \in
+      \mathcal{I}$} $\rightarrow \mathcal{D}$
+    \State \textbf{let} $dis \leftarrow [\,]$;
+    \State $counter \leftarrow counter + 1$;
+    \For{$i$ \textbf{from} $1$ \textbf{to} $|path|$}
+    \State $dis[i] \leftarrow \langle site,\, counter \rangle$;
+    \State \LINEIFTHEN {$path[i]=q.P[i]$} {$dis[i] \leftarrow q.D[i];$}
+    \State \LINEIFTHEN {$path[i]=p.P[i]$} {$dis[i] \leftarrow p.D[i];$}
+    \EndFor
+    \State \textbf{return} $dis$;
+    \EndFunction
+  \end{algorithmic}

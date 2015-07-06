@@ -1,0 +1,56 @@
+
+\section{Conclusion}
+
+\label{sec:conclusion}
+In the context of collaborative editing, this paper proposed an identifier
+allocation function \NAME{} for building sequence replicated data
+structures. The obtained sequences enjoy good space and time complexities. The
+proof on space complexity demonstrates logarithmic, polylogarithmic, and
+quadratic for, respectively, random, monotonic, and worst-case
+insertions. Using this allocation function and interval version vectors to
+track causality, we developed a distributed collaborative editor called
+\EDITORNAME{}. This editor is fully decentralised and scales in terms of the
+number of peers, concurrency, and document size. We validated the approach on a
+setup close of the real life conditions and using extreme parameters: low
+startup values, high number of insertions, high number of peers and high
+latency. The experiments confirmed the space complexity of \NAME{} and the
+scalability of \EDITORNAME{}. As such, it alleviates the issues brought by
+centralised approaches: single point of failure, privacy issues, economic
+intelligence issues, limitations in terms of service, etc. Also, it alleviates
+the scalability issues of decentralised approaches. As such, it can be seen as
+a serious competitor for current trending editors (e.g. Google Docs,
+SubEthaEdit,~\ldots), allowing massive collaborative editing without any
+service providers. More specifically, it opens the field to a new range of
+distributed applications such as massive editing of online courses, or
+collaborative reviewing of co-located events, webinars etc.
+
+
+%% Future work concerns the improvement of our prototype
+%% CRATE: \begin{enumerate} \item We aim to develop of a truly tree-based
+%% implementation of \NAME{}. Indeed, the current version uses a data structure
+%% which is a linearisation of the tree. As a consequence, each element is
+%% linked to its identifier without factorising the common parts of the
+%% latter. Therefore, the memory usage is currently higher than the one
+%% suggested by the theoretical analysis of Section~\ref{sec:proposal}. The
+%% network load would remain unchanged.  \item Currently, CRATE only includes
+%% the core functionalities described in this paper. However, we intend to add
+%% common functionalities such as the modifications of document style, the
+%% group awareness, etc.  \item Recent technological advances finally allow to
+%% build peer-to-peer applications within the web browser without any
+%% additional plug-ins. The real strength of current editors hosted by service
+%% providers is their ease of access. Nevertheless, the aforementioned progress
+%% puts distributed editors on an equal footing in that regard. Furthermore, it
+%% extends the tool to a range of users equipped with small devices but still
+%% embedding a web browser such as smartphone users, or Raspberry Pi users
+%% etc.  \end{enumerate}
+
+% Future work concerns the causality tracking issue. Indeed, the chosen
+% trade-off proposed by the interval version vectors allows scaling in number
+% of peers. Nevertheless, when the network is subject to churn, the local
+% memory used to store the vector can grow quickly. We envision an approach
+% trading accuracy for memory without sacrificing on correctness.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End: 

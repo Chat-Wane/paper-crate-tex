@@ -1,0 +1,61 @@
+
+\small
+\algrenewcommand{\algorithmiccomment}[1]{\hskip2em$\rhd$ #1}
+
+\newcommand{\comment}[1]{$\rhd$ #1}
+
+
+\algblockdefx[initially]{initially}{endInitially}
+  [0] {\textbf{INITIALLY:}} 
+
+\algblockdefx[local]{local}{endLocal}
+  [0] {\textbf{LOCAL UPDATE:}}
+
+\algblockdefx[received]{received}{endReceived}
+  [0] {\textbf{RECEIVED UPDATE:}}
+
+\algblockdefx[onInsert]{onLocal}{endOnLocal}
+  [0] {\textbf{on} insert ($p \in \mathcal{I},\,\alpha \in \mathcal{A},\,
+   q\in\mathcal{I}$):}
+  [0] {\textbf{on} delete ($i \in \mathcal{I}$):} 
+
+\algblockdefx[onRemote]{onRemote}{endOnRemote}
+  [0] {\textbf{on} insert ($i\in\mathcal{I}$):\hfill\comment{once per 
+  distinct triple in $\mathcal{I}$}}
+  [0] {\textbf{on} delete ($i\in\mathcal{I}$):\hfill\comment{after the 
+  remote $insert(i)$ is done}} 
+
+\newcommand{\LINEFOR}[2]{%
+  \algorithmicfor\ {#1}\ \algorithmicdo\ {#2} %
+  }
+
+\newcommand{\LINEIFTHEN}[2]{%
+  \algorithmicif\ {#1}\ \algorithmicthen\ {#2} %
+  }
+
+\newcommand{\INDSTATE}[1][1]{\State\hspace{\algorithmicindent}}
+
+\begin{algorithmic}[1]
+  \Statex
+  \initially
+    \State $\mathcal{T} \leftarrow \varnothing$; \hfill \comment{structure of
+     the CRDT for sequences}
+  \endInitially
+  
+  \local
+    \onLocal
+    \State \textbf{let} $path \leftarrow allocPath(p.P,\,q.P)$; \label{line:allocpath}
+    \State \textbf{let} $dis \leftarrow allocDis(p,\, path,\, q)$; \label{line:allocdes}
+    \State $broadcast('insert',\, \langle path,\, \alpha,\, dis \rangle)$;
+    \endOnLocal
+    \INDSTATE $broadcast('delete',\,i)$;
+  \endLocal
+  
+  \received
+    \onRemote
+    \State $\mathcal{T} \leftarrow \mathcal{T} \cup i$;
+    \endOnRemote
+    \INDSTATE $\mathcal{T} \leftarrow \mathcal{T}\, \backslash\, i$; 
+  \endReceived
+  
+\end{algorithmic}

@@ -1,0 +1,98 @@
+
+\documentclass[preprint,5p]{elsarticle}
+%%\documentclass{article} %% hevea
+%%\usepackage[utf8]{inputenc} %% hevea
+
+
+\usepackage{hyperref}
+%% biography images
+\usepackage{picins}
+%% url
+\usepackage{url}
+%% maths
+\usepackage[cmex10]{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+%% algorithms
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+%% images
+\usepackage{graphicx}
+%% inparaenum
+\usepackage{paralist}
+%% tables
+\usepackage{booktabs}
+\usepackage{multirow}
+%% figures
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,plotmarks,shapes}
+%% transform eps in pdf crossplateform
+\usepackage{epstopdf}
+\usepackage{epsfig}
+
+\usepackage{enumitem}
+
+\newcommand{\TODO}[1]{\textcolor{red}{#1}}
+\newcommand{\NAME}[0]{LSEQ}
+\newcommand{\EDITORNAME}[0]{CRATE}
+
+
+\newcounter{example}
+\setcounter{example}{0}
+\newcommand{\EXAMPLE}[0]{\stepcounter{example}\the\value{example}}
+
+%%paralist
+\renewcommand*\descriptionlabel[1]{%
+\scshape #1}
+\renewcommand\paradescriptionlabel[1]{%
+\scshape #1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\title{A Scalable Sequence Encoding for Massive Collaborative Editing}
+
+\author[lina]{Brice N{\'e}delec\corref{fn}}
+\author[lina]{Pascal Molli\corref{fn}}
+\author[lina]{Achour Mostefaoui\corref{fn}}
+%%+330251125810
+\cortext[fn]{\emph{Corresponding authors:} \url{first.last@univ-nantes.fr}}
+
+\address[lina]{Universit{\'e} de Nantes, LINA, 2, rue de la Houssini{\`e}re, BP
+  92208, 44322 Nantes Cedex 3, France}
+
+\date{}
+
+\input{input/abstract.tex}
+\input{input/keywordsandcategory.tex}
+
+
+\maketitle
+
+\input{input/introduction.tex}
+\input{input/background.tex}
+
+\input{input/proposal.tex}
+\input{input/experiments.tex}
+\input{input/relatedwork.tex}
+\input{input/conclusion.tex}
+\input{input/acknowledgements.tex}
+
+
+\bibliographystyle{elsarticle-num}
+\bibliography{bibliographie}
+\input{input/biography.tex}
+
+\appendix
+\input{input/problem.tex}
+\input{input/messagedelivery.tex}
+
+\end{document}
+
+% Local Variables:
+% reftex-default-bibliography: \./bibliographie\.bib
+% End:

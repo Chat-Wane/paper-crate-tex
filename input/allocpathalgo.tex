@@ -1,0 +1,55 @@
+
+\begin{algorithm}[h]
+\small
+\algrenewcommand{\algorithmiccomment}[1]{\hskip2em$\rhd$ #1}
+\newcommand*{\comment}[1]{$\rhd$ #1}
+
+  \begin{algorithmic}[1]
+  \State \textbf{let} $boundary \leftarrow 10$; \Comment{Any constant} 
+  \State \textbf{let} $h:\mathbb{N} \rightarrow (\mathcal{P}\times
+  \mathcal{P}\rightarrow \mathcal{P})$; \hfill \comment{get sub-allocation
+    function}
+  \Statex
+    \Function{allocPath}{$p,\, q \in \mathcal{P}$}
+    $\rightarrow \mathcal{P}$
+    \State \textbf{let} $depth,\,\_ \leftarrow getDepthInterval(p,\,q)$;
+    \State \textbf{return} $h(depth)(p,\,q)$; \Comment{Defers the call}
+    \EndFunction
+    \Statex
+    \Function{endEditing}{$p,\,q \in \mathcal{P}$}
+    $\rightarrow \mathcal{P}$
+    \Statex \comment{\#1 Get the depth of the new path}
+    \State \textbf{let} $depth,\,interval \leftarrow getDepthInterval(p,q);$
+    \Statex \comment{\#2 Process a maximal space between two identifiers}
+    \State \textbf{let} $step \leftarrow min(boundary,interval)$;
+    \Statex \comment{\#3 Create the new path}
+    \State \textbf{return} $subPath(p,depth) + rand(0,step)$;
+    \EndFunction
+    \Statex
+    \Function{frontEditing}{$p,\,q \in \mathcal{P}$}
+    $\rightarrow \mathcal{P}$
+    \State \textbf{let} $depth,\, interval \leftarrow getDepthInterval(p,q);$
+    \hfill \comment{\#1}
+    \State \textbf{let} $step \leftarrow min(boundary,interval)$;
+    \hfill \comment{\#2}
+    \State \textbf{return} $subPath(q,depth) - rand(0,step)$;
+    \hfill \comment{\#3}
+    \EndFunction
+
+    \Statex 
+    \Statex 
+    \comment{Which depth has enough space for 1 path}
+    \Function{getDepthInterval}{$p,\,q \in \mathcal{P}$} $\rightarrow \mathbb{N} \times \mathbb{N}$
+      \State \textbf{let} $depth \leftarrow 0$; $interval \leftarrow 0$;
+      \While{$(interval < 2)$}
+        \State $depth \leftarrow depth + 1$;
+        \State $interval \leftarrow subPath(q,depth) - subPath(p,depth)$;
+      \EndWhile
+      \State \textbf{return} $\langle depth,\, interval\rangle$;
+    \EndFunction
+
+  \end{algorithmic}
+\caption{The $allocPath$ function of \NAME{}}
+\label{algo:allocpathalgo}
+
+\end{algorithm}

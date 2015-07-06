@@ -1,0 +1,32 @@
+
+\begin{abstract}
+
+  The recent development of distributed collaborative editors has renewed the
+  interest for efficient data structures that can allow a huge number of
+  simultaneous users. Indeed, existing editors lack scalability in terms of the
+  number of users, concurrency, and the size of the produced
+  documents. Additionally, centralised editors suffer from privacy issues,
+  single-point-of-failure, economic intelligence issues, and restrictions in
+  terms of service.  Several replicated data structures implementing sequences
+  have been proposed to alleviate most of the aforementioned issues. Yet, they
+  have an unsatisfying space complexity. Either they use tombstones and then
+  deleted elements are only hidden to the user or they allocate to each element
+  of the sequence an identifier that may be as large as the number of elements
+  in the sequence. This paper proposes an identifier allocation function named
+  \NAME{}. It provides identifiers enjoying a sub-linear space complexity
+  without being application specific and proves the polylogarithmic size of
+  these identifiers. Moreover, this paper provides all the outlines to develop
+  distributed collaborative editors that scale in all the aforementioned
+  dimensions. Using these outlines, we developed a prototype called
+  \EDITORNAME{} ({\sc c}ollabo{\sc rat}ive {\sc e}ditor) that we evaluated on
+  the Grid'5000 testbed. The results show that such editors, being
+  decentralised and scalable, could constitute a serious competitor to current
+  trending editors. In particular, it allows massive collaborative authoring of
+  huge documents which opens the field to new kinds of distributed
+  applications.
+\end{abstract}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End: 
