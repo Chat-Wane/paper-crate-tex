@@ -30,7 +30,7 @@ one. Consequently, all collaborators suffer from few concurrent operations
 making OT approaches non practical because of unpredictable latency.
 
 On the other side, a family of distributed data structure called Conflict-free
-Replicated Data Type \cite{shapiro2011comprehensive,shapiro2011conflict} (CRDT)
+Replicated Data Type~\cite{shapiro2011comprehensive, shapiro2011conflict} (CRDT)
 has been introduced. This family encompasses data structures such as counters
 and variants of sequences, sets, and graphs. This family does not include data
 structures such as a register, a stack, etc. Fortunately, a sequence is a data
@@ -44,12 +44,12 @@ paragraph) in the sequence (i.e. document). The set of identifiers is paired
 with a total order, and this latter actually makes the sequence.
 
 Nevertheless, these sequence data structures have a space complexity
-issue. Indeed, they provide two update operations (insert and delete) and use
-an identifier allocation function that either depends on the type of the
-performed operation
-\cite{ahmed2011evaluating,conway2014language,grishchenko2010deep,oster2006data,preguica2009commutative,roh2011replicated,weiss2007wooki,wu2010partial,Yu2012stringwise},
-or the arguments of the operation~\cite
-{preguica2009commutative,andre2013supporting,weiss2009logoot}. In both cases,
+issue. Indeed, they provide two update operations (insert and delete) and use an
+identifier allocation function that either depends on the type of the performed
+operation \cite{ahmed2011evaluating, conway2014language, grishchenko2010deep,
+  oster2006data, preguica2009commutative, roh2011replicated, weiss2007wooki,
+  wu2010partial, Yu2012stringwise}, or the arguments of the operation~\cite
+{preguica2009commutative, andre2013supporting,weiss2009logoot}. In both cases,
 the space overhead induced by the identifiers can be prohibitively high and
 directly impacts performance. Unfortunately, this allocation is a crucial but a
 non-trivial problem.

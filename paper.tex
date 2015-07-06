@@ -1,18 +1,17 @@
 
-\documentclass[preprint,5p]{elsarticle}
+\documentclass{sig-alternate}
 %%\documentclass{article} %% hevea
 %%\usepackage[utf8]{inputenc} %% hevea
 
 
 \usepackage{hyperref}
-%% biography images
-\usepackage{picins}
+
 %% url
 \usepackage{url}
 %% maths
-\usepackage[cmex10]{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
+%\usepackage[cmex10]{amsmath}
+%\usepackage{amsfonts}
+%\usepackage{amssymb}
 %% algorithms
 \usepackage{algorithm}
 \usepackage{algorithmicx}
@@ -43,10 +42,10 @@
 \newcommand{\EXAMPLE}[0]{\stepcounter{example}\the\value{example}}
 
 %%paralist
-\renewcommand*\descriptionlabel[1]{%
-\scshape #1}
-\renewcommand\paradescriptionlabel[1]{%
-\scshape #1}
+%\renewcommand*\descriptionlabel[1]{%
+%\scshape #1}
+%\renewcommand\paradescriptionlabel[1]{%
+%\scshape #1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,22 +55,18 @@
 
 \title{A Scalable Sequence Encoding for Massive Collaborative Editing}
 
-\author[lina]{Brice N{\'e}delec\corref{fn}}
-\author[lina]{Pascal Molli\corref{fn}}
-\author[lina]{Achour Mostefaoui\corref{fn}}
-%%+330251125810
-\cortext[fn]{\emph{Corresponding authors:} \url{first.last@univ-nantes.fr}}
+\numberofauthors{1}
+\author{
+     \alignauthor Brice Nedelec, Pascal Molli, Achour Mostefaoui\\
+     \affaddr{LINA, 2 rue de la Houssini\`ere}\\
+     \affaddr{BP92208, 44322 Nantes Cedex 03}\\
+     \email{first.last@univ-nantes.fr}
+}
 
-\address[lina]{Universit{\'e} de Nantes, LINA, 2, rue de la Houssini{\`e}re, BP
-  92208, 44322 Nantes Cedex 3, France}
-
-\date{}
+\maketitle
 
 \input{input/abstract.tex}
 \input{input/keywordsandcategory.tex}
-
-
-\maketitle
 
 \input{input/introduction.tex}
 \input{input/background.tex}
@@ -83,9 +78,9 @@
 \input{input/acknowledgements.tex}
 
 
-\bibliographystyle{elsarticle-num}
+\bibliographystyle{abbrv}
+\raggedright
 \bibliography{bibliographie}
-\input{input/biography.tex}
 
 \appendix
 \input{input/problem.tex}
