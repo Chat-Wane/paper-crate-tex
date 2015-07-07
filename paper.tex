@@ -31,10 +31,12 @@
 \usepackage{epsfig}
 
 \usepackage{enumitem}
+\usepackage{xspace}
 
 \newcommand{\TODO}[1]{\textcolor{red}{#1}}
-\newcommand{\NAME}[0]{LSEQ}
-\newcommand{\EDITORNAME}[0]{CRATE}
+\newcommand{\LSEQ}[0]{LSEQ\xspace}
+\newcommand{\CRATE}[0]{\textsc{Crate}\xspace}
+\newcommand{\SPRAY}[0]{\textsc{Spray}\xspace}
 
 
 \newcounter{example}
@@ -53,7 +55,7 @@
 
 \begin{document}
 
-\title{A Scalable Sequence Encoding for Massive Collaborative Editing}
+\title{CRATE: a Web Application for Massive Collaborative Editing}
 
 \numberofauthors{1}
 \author{

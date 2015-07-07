@@ -3,18 +3,18 @@
 
 \label{sec:conclusion}
 In the context of collaborative editing, this paper proposed an identifier
-allocation function \NAME{} for building sequence replicated data
+allocation function \LSEQ for building sequence replicated data
 structures. The obtained sequences enjoy good space and time complexities. The
 proof on space complexity demonstrates logarithmic, polylogarithmic, and
 quadratic for, respectively, random, monotonic, and worst-case
 insertions. Using this allocation function and interval version vectors to
 track causality, we developed a distributed collaborative editor called
-\EDITORNAME{}. This editor is fully decentralised and scales in terms of the
+\CRATE. This editor is fully decentralised and scales in terms of the
 number of peers, concurrency, and document size. We validated the approach on a
 setup close of the real life conditions and using extreme parameters: low
 startup values, high number of insertions, high number of peers and high
-latency. The experiments confirmed the space complexity of \NAME{} and the
-scalability of \EDITORNAME{}. As such, it alleviates the issues brought by
+latency. The experiments confirmed the space complexity of \LSEQ and the
+scalability of \CRATE. As such, it alleviates the issues brought by
 centralised approaches: single point of failure, privacy issues, economic
 intelligence issues, limitations in terms of service, etc. Also, it alleviates
 the scalability issues of decentralised approaches. As such, it can be seen as
@@ -27,7 +27,7 @@ collaborative reviewing of co-located events, webinars etc.
 
 %% Future work concerns the improvement of our prototype
 %% CRATE: \begin{enumerate} \item We aim to develop of a truly tree-based
-%% implementation of \NAME{}. Indeed, the current version uses a data structure
+%% implementation of \LSEQ. Indeed, the current version uses a data structure
 %% which is a linearisation of the tree. As a consequence, each element is
 %% linked to its identifier without factorising the common parts of the
 %% latter. Therefore, the memory usage is currently higher than the one

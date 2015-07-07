@@ -2,26 +2,26 @@
 \label{sec:experiments}
 
 This section is divided into two parts. The first part describes the core of
-the distributed CollaboRATive Editor \EDITORNAME{} by filling in the blanks
+the distributed CollaboRATive Editor \CRATE by filling in the blanks
 left on causality tracking and eventual delivery of operations. The second part
 concerns the experiments that aim to:
 
 \begin{enumerate}[leftmargin=*]
-\item Validate the space complexity of \NAME{} and highlight the improvement
+\item Validate the space complexity of \LSEQ and highlight the improvement
   over the state-of-the-art.
-\item Show that \EDITORNAME{} scales with respect to the number of
+\item Show that \CRATE scales with respect to the number of
   collaborators simultaneously involved in a document editing.
 \item Show that concurrency does not impact the size of
   identifiers. Consequently, the space complexity of the identifiers can be
   studies in scenarios without concurrency.
 \end{enumerate}
 
-\subsection{\EDITORNAME{}}
+\subsection{\CRATE}
 \label{subsec:crdt}
-\EDITORNAME{} (CollaboRATive Editor) is a prototype of decentralised editor. We
+\CRATE (CollaboRATive Editor) is a prototype of decentralised editor. We
 assume that collaborators can join the document editing and leave when they
 want. The group of collaborators can be seen as a peer-to-per network. Hence,
-\EDITORNAME{} uses a gossip dissemination protocol to scale with respect to the
+\CRATE uses a gossip dissemination protocol to scale with respect to the
 number of collaborators/peers involved in the authoring. In this protocol, each
 peer has a set of neighbours and communicates with them. When a peer performs
 an operation, it creates a message containing the result of the operation. Each
@@ -30,12 +30,12 @@ the first time, it re-broadcasts this message. However,
 Section~\ref{sec:preliminaries} states that strong eventual consistency is
 ensured upon the assumption of eventual delivery, and unfortunately, the
 gossiping broadcast is only reliable with high probability. To make it
-reliable, \EDITORNAME{} includes an additional anti-entropy protocol to
+reliable, \CRATE includes an additional anti-entropy protocol to
 retrieve the possibly missing operations (cf.~\ref{sec:messagedelivery}).
 
 Section~\ref{sec:preliminaries} also states that sequences can be seen as
 conflict-free data types under the condition that deletion of a particular
-element cannot precede its insertion. To ensure this condition, \EDITORNAME{}
+element cannot precede its insertion. To ensure this condition, \CRATE
 uses a vector structure called interval version
 vector~\cite{mukund2014optimized} (IVV) whose values are version numbers called
 dates.
@@ -47,7 +47,7 @@ two scalars are required to preserve the causal dependency instead of a full
 vector. This difference considerably lowers the network overload while keeping
 a local space complexity of the same order than version vectors.  It
 constitutes an essential trade-off since local memory is often considered as
-virtually infinite while the network can be easily overloaded. \EDITORNAME{}
+virtually infinite while the network can be easily overloaded. \CRATE
 uses an IVV to
 \begin{inparaenum}[(i)]
 \item minimise the retransmission of operations (i.e. each peer broadcast only
@@ -117,26 +117,26 @@ Web applications. The code is released on the Github
 platform\footnote{\url{https://github.com/Chat-Wane/LSEQTree.git}} under the
 MIT license. Based on this implementation, we developed a prototype of
 distributed CollaboRATive Editor
-\EDITORNAME{}\footnote{\url{https://github.com/Chat-Wane/CRATE.git}} following
+\CRATE\footnote{\url{https://github.com/Chat-Wane/CRATE.git}} following
 the outlines of this paper.
 \ \\
 
 \begin{asparadesc}
-\item [Objective:] Validate the space complexity analysis of \NAME{}. In
-  particular, when the editing behaviour is monotonic, \NAME{} has a
+\item [Objective:] Validate the space complexity analysis of \LSEQ. In
+  particular, when the editing behaviour is monotonic, \LSEQ has a
   polylogarithmic upper-bound on space complexity with respect to the number of
-  insert operations. When the editing behaviour is random, \NAME{} has a
-  logarithmic space complexity. A second objective is to compare \NAME{} with
+  insert operations. When the editing behaviour is random, \LSEQ has a
+  logarithmic space complexity. A second objective is to compare \LSEQ with
   an existing sequence structure
   Logoot~\cite{weiss2009logoot,weiss2010logootundo}.
 \item [Description:] A single machine hosts two peers communicating via a
   peer-to-peer connection. They produce a document of half a million characters
   in $50$ minutes, i.e., they insert $166$ characters per second. Two editing
-  behaviours are studied: monotonic and random. They use either \EDITORNAME{},
-  or a version of \EDITORNAME{} using Logoot instead of \NAME{}. According
+  behaviours are studied: monotonic and random. They use either \CRATE,
+  or a version of \CRATE using Logoot instead of \LSEQ. According
   to~\cite{ahmed2011evaluating}, Logoot constitutes the sequence with
   variable-size identifiers that delivers the best performance overall. As
-  such, it is an ideal baseline. While \NAME{} starts with a departure base of
+  such, it is an ideal baseline. While \LSEQ starts with a departure base of
   $2^8$ and doubles it when required, Logoot uses a constant base of
   $2^{16}$. We measure the average size of messages transiting through the
   peers during the experiment.
@@ -147,8 +147,8 @@ the outlines of this paper.
   \caption{\label{fig:complexities} Average size of the messages exchanged
     between two peers during repeated insertions of elements in the
     sequence. The measurements concern two editing behaviours (monotonic and
-    random) with two \EDITORNAME{} using different sequence structures (Logoot
-    and \NAME{}-based). The replicated document grows up to half a million
+    random) with two \CRATE using different sequence structures (Logoot
+    and \LSEQ-based). The replicated document grows up to half a million
     characters.}
 \end{figure}
 
@@ -159,19 +159,19 @@ the outlines of this paper.
   leads to a logarithmic growth of the size of messages with both sequences
   with a barely noticeable difference. On the other hand, for a monotonic
   editing behaviour Logoot exposes a linear growth of the size of its messages
-  while the \NAME{}-based sequence has a polylogarithmic validating the proof
+  while the \LSEQ-based sequence has a polylogarithmic validating the proof
   given in Section~\ref{sec:proposal}. Thus, even if Logoot starts with a
   smaller size messages, it quickly becomes less efficient than the
-  \NAME{}-based sequence when the number of insertions increases.
+  \LSEQ-based sequence when the number of insertions increases.
 
 \item [Reasons:] The random editing behaviour is slightly better for the
-  \NAME{}-based sequence compared to Logoot because \NAME{} starts with a lower
+  \LSEQ-based sequence compared to Logoot because \LSEQ starts with a lower
   departure base. Nonetheless, a random editing behaviour leads to a same space
   complexity for both sequences. For monotonic editing, the identifiers of
   Logoot linearly grow because Logoot uses a K-ary tree. Consequently, it does
   not adapt itself to the growing number of insertions in the sequence, i.e.,
   each node in the tree can store as many nodes as its parent. On the opposite
-  side, \NAME{} doubles the number of available children when
+  side, \LSEQ doubles the number of available children when
   required. Consequently, when the document size increases, the number of
   possible identifiers grows even more.
 \end{asparadesc}
@@ -179,11 +179,11 @@ the outlines of this paper.
 \ \\
 
 \begin{asparadesc}
-\item [Objective:] Show that \EDITORNAME{} scales in terms of the number of
+\item [Objective:] Show that \CRATE scales in terms of the number of
   peers. In other words, the size of the network does not impact the space
   complexity upper bound of messages.
 \item [Description:] A cluster of the Grid'5000 testbed hosts a varying number
-  of peers using the application \EDITORNAME{}. The peers produce a
+  of peers using the application \CRATE. The peers produce a
   document of 500 thousand characters by repeatedly inserting at the end of the
   document (monotonic editing). The experiments last $50$ minutes. The number
   of peers varies from $2$ to $450$. The generation of $166$ operations
@@ -206,16 +206,16 @@ the outlines of this paper.
   number of involved peers, the average size of messages grows
   polylogarithmically compared to the size of the document. Also, even if the
   values of the 2-peers curve are invariably above the others, they do not
-  demonstrate significant differences. Consequently, \EDITORNAME{} scales in
+  demonstrate significant differences. Consequently, \CRATE scales in
   two dimensions: number of peers and number of insertions.
 \item [Reasons:] The size of messages reflects the size of the identifiers and
   the additional causality tracking metadata. In Section~\ref{subsec:crdt} that
-  describes \EDITORNAME{}, we saw only two scalars are required to track
+  describes \CRATE, we saw only two scalars are required to track
   semantically related operations. Since these scalars also exist within the
   identifiers, we reuse them. Consequently, the average size of messages only
   depends of the average size of the identifiers. Since the space complexity of
-  \NAME{} is independent of the number of peers, so are the messages of the
-  \EDITORNAME{}. Still, the latter locally requires a linearly growing vector
+  \LSEQ is independent of the number of peers, so are the messages of the
+  \CRATE. Still, the latter locally requires a linearly growing vector
   in terms of the number of peers. Figure~\ref{fig:scalability} shows small
   measurement variations between the different runs. This result is due to a
   growing number of peers that implies an increasing concurrency rate. When
@@ -243,7 +243,7 @@ the outlines of this paper.
   of identifiers. Hence, scenarios without concurrency show the upper-bound on
   the size of identifiers.
 \item [Description:] A single machine emulates 10 peers using the application
-  \EDITORNAME{}. The peers produce a document of $10$ thousand characters at a
+  \CRATE. The peers produce a document of $10$ thousand characters at a
   rate of 3 insertions per second uniformly distributed among the peers. The
   tool $netem$ provides the network emulation functionality. In particular, it
   allows us to change the transmission delay of messages transmitted through a
@@ -274,13 +274,13 @@ the outlines of this paper.
 
 \subsection{Synthesis}
 This section detailed a complete distributed collaborative editor.  Using the
-outline, we developed \EDITORNAME{} and used it to perform the experiments. The
+outline, we developed \CRATE and used it to perform the experiments. The
 first experiment confirmed the space complexity analysis of
-Section~\ref{sec:proposal}. Therefore, \EDITORNAME{} scales with respect to the
+Section~\ref{sec:proposal}. Therefore, \CRATE scales with respect to the
 number of insert operations performed on the document. The second experiment
 showed that using a causality tracking mechanism focused on semantically
 dependent operations does not impact the size of messages. As a consequence,
-\EDITORNAME{} scales with respect to the number of peers. Finally, the third
+\CRATE scales with respect to the number of peers. Finally, the third
 experiment confirmed the observations made in the second one: the concurrency
 rate does not negatively impact the size of identifiers. Also, the sequential
 execution gives the upper bound on the average size of messages.

@@ -2,7 +2,7 @@
 \section{Message delivery protocol}
 \label{sec:messagedelivery}
 This section provides the additional algorithms of the messaging between
-peers. The distributed collaborative editor \EDITORNAME{} uses these protocols
+peers. The distributed collaborative editor \CRATE uses these protocols
 to ensure that operations are eventually integrated, only once, and the
 deletion of an element is always integrated after its insertion.
 
@@ -47,7 +47,7 @@ cannot be mistaken for an element inserted then deleted.
 
 
 As stated in Section~\ref{sec:preliminaries}, CRDTs require a reliable
-broadcast to provide strong eventual consistency. Nevertheless, \EDITORNAME{}
+broadcast to provide strong eventual consistency. Nevertheless, \CRATE
 uses a gossip dissemination protocol which scales in number of peers, yet
 unreliable.
 

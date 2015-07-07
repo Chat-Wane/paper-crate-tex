@@ -60,13 +60,13 @@ core of which there is the identifier allocation function that provides the
 different collaborators with identifiers they assign to the elements of the
 associated sequence. This paper has four main contributions:
 \begin{itemize}
-\item A new identifier allocation function called \NAME{}.
-\item A proof of the polylogarithmic space complexity of \NAME{}.
+\item A new identifier allocation function called \LSEQ.
+\item A proof of the polylogarithmic space complexity of \LSEQ.
 \item All the outlines to develop a distributed collaborative editor for
-  massive editing of large documents and a prototype called \EDITORNAME{} (for
+  massive editing of large documents and a prototype called \CRATE (for
   {\sc c}ollabo{\sc rat}ive {\sc e}ditor).
-\item A experimental study that validates the space complexity of \NAME{} and
-  the scalability of \EDITORNAME{}. Parts of theses experiments ran on the
+\item A experimental study that validates the space complexity of \LSEQ and
+  the scalability of \CRATE. Parts of theses experiments ran on the
   Grid'5000 testbed and involved up to $450$ emulated peers creating a document
   of half a million characters at a global rate of $166$ operations per second.
 \end{itemize}
@@ -74,10 +74,10 @@ associated sequence. This paper has four main contributions:
 The remainder of this paper is organised as
 follows. Section~\ref{sec:preliminaries} provides the necessary background to
 sequence data structures and the motivations. Section~\ref{sec:proposal}
-follows with a description of \NAME{} and the proof of its space
+follows with a description of \LSEQ and the proof of its space
 complexity. Section \ref {sec:experiments} highlights the scalability of
-\EDITORNAME{} while validating the space complexity analysis of
-\NAME{}. Section~\ref{sec:relatedwork} reviews related works. Finally,
+\CRATE while validating the space complexity analysis of
+\LSEQ. Section~\ref{sec:relatedwork} reviews related works. Finally,
 Section~\ref{sec:conclusion} concludes the paper.
 
 %%% Local Variables: 
