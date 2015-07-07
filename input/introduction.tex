@@ -1,10 +1,11 @@
 
 \section{Introduction}
 
-In recent years, the interest in distributed collaborative editors such as
-Google Docs, SubEthaEdit, or Etherpad, has not stopped growing. Such editors
-allow distributing the work across space, time and organisations. However,
-despite being undoubtedly useful, they have several limitations due either to
+The recent WebRTC technology has opened a new playground for large-scale
+distributed web applications. Among others, distributed collaborative editors
+such as Google Docs, SubEthaEdit, or Etherpad, have proven their
+usefulness. Such editors allow distributing the work across space, time and
+organizations. However, they have several limitations due either to
 centralisation (e.g. single-point-of-failure, privacy issues, economic
 intelligence issues, limitations in terms of service) or to decentralisation
 (e.g. number of users, concurrency and synchronisation, number of
@@ -17,58 +18,58 @@ scheme \cite{johnson1975maintenance, saito2005optimistic} to provide high
 availability and responsiveness. Locally, each user involved in the
 collaboration owns a copy of the document (replica). Local operations are
 executed and become effective locally before being broadcast. Remotely, each
-user integrates the received operations to her replica. The convergence
-property of optimistic replication states that replicas are allowed to
-temporarily diverge. Yet, the resulting replicas become identical when all
-collaborators have received all changes~\cite{demers1987epidemic}.
+user integrates the received operations to her replica. The convergence property
+of optimistic replication states that replicas are allowed to temporarily
+diverge. Yet, the resulting replicas become identical when all collaborators
+have received all changes~\cite{demers1987epidemic}.  Thus, optimistic
+replication requires a shared data type that ensures consistency and an
+algorithm to disseminate changes.
 
-Operational transformation (OT) approaches are the first techniques used to
-build distributed collaborative editors. However, the time complexity of the
-integration of operations is upper-bounded by $O(H^2)$ where $H$ is the number
-of concurrent operations in the logfile relatively to the integrated
-one. Consequently, all collaborators suffer from few concurrent operations
-making OT approaches non practical because of unpredictable latency.
+Operational transformation~\cite{sun1998operational, sun2009contextbased} (OT)
+approaches are the first techniques used to build distributed collaborative
+editors. However, the time complexity of the integration of operations is
+quadratically upper-bounded by the number of concurrent operations relatively to
+the integrated one. Consequently, all collaborators suffer from few concurrent
+operations making OT approaches non practical because of unpredictable latency.
 
 On the other side, a family of distributed data structure called Conflict-free
 Replicated Data Type~\cite{shapiro2011comprehensive, shapiro2011conflict} (CRDT)
-has been introduced. This family encompasses data structures such as counters
-and variants of sequences, sets, and graphs. This family does not include data
-structures such as a register, a stack, etc. Fortunately, a sequence is a data
-structure well-suited for building distributed collaborative editors that scale
-in presence of concurrent operations. Contrarily to OT, most of the processing
-time is located in the local part of operations, making this approach more
-practical since each operation leads to $N$ remote integrations ($N$ being the
-number of collaborators). To ensure convergence, a unique and immutable
-identifier is associated with each element (e.g. character, words, line,
-paragraph) in the sequence (i.e. document). The set of identifiers is paired
-with a total order, and this latter actually makes the sequence.
-
-Nevertheless, these sequence data structures have a space complexity
-issue. Indeed, they provide two update operations (insert and delete) and use an
-identifier allocation function that either depends on the type of the performed
-operation \cite{ahmed2011evaluating, conway2014language, grishchenko2010deep,
-  oster2006data, preguica2009commutative, roh2011replicated, weiss2007wooki,
-  wu2010partial, Yu2012stringwise}, or the arguments of the operation~\cite
+has been introduced. A CRDT for sequences is a data structure well-suited for
+building distributed collaborative editors that scale in presence of concurrent
+operations. To ensure convergence, a unique and immutable identifier is
+associated with each element (e.g. character, words, line, paragraph) in the
+sequence (i.e. document). The set of identifiers is paired with a total order,
+and this latter actually makes the sequence.  Nevertheless, these sequence data
+structures have a space complexity issue. Indeed, they provide two update
+operations (insert and delete) and use an identifier allocation function that
+either depends on the type of the performed operation \cite{ahmed2011evaluating,
+  conway2014language, grishchenko2010deep, oster2006data,
+  preguica2009commutative, roh2011replicated, weiss2007wooki, wu2010partial,
+  Yu2012stringwise}, or the arguments of the operation~\cite
 {preguica2009commutative, andre2013supporting,weiss2009logoot}. In both cases,
 the space overhead induced by the identifiers can be prohibitively high and
 directly impacts performance. Unfortunately, this allocation is a crucial but a
 non-trivial problem.
 
-In this paper, we study sequence data structures \footnote{A short version of
-  this paper appeared in \cite{nedelec2013lseq,nedelec2013concurrency}.} at the
-core of which there is the identifier allocation function that provides the
-different collaborators with identifiers they assign to the elements of the
-associated sequence. This paper has four main contributions:
+In this paper, we introduce \CRATE, a distributed and decentralized
+collaborative editor running in web browsers. Its core components are
+\LSEQ~\cite{nedelec2013concurrency, nedelec2013lseq}, an allocation strategy
+which provides sub-linearly upper-bounded identifiers compared to the number of
+insertions in the document, and \SPRAY (REF), an adaptive random peer sampling
+protocol fitting the web application context. This paper comprises the following
+contributions: 
+% In this paper, we study sequence data structures \footnote{A short version of
+%   this paper appeared in \cite{nedelec2013lseq,nedelec2013concurrency}.} at the
+% core of which there is the identifier allocation function that provides the
+% different collaborators with identifiers they assign to the elements of the
+% associated sequence. This paper has four main contributions:
 \begin{itemize}
-\item A new identifier allocation function called \LSEQ.
+\item An in-depth description of its core components.
 \item A proof of the polylogarithmic space complexity of \LSEQ.
-\item All the outlines to develop a distributed collaborative editor for
-  massive editing of large documents and a prototype called \CRATE (for
-  {\sc c}ollabo{\sc rat}ive {\sc e}ditor).
-\item A experimental study that validates the space complexity of \LSEQ and
-  the scalability of \CRATE. Parts of theses experiments ran on the
-  Grid'5000 testbed and involved up to $450$ emulated peers creating a document
-  of half a million characters at a global rate of $166$ operations per second.
+\item A experimental study that validates the space complexity of \LSEQ and the
+  scalability of \CRATE. Parts of theses experiments ran on the Grid'5000
+  testbed and involved up to $500$ emulated peers creating a document of one
+  million characters at a global rate of one hundred operations per second.
 \end{itemize}
 
 The remainder of this paper is organised as
