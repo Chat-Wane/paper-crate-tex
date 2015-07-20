@@ -250,7 +250,10 @@ connection with a user $u_2$ must create an offer ticket and send it to $u_2$
 through a mediator (e.g. by mail, dedicated servers, peers already connected in
 the network). Then, $u_2$ must answer with another offer (refereed as
 \emph{stamped ticket}) using a mediator too. Finally, $u_1$ must confirm the
-connection to establish the bidirectional link.
+connection to establish the bidirectional link. From its complexity, WebRTC
+encourages to make as small connections as possible, especially since the range
+of users includes small devices (e.g. smartphones, tablets, raspberry pi) with
+limited capacities.
 
 %%% Local Variables: 
 %%% mode: latex
