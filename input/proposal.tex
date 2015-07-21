@@ -3,7 +3,19 @@
 \label{sec:proposal}
 
 \CRATE (stands for CollaboRATive Editor) is a distributed and decentralized
-collaborative editor running as a web application.
+collaborative editor running as a web application. As depicted in
+Figure~\ref{fig:architecture}, \CRATE's architecture comprises four layers:
+\begin{asparadesc}
+\item [communication:] includes the editing session membership mechanism and the
+  information dissemination protocol.
+\item [causality:] includes the causality tracking structure that guarantees a
+  delivery order of operations reflecting a form of causality.
+\item [sequence structure:] includes the structure that guarantees a global
+  total order among elements of the sequence.
+\item [graphical user interface:] includes the editor as a graphical entity that
+  users can interact with inside web browsers.
+\end{asparadesc}
+
 
 \begin{figure}
   \centering
