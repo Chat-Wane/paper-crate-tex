@@ -1,0 +1,52 @@
+
+\small
+\algrenewcommand{\algorithmiccomment}[1]{\hskip2em$\rhd$ #1}
+
+\newcommand{\comment}[1]{$\rhd$ #1}
+
+\algblockdefx[act]{act}{endAct}
+  [0] {\textbf{ACTIVE THREAD:}}
+
+\algblockdefx[pas]{pas}{endPas}
+  [0] {\textbf{PASSIVE THREAD:}}
+
+
+\newcommand{\LINEFOR}[2]{%
+  \algorithmicfor\ {#1}\ \algorithmicdo\ {#2} %
+  }
+
+\newcommand{\LINEIFTHEN}[2]{%
+  \algorithmicif\ {#1}\ \algorithmicthen\ {#2} %
+  }
+
+\newcommand{\INDSTATE}[1][1]{\State\hspace{\algorithmicindent}}
+
+\begin{algorithmic}[1]
+  \Statex
+  \act
+    \Function{loop}{ } \hfill \comment{Every $\Delta\,t$}
+    \State $\mathcal{P} \leftarrow incrementAge(\mathcal{P})$;
+    \State \textbf{let} $ \langle q,\, age \rangle \leftarrow getOldest(\mathcal{P})$;
+    \State \textbf{let} $sample \leftarrow $ \label{line:samplesize}
+    \Statex \hfill $getSample(\mathcal{P}\setminus\left\{\langle q, age\rangle\right\}, \left \lceil{|\mathcal{P}|\over{2}} \right \rceil-1) \uplus \left\{\langle p, 0 \rangle\right\}$;
+    \State $sample \leftarrow replace(sample,\,q,\,p)$; \label{line:replace1}
+    \State $sendTo(q,\, 'exchange',\, sample)$;
+    \State \textbf{let} $sample'\leftarrow receiveFrom(q)$;
+    \State $sample \leftarrow replace(sample,\,p,\,q)$;
+    \State $\mathcal{P} \leftarrow (\mathcal{P} \setminus sample) \uplus
+    sample'$;
+    \EndFunction
+  \endAct
+  
+  \pas
+    \Function{onExchange}{$o,\, sample$} \hfill \comment{$o: origin$}
+    \State \textbf{let} $sample' \leftarrow getSample(\mathcal{P} ,\, \left\lceil |\mathcal{P}|\over{2} \right\rceil )$;
+    \State $sample' \leftarrow replace(sample',\,o,\,p);$ \label{line:replace2}
+    \State $sendTo(o ,\, sample')$;
+    \State $sample' \leftarrow replace(sample',\,p,\,o)$;
+    \State $\mathcal{P} \leftarrow (\mathcal{P} \setminus sample') \uplus
+    sample$; 
+    \EndFunction
+  \endPas
+  
+\end{algorithmic}

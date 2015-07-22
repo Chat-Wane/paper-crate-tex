@@ -5,17 +5,29 @@
 \CRATE (stands for CollaboRATive Editor) is a distributed and decentralized
 collaborative editor running as a web application. As depicted in
 Figure~\ref{fig:architecture}, \CRATE's architecture comprises four layers:
-\begin{asparadesc}
-\item [communication:] includes the editing session membership mechanism and the
-  information dissemination protocol.
-\item [causality:] includes the causality tracking structure that guarantees a
+\begin{inparaenum}[(i)]
+\item communication: includes the editing session membership mechanism and the
+  information dissemination protocols.
+\item causality: includes the causality tracking structure that guarantees a
   delivery order of operations reflecting a form of causality.
-\item [sequence structure:] includes the structure that guarantees a global
+\item sequence structure: includes the structure that guarantees a global
   total order among elements of the sequence.
-\item [graphical user interface:] includes the editor as a graphical entity that
+\item graphical user interface: includes the editor as a graphical entity that
   users can interact with inside web browsers.
-\end{asparadesc}
-
+\end{inparaenum}
+The left part of the figure depicts the common process chain: when the user
+performs an operation on the document, the operation is applied to the shared
+sequence which creates an \LSEQ identifier. Then it decorates the result of the
+operation with causality tracking metadata. Finally, \CRATE broadcasts it using
+the neighborhood provided by the \SPRAY random peer sampling protocol.
+Conversely, when \CRATE receives a broadcast message, it checks if the operation
+is causally ready to be delivered. Once the condition is verified, it applies
+the operation to the shared sequence which notifies the graphical user interface
+of the changes.  The right part of the figure corresponds to the catch up
+strategy where a peer may have missed operations due to dropped messages, or
+simply because the peer worked on offline mode for a while. Therefore, it
+regularly asks to its neighborhood the missing operations using the differences
+of version vectors.
 
 \begin{figure}
   \centering
@@ -23,9 +35,63 @@ Figure~\ref{fig:architecture}, \CRATE's architecture comprises four layers:
   \caption{\label{fig:architecture}\CRATE architecture}
 \end{figure}
 
-\subsection{LSeq: a polylogarithmic allocator}
+\begin{asparadesc}
+\item [The communication layers] includes both an information dissemination
+  protocol and a random peer sampling protocol. While the former is very simple
+  since it is only in charge of sending and receiving the operations, the latter
+  is complex.
 
-\subsection{Spray: an adaptive random peer sampling}
+  \SPRAY is an adaptive random peer sampling protocol whose primary target is
+  WebRTC, a recent technology that allows peer-to-peer communication between web
+  browser. WebRTC has additional constraints such as the range of users which
+  includes small devices (e.g. smartphones, tablets, etc.), and its complex
+  3-way connection establishment. Indeed, as depicted in \TODO{Figure}, a user
+  $u_1$ wishing to establish a connection with a user $u_2$ must create an offer
+  ticket and send it to $u_2$ through a mediator (e.g. by mail, dedicated
+  servers, peers already connected in the network). Then, $u_2$ must answer with
+  another offer (referred to as \emph{stamped ticket}) using a mediator
+  too. Finally, $u_1$ must confirm the connection to establish the bidirectional
+  link. Due to this complex protocol, the peer sampling protocols are encouraged
+  to keep a small number of connections.
+
+  \SPRAY is adaptive in the sense that the neighborhood maintained at each peer
+  grows and shrinks logarithmically compared to the number of members in the
+  editing session. \SPRAY divides the life-cycle of a peer into three phases:
+  the joining, the exchanges, and the leaving. They respectively aims to
+  increase, keep unchanged, decrease the number of connections to follow a
+  logarithmic progression.
+  
+  \begin{algorithm}
+    \input{./input/joiningalgo.tex}
+    \caption{\label{algo:joining}The joining algorithm.}
+  \end{algorithm}
+  
+  \begin{algorithm}
+    \input{./input/cyclicalgo.tex}
+    \caption{\label{algo:exchange}The exchange algorithm.}
+  \end{algorithm}
+  
+  \begin{algorithm}
+    \input{./input/leavingalgo.tex}
+    \caption{\label{algo:leaving}The leaving algorithm.}
+  \end{algorithm}
+\end{asparadesc}
+
+
+
+\begin{asparadesc}
+\item [The causality tracking layer].
+  
+  \begin{figure}
+    \input{./input/timelineexample.tex}
+    \caption{\label{fig:timeline}Causality tracking example.}
+  \end{figure}
+  
+\end{asparadesc}
+
+\begin{asparadesc}
+\item [The shared sequence layer].
+\end{asparadesc}
 
 \LSEQ (polyLogarithmic SEQuence) is the name of the proposed allocation
 function. As such, any sequence data structure using variable-size identifiers

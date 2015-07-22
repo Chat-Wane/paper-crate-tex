@@ -1,101 +1,48 @@
 \section{Related Work}
 \label{sec:relatedwork}
 
-Distributed collaborative editing tools can be divided in two classes. The
-Operational Transformation (OT) approach~\cite{saito2005optimistic} is the most
-ancient. A wide variety of OT approaches exist for text editing, image editing
-etc. In the context of text editing, OT can provide the usual $insert$ and
-$delete$ operations plus a range of string-wise operations such as $move$,
-$cut-paste$, etc. However, the correctness analysis requires to carefully
-examine each pair of operations and their parameters. As a consequence, few OT
-approaches are actually correct~\cite{imine2003proving}. Furthermore, this
-first class can be divided into two subclasses centralised and
-decentralised. Centralised approaches~\cite{nichols1995high} serialise the
-order of operations on a central server easing the convergence. However, the
-topology in itself implies a single point of failure, privacy issues, economic
-intelligence issues, and scalability issues. Decentralised
-approaches~\cite{sun2009contextbased} require a version vector to identify the
-generation context of the received operations. It transforms the arguments of
-the received operation against its concurrent and older operations to
-consistently execute it without undoing the latter operations. While the local
-operation is very efficient, the high price in case of concurrency must been
-paid at all distant sites.  As a consequence, OT approaches work fine in
-confined configurations only. However, they are not designed to handle massive
-authoring of large documents. In comparison, \CRATE uses \LSEQ that
-does not require a logfile and whose complexity depends of the insert
-operations only, sends only two scalars in messages to guarantee the
-convergence, and supports concurrency.
+Optimistic replication is a replication strategy where each peer owns a local
+copy (or replica) of the shared data. Since peers can directly modify this copy,
+it improves both availability and responsiveness of the data. When a peer
+performs an operation on the local data, the information is spread to all owners
+of the shared data where they are integrated. Optimistic replication approaches
+guarantee eventual consistency~\cite{bailis2013eventual},i.e., after the
+receipt and integration of all operations by the members, the replicas converge
+to an identical state. This section introduces the shared data structure that
+guarantees eventual consistency and the dissemination protocol.
 
-The second class, besides the OT class, is the class based on conflict-free
-replicated data types
-(CRDTs)~\cite{shapiro2011comprehensive,shapiro2011conflict}. This class shares
-the computational cost between the local and remote part of the optimistic
-replication. While CRDTs significantly improve the time complexity compared to
-decentralised OT approaches, they hide the complexity in the memory
-usage. CRDTs for sequences can be slit into two sub-classes, the tombstone
-class and the variable-size identifiers class. The tombstone 
-CRDTs~\cite{ahmed2011evaluating,
-  conway2014language,grishchenko2010deep,oster2006data,preguica2009commutative,
-  roh2011replicated, weiss2007wooki,wu2010partial,Yu2012stringwise} marks the
-deleted elements. Therefore, while these elements do not appear to the user,
-they still exist in the underlying model and affect the overall
-performance. Thus, the complexity depends on the number of insert and delete
-operations. Including the deletes in the complexity is problematic because, for
-instance, in Wikipedia documents subject to vandalism, delete operations are
-very common. As a consequence, a page may contain few lines and yet use a large
-amount of storage due to the hidden tombstones. On the other side, the
-variable-size identifiers class of CRDTs~\cite{preguica2009commutative,
-  andre2013supporting,weiss2009logoot} assigns an identifier to each element in
-the document. Contrarily to tombstone approaches, deleted elements are truly
-removed. However, the identifiers also encode the order of elements and hence
-the space complexity of these approaches is crucial and depends only on the
-number of insert operations.
+To insert a character in a shared document, one cannot just use the standard
+well-known operation \emph{insert element at index} of arrays and expect
+guaranties on convergence. For instance, if two users concurrently edit a
+sequence ERTY: the first user inserts a Q at index 0, while the second user
+inserts a W at index 0. They respectively obtains QERTY and WERTY as resulting
+sequence. On receipt of each other's operation they respectively obtain WQERTY
+and QWERTY. Hence the need to inspect these concurrent cases to ensure
+convergent replicas.
 
-In the literature, two kinds of allocation functions exist for the
-identifiers. Let us consider an insertion of $b$ between two elements $a$ and
-$c$; let $id_a$ and $id_c$ be their respective identifiers where
-$id_a<id_c$. Both kinds of allocation functions aim to provide the shortest
-identifiers possible. Thus, the maximum size of the identifier $id_b$
-corresponding to $b$ is always: $min(|id_a|,\,|id_c|)+1$. The first allocation
-function consists in randomising a path between $id_a$ and $id_c$. This
-function aims to make the conflicts very unlikely. However, with a monotonic
-editing behaviour, such function consumes on the average half the level of
-identifiers in a branch. The second allocation function comes from the
-observations made on a Wikipedia corpus that favours end-editing. When the
-editing behaviour complies with this assumption, the average size of
-identifiers remains linear. None of the two functions provides reasonable size
-identifiers when associated with the dual editing behaviour.
+Currently, most of web collaborative editors (REF) use operational transform
+(OT) approaches whose principle lies in modifying the arguments of the received
+operation against its concurrent ones. For instance, in the prior example, when
+the first user receives \emph{insert W at 0}, it detects \emph{insert Q at 0} as
+concurrent, and decides to transform the operation into \emph{insert W at 1}.
+In that spirit, a wide variety of OT approaches exist for text editing, image
+editing etc. In text editing context, OT can provide the usual insertion and
+deletion operations plus a range of string-wise operations such as move,
+cut-paste, etc. However, operational transform approaches have drawbacks. First,
+the quadratic time complexity of the transformations compared to the number of
+concurrent operations which precludes its usage on the Internet subject to
+unpredictable latency and, in particular, the existence of an offline editing
+mode. Second, the structure to detect concurrency is expansive, i.e., it
+requires the history of all operations and a causality tracking
+mechanism. \TODO{Moar}.
 
-The allocation function \LSEQ~\cite{nedelec2013lseq,nedelec2013concurrency}
-improves the state-of-the-art by lowering the space complexity of identifiers
-from linear to sub-linear. Figure~\ref{fig:complexities} shows how it impacts
-the average size of identifiers. As a consequence, \LSEQ scales with respect
-to the size of the document.
-
-LogootSplit~\cite{andre2013supporting} proposes an orthogonal solution to
-reduce the metadata generated by sequences with variable-size
-identifiers. LogootSplit does not reduce the space complexity of the
-identifiers but modifies the way identifiers are linked to elements. Indeed,
-LogootSplit handles multiple granularities. LogootSplit aims to allocate
-identifiers to coarse grain elements whenever it is possible in order to reduce
-the number of identifiers. Being orthogonal, LogootSplit could use \LSEQ to
-benefit from its advantages.
-
-Using \LSEQ, a sequence still requires some form of causality
-tracking. However, causality tracking is still an issue in distributed network
-subject to churn~\cite{baldoni2002fundamentals}. A full causality tracking
-requires piggybacking a version vector with $N$ entries within each message,
-$N$ being the number of peers \emph{ever} involved in the network. Of course,
-it is feasible in contexts where peers can join and leave the network
-freely. Some other approaches~\cite{almeida2008interval} reuse entries of left
-peers but require that leaving peers notify this clearly. Even though version
-vectors (or other structures with the same space complexity) are necessary to
-accurately track causality~\cite{charronbost1991concerning}, there exist
-trade-offs between space complexity and accuracy. \CRATE chooses to
-track semantically related operations accurately. The interval version
-vector~\cite{mukund2014optimized} has a local space complexity eventually
-comparable to the space complexity of the version vector while not overwhelming
-the network with causality metadata.
+In order to alleviate these issues, web editors communicate through a central
+server. Thus, each operation transits through the server which transforms them
+and forwards them to all connected participants. However, the topology itself
+lacks of scalablity and brings privacy issues, censorship issues,
+single-point-of-failure, economic intelligence issues, and restriction in terms
+of service. In other terms, the shared document does not fully belong to its
+authors since the owner of the server controls it.
 
 %%% Local Variables: 
 %%% mode: latex
