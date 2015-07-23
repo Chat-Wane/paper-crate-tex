@@ -80,37 +80,75 @@ of version vectors.
 
 
 \begin{asparadesc}
-\item [The causality tracking layer].
-  
+\item [The causality tracking layer] guarantees that operations are not
+  delivered more than once, and that operations depending on another operation
+  is delivered after the latter. \CRATE uses a version vector with
+  exceptions~\cite{malkhi2007concise} which stores for each
+  site
+  \begin{inparaenum}[(i)]
+  \item an integer denoting the maximum counter of operations originated from
+    this site and
+  \item a list of integers denoting the exceptions, i.e., the counter of
+    operations known as not received yet.
+  \end{inparaenum}
+
+  Each operations is uniquely identified by its unique site identifier and a
+  monotonically growing counter. On operation reception, \CRATE discards the
+  operation if it has already been received before. Otherwise, it modifies the
+  version vector entry either by updating the maximum counter or removing an
+  entry in the exceptions.
+
   \begin{figure}
     \input{./input/timelineexample.tex}
     \caption{\label{fig:timeline}Causality tracking example.}
   \end{figure}
-  
+
+  Figure~\ref{fig:timeline} depicts a scenario where 3 peers are involved. Thus,
+  all peers have a vector of three entries. Peer $p_1$ inserts two elements in
+  the sequence and broadcasts the operations. Peer $p_3$ immediatly receives
+  both operations and increments the entry in its version vector accordingly.
+  In the meantime, Peer $p_2$ only receives the second operation which leads to
+  an update of the maximum counter and an exception concerning the first
+  operation of Peer $p_1$. Then, Peer $p_3$ removes the first element inserted
+  by $p_1$ and broadcast it. While $p_1$ delivers the removal immediately, Peer
+  $p_2$ has to wait since the targeted operation belongs to the exceptions. Once
+  it receives the first operation of $p_1$, the exception disappears and the
+  delete operation is performed.
+
+  The anti-entropy \TODO{Moar}.
+
 \end{asparadesc}
 
 \begin{asparadesc}
-\item [The shared sequence layer].
-\end{asparadesc}
+\item [The shared sequence layer] uses a conflict-free replicated data type for
+  sequences~\cite{shapiro2011comprehensive, shapiro2011conflict}. It is an
+  abstract data type for sequences that provides two commutatives operations:
+  insert and delete. As such, the delivery order of operations does not matter
+  as long as the deletion of an element follows its insertion. This property
+  makes these shared sequences tolerent to concurrency. However, their
+  complexity lies in their space consumption. Indeed, each insert operation
+  allocates a unique and immutable identifier to the element. A global total
+  order among the identifiers guarantees that replicas eventually converge to an
+  identical states.
 
-\LSEQ (polyLogarithmic SEQuence) is the name of the proposed allocation
-function. As such, any sequence data structure using variable-size identifiers
-can use it. \LSEQ allocates identifiers with a space complexity
-polylogarithmically upper-bounded with respect to the number of insert
-operations. Since sequence data structures scale in the number of peers and the
-concurrency rate, building a distributed collaborative editor using \LSEQ
-would allow ergonomic and massive collaborative editing of huge documents. This
-section describes \LSEQ: $allocPath$ and $allocDis$ functions. Then, it
-provides the proof of the space complexity of its identifiers.
+  \CRATE uses \LSEQ, a polyLogarithmic identifier allocator for SEQuences. Its
+  underlying structure is an exponential tree which, when linearized using its
+  global total order, results in the sequence of elements representing the
+  document. \LSEQ comprises two parts:
+  \begin{inparaenum}[(i)]
+  \item the function $allocPath$ which chooses the path in the tree for the
+    newly allocated identifier.
+  \item the function $allocDes$ which decorates the path in order to ensure the
+    uniqueness of the path, even with concurrent insertions.
+  \end{inparaenum}
 
-\begin{asparadesc}
-\item [The function allocPath] chooses the path associated with each element in
+  The function $allocPath$ chooses the path associated with each element in
   order to encode its relative position with regard to its adjacent elements in
   the sequence. For the sake of performance, the aim of $allocPath$ is to keep
   the underlying tree with a small depth. Three components compose
-  $allocPath$. Each of these components fails to provide an efficient
-  allocation function. Nevertheless, their composition allows to get the best
-  of each by cancelling their respective deficiency.
+  $allocPath$. Each of these components fails to provide an efficient allocation
+  function. Nevertheless, their composition allows to get the best of each by
+  cancelling their respective deficiency.
 \end{asparadesc}
 
 \begin{enumerate}[leftmargin=*]
