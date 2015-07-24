@@ -138,8 +138,8 @@ of version vectors.
   \begin{inparaenum}[(i)]
   \item the function $allocPath$ which chooses the path in the tree for the
     newly allocated identifier.
-  \item the function $allocDes$ which decorates the path in order to ensure the
-    uniqueness of the path, even with concurrent insertions.
+  \item the function $allocDis$ which decorates the path in order to ensure its
+    uniqueness even in presence of concurrent insertions.
   \end{inparaenum}
 
   The function $allocPath$ chooses the path associated with each element in

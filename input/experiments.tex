@@ -1,14 +1,14 @@
 \section{Experiments}
 \label{sec:experiments}
 
-This section is divided into two parts. The first part describes the core of
-the distributed CollaboRATive Editor \CRATE by filling in the blanks
-left on causality tracking and eventual delivery of operations. The second part
-concerns the experiments that aim to:
-
+In this section, we evualuate the core components of \CRATE both individually
+and together. It aims to
 \begin{enumerate}[leftmargin=*]
 \item Validate the space complexity of \LSEQ and highlight the improvement
   over the state-of-the-art.
+\item Validate the adaptiveness of \SPRAY, i.e., it automatically resizes the
+  neigbhorhood of peers to follow a logarithmic growth compared to the editing
+  session membership.
 \item Show that \CRATE scales with respect to the number of
   collaborators simultaneously involved in a document editing.
 \item Show that concurrency does not impact the size of
