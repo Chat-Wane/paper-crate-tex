@@ -2,13 +2,13 @@
 \label{sec:experiments}
 
 In this section, we evualuate the core components of \CRATE both individually
-and together. It aims to
+and together. It aims to:
 \begin{enumerate}[leftmargin=*]
-\item Validate the space complexity of \LSEQ and highlight the improvement
-  over the state-of-the-art.
 \item Validate the adaptiveness of \SPRAY, i.e., it automatically resizes the
   neigbhorhood of peers to follow a logarithmic growth compared to the editing
   session membership.
+\item Validate the space complexity of \LSEQ and highlight the improvement
+  over the state-of-the-art.
 \item Show that \CRATE scales with respect to the number of
   collaborators simultaneously involved in a document editing.
 \item Show that concurrency does not impact the size of
@@ -16,92 +16,23 @@ and together. It aims to
   studies in scenarios without concurrency.
 \end{enumerate}
 
-\subsection{CRATE}
-\label{subsec:crdt}
-\CRATE (CollaboRATive Editor) is a prototype of decentralised editor. We
-assume that collaborators can join the document editing and leave when they
-want. The group of collaborators can be seen as a peer-to-per network. Hence,
-\CRATE uses a gossip dissemination protocol to scale with respect to the
-number of collaborators/peers involved in the authoring. In this protocol, each
-peer has a set of neighbours and communicates with them. When a peer performs
-an operation, it creates a message containing the result of the operation. Each
-peer broadcasts its messages and when a peer receives a specific message for
-the first time, it re-broadcasts this message. However,
-Section~\ref{sec:preliminaries} states that strong eventual consistency is
-ensured upon the assumption of eventual delivery, and unfortunately, the
-gossiping broadcast is only reliable with high probability. To make it
-reliable, \CRATE includes an additional anti-entropy protocol to
-retrieve the possibly missing operations (cf.~\ref{sec:messagedelivery}).
-
-Section~\ref{sec:preliminaries} also states that sequences can be seen as
-conflict-free data types under the condition that deletion of a particular
-element cannot precede its insertion. To ensure this condition, \CRATE
-uses a vector structure called interval version
-vector~\cite{mukund2014optimized} (IVV) whose values are version numbers called
-dates.
-
-Similarly to version vectors, IVVs require a vector with one entry per peer
-involved in the authoring at the difference that each entry of an IVV contains
-a vector of intervals. Furthermore, when a peer broadcasts an operation, only
-two scalars are required to preserve the causal dependency instead of a full
-vector. This difference considerably lowers the network overload while keeping
-a local space complexity of the same order than version vectors.  It
-constitutes an essential trade-off since local memory is often considered as
-virtually infinite while the network can be easily overloaded. \CRATE
-uses an IVV to
-\begin{inparaenum}[(i)]
-\item minimise the retransmission of operations (i.e. each peer broadcast only
-  once each operation),
-\item integrate the insert operation only once,
-\item preserve the aforementioned invariant.
-\end{inparaenum}
-The delivery algorithm using the IVV can be found in~\ref{sec:messagedelivery}.
-
-\begin{figure}
-  \centering \input{input/timelineexample.tex}
-  \caption{\label{fig:timelineexample}Timeline of operations performed by 3
-    collaborators. For the sake of simplicity, sets represent the intervals
-    stored in the local vectors. In this example, the $insert$ operations
-    concern any element while the $delete$ operation targets the first
-    insertion of collaborator $p_1$.}
-\end{figure}
-
-Figure~\ref{fig:timelineexample} depicts an example of causality tracking using
-an IVV with all possible configurations. Each of the three peers initialises
-its 3-entry vector with empty intervals. First, peer $p_1$ performs an
-insertion and broadcasts it to $p_2$ and $p_3$. The operation conveys the
-unique peer identifier $p_1$ and its corresponding stamp $1$. When $p_3$
-receives the message, it adds the entry to the corresponding interval, and
-immediately delivers the new element. The second operation of $p_1$ conveys the
-stamp $2$. When $p_2$ receives this message, it merges the entry with its local
-vector and delivers the element, even if the first operation of $p_1$ is not
-received yet. Peer $p_3$ does the same resulting in the intervals
-$[\{1,2\};\{\};\{\}]$. Then, $p_3$, not satisfied by the first operation of
-$p_1$ deletes it. The message conveys these two scalars. When $p_2$ receives
-the message, the interval corresponding to the insertions at $p_2$ does not
-contain the first one. Consequently, the $del$ operation must wait the delivery
-of the first insertion of $p_1$. On $p_1$, the $del$ operation is immediately
-delivered.
-
-\subsection{Setup and results}
-
 Two kinds of environments hosted the experiments. First, a single machine
 emulating multiple peers. Despite the poor scalability of these experiments due
 to replication, it allows running the experiments in a controlled
 environment. Then, multiple machines distributed in a cluster of the Grid'5000
 testbed are considered. A single machine can host multiple peers and
 communicate with other machines. The magnitude of these experiments grows up to
-$450$ connected peers.
+$500$ connected peers. \TODO{Moar}.
 
 In these experiments, we focus our analysis on two editing behaviours: random
 and monotonic. In random editing, when a peer inserts an element, it randomises
 the position of the new element in the document following a uniform
 distribution. In monotonic editing, when a peer inserts an element, it inserts
-the new element at the end of the document. As stated in
-Section~\ref{sec:spacecomplexity}, this case is not favourable because it tends
-to unbalance the underlying tree representing the sequence. In contrast to
-this, performing insertions at different locations tends to even up the branch
-of the tree, i.e., the average size of identifiers is lowered.
+the new element at the end of the document. It worth noting that the latter case
+is not favourable since it tends to unbalance the underlying tree representing
+the sequence. On the opposite, performing insertions at different locations
+tends to even up the branch of the tree, i.e., the average size of identifiers
+is lowered.
 
 We focus our measurements on the average size of the messages broadcast by each
 peer. Since the delete messages have a low and constant size, we focus on
@@ -112,14 +43,24 @@ a low value in order to accelerate the growth of the identifiers. In this
 section, we are more interested in the shape of the curves than in the actual
 values.
 
-In order to perform these evaluations, we developed a JavaScript data type for
-Web applications. The code is released on the Github
-platform\footnote{\url{https://github.com/Chat-Wane/LSEQTree.git}} under the
-MIT license. Based on this implementation, we developed a prototype of
-distributed CollaboRATive Editor
-\CRATE\footnote{\url{https://github.com/Chat-Wane/CRATE.git}} following
-the outlines of this paper.
+We evaluate the Javascript implementation of \CRATE's core released on the
+Github platform\footnote{\url{https://github.com/Chat-Wane/CRATE-core.git}}
+under the MIT license.
 \ \\
+
+\begin{asparadesc}
+\item [Objective:]
+\item [Description:]
+\item [Results:]
+\item [Reasons:]
+\end{asparadesc}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.475\textwidth]{./img/partialview.eps}
+  \caption{\label{fig:partialview} Average partial view size at each peer over
+  the global membership size.}
+\end{figure}
 
 \begin{asparadesc}
 \item [Objective:] Validate the space complexity analysis of \LSEQ. In
@@ -129,17 +70,7 @@ the outlines of this paper.
   logarithmic space complexity. A second objective is to compare \LSEQ with
   an existing sequence structure
   Logoot~\cite{weiss2009logoot,weiss2010logootundo}.
-\item [Description:] A single machine hosts two peers communicating via a
-  peer-to-peer connection. They produce a document of half a million characters
-  in $50$ minutes, i.e., they insert $166$ characters per second. Two editing
-  behaviours are studied: monotonic and random. They use either \CRATE,
-  or a version of \CRATE using Logoot instead of \LSEQ. According
-  to~\cite{ahmed2011evaluating}, Logoot constitutes the sequence with
-  variable-size identifiers that delivers the best performance overall. As
-  such, it is an ideal baseline. While \LSEQ starts with a departure base of
-  $2^8$ and doubles it when required, Logoot uses a constant base of
-  $2^{16}$. We measure the average size of messages transiting through the
-  peers during the experiment.
+\item [Description:]
 
 \begin{figure}
   \centering
@@ -179,27 +110,27 @@ the outlines of this paper.
 \ \\
 
 \begin{asparadesc}
-\item [Objective:] Show that \CRATE scales in terms of the number of
+\item [Objective:] \TODO{Show that \CRATE scales in terms of the number of
   peers. In other words, the size of the network does not impact the space
-  complexity upper bound of messages.
-\item [Description:] A cluster of the Grid'5000 testbed hosts a varying number
+  complexity upper bound of messages.}
+\item [Description:] \TODO{A cluster of the Grid'5000 testbed hosts a varying number
   of peers using the application \CRATE. The peers produce a
   document of 500 thousand characters by repeatedly inserting at the end of the
   document (monotonic editing). The experiments last $50$ minutes. The number
   of peers varies from $2$ to $450$. The generation of $166$ operations
   per second is uniformly distributed among the peers and time. We measure the
-  average size of messages.
+  average size of messages.}
 
 \begin{figure}
   \centering
-  \includegraphics[angle=-90,width=0.475\textwidth]{./img/scalability.eps}
+  \includegraphics[width=0.475\textwidth]{./img/identifiers.eps}
   \caption{\label{fig:scalability}Average size of messages sent during a
     session of document editing. The number of peers varies from $2$ to $450$
     collaboratively producing a document of $500$ thousand characters in $50$
     minutes. The editing behaviour is monotonic.}
 \end{figure}
 
-\item [Results:] Figure~\ref{fig:scalability} shows the results of these
+\item [Results:] \TODO{Figure~\ref{fig:scalability} shows the results of these
   experiments. The y-axis corresponds to the average size of messages in
   bytes. The x-axis corresponds to the number of insert operations performed on
   the sequence. Figure~\ref{fig:scalability} shows that, independently of the
@@ -207,8 +138,8 @@ the outlines of this paper.
   polylogarithmically compared to the size of the document. Also, even if the
   values of the 2-peers curve are invariably above the others, they do not
   demonstrate significant differences. Consequently, \CRATE scales in
-  two dimensions: number of peers and number of insertions.
-\item [Reasons:] The size of messages reflects the size of the identifiers and
+  two dimensions: number of peers and number of insertions.}
+\item [Reasons:] \TODO{The size of messages reflects the size of the identifiers and
   the additional causality tracking metadata. In Section~\ref{subsec:crdt} that
   describes \CRATE, we saw only two scalars are required to track
   semantically related operations. Since these scalars also exist within the
@@ -223,7 +154,7 @@ the outlines of this paper.
   function $insert$ with the same bounds as arguments. Therefore the resulting
   paths share a same allocating range. Thus, they are closer from each other
   compared to a sequential execution. Therefore, the average size of messages
-  slightly decreases when the number of peers increases.
+  slightly decreases when the number of peers increases.}
 \end{asparadesc}
 
 \begin{figure}
@@ -271,6 +202,19 @@ the outlines of this paper.
   value suddenly changes to an higher value. A finer grain of measurements in
   this experiment allows us observing these changes.
 \end{asparadesc}
+
+\begin{asparadesc}
+\item [Objective:]
+\item [Description:]
+\item [Results:]
+\item [Reasons:]
+\end{asparadesc}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.475\textwidth]{./img/traffic.eps}
+  \caption{\label{fig:traffic} Average traffic per peer over time.}
+\end{figure}
 
 \subsection{Synthesis}
 This section detailed a complete distributed collaborative editor.  Using the
