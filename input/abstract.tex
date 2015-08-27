@@ -1,22 +1,45 @@
 
-\begin{abstract}
 
+\begin{abstract}
+  WebRTC provides browser-to-browser connections. It allows a new kind
+  of web applications to run distributed across browsers without the
+  need of web servers.  Such applications are easy to deploy, better
+  preserve privacy and should scale at the web-scale.
+
+  In this paper, we present CRATE a browser-to-browser real-time
+  editor. Building such applications requires component to ensure
+  communications and consistency.
+
+  As core components, \CRATE uses \LSEQ to efficiently
+  represent its shared document, and \SPRAY to automatically adjust
+  the editing session membership.  In this paper, we extensively
+  describe each core components, we provide the proof of the
+  polylarithmic upper-bound on the space complexity of the shared
+  sequence. We evaluate \CRATE in large-scale experiments on the
+  Grid'5000 testbed. 
+\end{abstract}
+
+\begin{abstract}
   The recent WebRTC technology has renewed the interest over large-scale
   distributed web applications. Over the last decades, the number of users of
   distributed collaborative editors like Google Docs, Etherpad, or CoWeb, has
   not ceased to increase. They allow distributing the work across space, time,
-  and organizations to create better documents. However, current solutions
-  either lack of scalablity or suffer of issues in privacy, censorship,
-  single-point-of-failure, economic intelligence, restriction in terms of
-  service. In this paper, we address these issues by introducing \CRATE, a
-  distributed and decentralized collaborative editor running in web browsers.
-  As core components, \CRATE uses \LSEQ to efficiently represent its shared
-  document, and \SPRAY to automatically adjust the editing session membership.
-  In this paper, we extensively describe each core components, we provide the
-  proof of the polylarithmic upper-bound on the space complexity of the shared
-  sequence. We evaluate \CRATE in large-scale experiments on the Grid'5000
-  testbed. Being scalable and decentralized, it constitutes a serious competitor
-  to current trending editors. 
+  and organizations to create better documents. 
+
+  However, current solutions either lack of scalablity or suffer of
+  issues in privacy, censorship, single-point-of-failure, economic
+  intelligence, restriction in terms of service. 
+
+  In this paper, we address these issues by introducing \CRATE, a
+  distributed and decentralized collaborative editor running in web
+  browsers.  As core components, \CRATE uses \LSEQ to efficiently
+  represent its shared document, and \SPRAY to automatically adjust
+  the editing session membership.  In this paper, we extensively
+  describe each core components, we provide the proof of the
+  polylarithmic upper-bound on the space complexity of the shared
+  sequence. We evaluate \CRATE in large-scale experiments on the
+  Grid'5000 testbed. Being scalable and decentralized, it constitutes
+  a serious competitor to current trending editors.
 
   % The recent development distributed collaborative editors has renewed the
   % interest for efficient data structures that can allow a huge number of
