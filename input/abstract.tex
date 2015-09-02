@@ -1,22 +1,28 @@
 
 
 \begin{abstract}
-  WebRTC provides browser-to-browser connections. It allows a new kind
-  of web applications to run distributed across browsers without the
-  need of web servers.  Such applications are easy to deploy, better
-  preserve privacy and should scale at the web-scale.
+% I followed
+% http://www.easterbrook.ca/steve/2010/01/how-to-write-a-scientific-abstract-in-six-easy-steps/ to structure the abstract
 
-  In this paper, we present CRATE a browser-to-browser real-time
-  editor. Building such applications requires component to ensure
-  communications and consistency.
+  Distributed real-time editors such as google docs, etherpad allow
+  people to work distributed in space and accross
+  organization. However, current solutions either lack of scalablity
+  or suffer of issues in privacy, censorship, single-point-of-failure,
+  ease of deployement, economic intelligence, restriction in terms of
+  service. Building a fully decentralized, scalable, easy to deploy
+  real-time editor requires to find a difficult compromise between
+  time, space, and traffic complexity with respect to the number of
+  users and size of shared documents. In this paper, we took advantage
+  of WebRTC to build \CRATE; an easy-to-deploy real-time editor that
+  runs on a network of browsers i.e. without servers. We balanced
+  complexities in order to support large number of users working on
+  large document. We extensively describe each core components, we
+  provide the proof of the polylarithmic upper-bound on the space
+  complexity of the shared sequence. We evaluate \CRATE in large-scale
+  experiments on the Grid'5000 testbed until 500 participants. We
+  observed logarithmic progession of generated traffic according the
+  size of shared document.
 
-  As core components, \CRATE uses \LSEQ to efficiently
-  represent its shared document, and \SPRAY to automatically adjust
-  the editing session membership.  In this paper, we extensively
-  describe each core components, we provide the proof of the
-  polylarithmic upper-bound on the space complexity of the shared
-  sequence. We evaluate \CRATE in large-scale experiments on the
-  Grid'5000 testbed. 
 \end{abstract}
 
 \begin{abstract}
