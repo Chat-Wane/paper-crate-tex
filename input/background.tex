@@ -1,16 +1,29 @@
 
-\section{Preliminaries}
+\section{Related Works}
 \label{sec:preliminaries}
 
-Optimistic replication is a replication strategy where each peer owns a local
-copy (or replica) of the shared data. Since peers can directly modify this copy,
-it improves both availability and responsiveness of the data. When a peer
-performs an operation on the local data, the information is spread to all owners
-of the shared data where they are integrated. Optimistic replication approaches
-guarantee eventual consistency~\cite{bailis2013eventual},i.e., after the
-receipt and integration of all operations by the members, the replicas converge
-to an identical state. This section introduces the shared data structure that
-guarantees eventual consistency and the dissemination protocol.
+\begin{asparadesc}
+\item[Optimistic replication] is a replication strategy where each peer owns a
+  local copy (or replica) of the document. Since users can directly modify this
+  copy, it improves both availability and responsiveness. When a user performs
+  an operation on the local document, the information is spread to all owners of
+  the shared document where they are integrated. Optimistic replication
+  approaches guarantee eventual consistency~\cite{bailis2013eventual}. Hence,
+  after the receipt and integration of all operations by the members, the
+  replicas converge to an identical state.
+\end{asparadesc}
+
+\begin{asparadesc}
+\item[Centralized] collaborative editors constitute an easy way to ensure
+  documents eventually consistent. There exist a plethora of these
+  (\TODO{examples}).  Nevertheless, the topology itself lack of scalablity and
+  suffer of issues in privacy, censorship, single-point-of-failure, ease of
+  deployment, economic intelligence, and restriction in terms of service.
+\end{asparadesc}
+
+\begin{asparadesc}
+\item[Decentralized] collaborative editors are rare in comparison. 
+\end{asparadesc}
 
 \subsection{Shared data structure for sequences}
 

@@ -1,48 +1,71 @@
 \section{Related Work}
 \label{sec:relatedwork}
 
-Optimistic replication is a replication strategy where each peer owns a local
-copy (or replica) of the shared data. Since peers can directly modify this copy,
-it improves both availability and responsiveness of the data. When a peer
-performs an operation on the local data, the information is spread to all owners
-of the shared data where they are integrated. Optimistic replication approaches
-guarantee eventual consistency~\cite{bailis2013eventual},i.e., after the
-receipt and integration of all operations by the members, the replicas converge
-to an identical state. This section introduces the shared data structure that
-guarantees eventual consistency and the dissemination protocol.
+\begin{asparadesc}
+\item[Optimistic replication] is a replication strategy where each peer owns a
+  local copy (or replica) of the document. Since users can directly modify this
+  copy, it improves both availability and responsiveness. When a user performs
+  an operation on the local document, the information is spread to all owners of
+  the shared document where they are integrated. Optimistic replication
+  approaches guarantee eventual consistency~\cite{bailis2013eventual}. Hence,
+  after the receipt and integration of all operations by the members, the
+  replicas converge to an identical state.
+\item[Centralized] collaborative editors constitute an easy way to ensure
+  documents eventually consistent. There exist a plethora of these
+  (\TODO{examples}).  Nevertheless, the topology itself lack of scalablity and
+  suffer of issues in privacy, censorship, single-point-of-failure, ease of
+  deployment, economic intelligence, and restriction in terms of service.
+\item[Decentralized] collaborative editors are rare in comparison. With such
+  topology, the algorithms and data structures are rethought to handle the
+  operations arriving disorderly.  To insert a character in a shared document,
+  one cannot just use the standard well-known operation \emph{insert element at
+    index} of arrays and expect guaranties on convergence. For instance, if two
+  users concurrently edit a sequence ERTY: the first user inserts a Q at index
+  0, while the second user inserts a W at index 0. They respectively obtains
+  QERTY and WERTY as resulting sequence. On receipt of each other's operation
+  they respectively obtain WQERTY and QWERTY. Hence the need to inspect these
+  concurrent cases to ensure convergent replicas.  Many approaches have been
+  proposed with the challenging task to find a good compromise between
+  complexities in time, space, and communication.
+\item [Operational transformation] constitute the former approaches aiming to
+  solve the concurrent cases. Their principle lies in modifying the arguments of
+  the received operation against its concurrent ones. For instance, in the prior
+  example, when the first user receives \emph{insert W at 0}, it detects
+  \emph{insert Q at 0} as concurrent, and decides to transform the operation
+  into \emph{insert W at 1}.  In that spirit, a wide variety of OT approaches
+  exist for text editing, image editing etc. In text editing context, OT can
+  provide the usual insertion and deletion operations plus a range of
+  string-wise operations such as move, cut-paste, etc. However, operational
+  transform approaches have drawbacks. First, the quadratic time complexity of
+  the transformations compared to the number of concurrent operations which
+  precludes its usage on the Internet subject to unpredictable latency and, in
+  particular, the existence of an offline editing mode. Second, the structure to
+  detect concurrency is expansive, i.e., it requires the history of all
+  operations and a causality tracking mechanism. \TODO{moar}.
+\item [Conflict-free replicated data types]. \TODO{moar}.
 
-To insert a character in a shared document, one cannot just use the standard
-well-known operation \emph{insert element at index} of arrays and expect
-guaranties on convergence. For instance, if two users concurrently edit a
-sequence ERTY: the first user inserts a Q at index 0, while the second user
-inserts a W at index 0. They respectively obtains QERTY and WERTY as resulting
-sequence. On receipt of each other's operation they respectively obtain WQERTY
-and QWERTY. Hence the need to inspect these concurrent cases to ensure
-convergent replicas.
+\begin{table}
+  \centering
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    & time & space & communication \\ \cmidrule{2-4}
+    Logoot & $O()$ & $O()$ & $O()$ \\ \midrule
+    COT-DO & $O()$ & $O()$ & $O()$ \\ \midrule
+    \LSEQ  & $O()$ & $O()$ & $O()$ \\ \bottomrule
+  \end{tabular}
+  \caption{\label{table:complexities}Complexities in time, space, and communication of decentralized approaches.}
+\end{table}
 
-Currently, most of web collaborative editors (REF) use operational transform
-(OT) approaches whose principle lies in modifying the arguments of the received
-operation against its concurrent ones. For instance, in the prior example, when
-the first user receives \emph{insert W at 0}, it detects \emph{insert Q at 0} as
-concurrent, and decides to transform the operation into \emph{insert W at 1}.
-In that spirit, a wide variety of OT approaches exist for text editing, image
-editing etc. In text editing context, OT can provide the usual insertion and
-deletion operations plus a range of string-wise operations such as move,
-cut-paste, etc. However, operational transform approaches have drawbacks. First,
-the quadratic time complexity of the transformations compared to the number of
-concurrent operations which precludes its usage on the Internet subject to
-unpredictable latency and, in particular, the existence of an offline editing
-mode. Second, the structure to detect concurrency is expansive, i.e., it
-requires the history of all operations and a causality tracking
-mechanism. \TODO{Moar}.
 
-In order to alleviate these issues, web editors communicate through a central
-server. Thus, each operation transits through the server which transforms them
-and forwards them to all connected participants. However, the topology itself
-lacks of scalablity and brings privacy issues, censorship issues,
-single-point-of-failure, economic intelligence issues, and restriction in terms
-of service. In other terms, the shared document does not fully belong to its
-authors since the owner of the server controls it.
+\item [As summary], Table~\ref{table:complexities} shows the complexities in
+  space, time, and communication of decentralized approaches. \TODO{moar}
+\end{asparadesc}
+
+\begin{algorithm}
+  \input{input/crdtabstractalgo.tex}
+  \caption{\label{algo:crdtabsract}Conflict-free replicated data types.}
+\end{algorithm}
+
 
 %%% Local Variables: 
 %%% mode: latex
