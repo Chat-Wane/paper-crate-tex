@@ -5,29 +5,33 @@ Distributed real-time editors such as google docs, etherpad allow
 people to work distributed in space and accross organization and are
 now used by milllions of users. 
 
-However, main stream real-time editors such google doc are centralized
-with issues in privacy, censorship, economic intelligence. It has also
-restrictions in terms of service i.e. google doc is restricted to 50
-real-time users. Real-time editors can be decentralized requiring no
-collaboration providers to start collaborating. Many algorithms has
-been proposed~\cite{sun1998operational, sun2009contextbased,woot} but
-it is hard to find a good comprise for a full working system with
-complexities in time, space and communications. It also difficult to
-achieve for a decentralized editor a 'one-click' easy deployement as
-Google doc can do.
+However, main stream real-time editors such google doc relies on
+centralized servers with issues in privacy, censorship or economic
+intelligence. It has also restrictions in terms of service i.e. google
+doc is restricted to 50 real-time users. 
+%
+Real-time editors can be decentralized requiring no collaboration
+providers. Many algorithms has been proposed~\cite{sun1998operational,
+  sun2009contextbased,woot} but it is hard to find a good comprise for
+a full working system with complexities in time, space and
+communications. due to the communication layer setup, It also
+difficult to achieve for a decentralized editor a 'one-click'
+deployement as Google doc can do.
 
 In this paper, we propose \CRATE, a real-time editor that runs on a
 network of browsers. \CRATE relies on WEBRTC and browser-to-browser
 connections to ensure easy deployement for end-users. Compared to
 state of art, \CRATE propose a new class of complexity for time,
-space, communication that better fit web constraints to run within
-browsers.
+space, communication that better fit web constraints in order to run
+within browsers.
 
-The contributions of this paper are:
+This main constribution of this paper are three-fold:
 \begin{itemize}
-\item An in-depth description of \CRATE and its core-components, namely \LSEQ
-  and \SPRAY. Compared to previous work~\cite{doceng}, we demonstrated
-  the upper bound space complexity \CRATE.  
+\item An in-depth description of \CRATE and its core-components,
+  namely \LSEQ and \SPRAY, with a full implementation in pure
+  javascript than run in browsers.
+\item Compared to previous work~\cite{doceng}, we
+  demonstrate that the upper bound space complexity of \CRATE.
 \item Experimental studies that validate the space complexity of \LSEQ and the
   scalability of \CRATE. Parts of theses experiments ran on the Grid'5000
   testbed and involved up to $500$ emulated peers creating a document of more
