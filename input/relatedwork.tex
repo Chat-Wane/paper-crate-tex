@@ -44,17 +44,11 @@
   operations and a causality tracking mechanism. \TODO{moar}.
 \item [Conflict-free replicated data types]. \TODO{moar}.
 
-\begin{table}
+\begin{table*}
   \centering
-  \begin{tabular}{@{}lccc@{}}
-    \toprule
-    & time & space & communication \\ \cmidrule{2-4}
-    Logoot & $O()$ & $O()$ & $O()$ \\ \midrule
-    COT-DO & $O()$ & $O()$ & $O()$ \\ \midrule
-    \LSEQ  & $O()$ & $O()$ & $O()$ \\ \bottomrule
-  \end{tabular}
+  \input{./input/complexitiestable.tex}
   \caption{\label{table:complexities}Complexities in time, space, and communication of decentralized approaches.}
-\end{table}
+\end{table*}
 
 
 \item [As summary], Table~\ref{table:complexities} shows the complexities in
