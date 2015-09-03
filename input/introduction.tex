@@ -1,136 +1,56 @@
 
 \section{Introduction}
 
-Distributed real-time editors such as google docs, etherpad allow
-people to work distributed in space and accross organization and are
-now used by milllions of users. 
+Distributed real-time editors such as Google Docs, or Etherpad allow
+people to work distributed in space and across organizations. Millions of users
+uses these editors. 
 
-However, main stream real-time editors such google doc relies on
-centralized servers with issues in privacy, censorship or economic
-intelligence. It has also restrictions in terms of service i.e. google
-doc is restricted to 50 real-time users. 
-%
-Real-time editors can be decentralized requiring no collaboration
-providers. Many algorithms has been proposed~\cite{sun1998operational,
-  sun2009contextbased,woot} but it is hard to find a good comprise for
-a full working system with complexities in time, space and
-communications. due to the communication layer setup, It also
-difficult to achieve for a decentralized editor a 'one-click'
-deployement as Google doc can do.
+However, main stream real-time editors such Google Doc rely on centralized
+servers. It implies issues in privacy, censorship and economic intelligence. It
+also brings restrictions in terms of service. For instance, Google Docs
+restricts the writing access of its documents to 50 users simultaneously.
 
-In this paper, we propose \CRATE, a real-time editor that runs on a
-network of browsers. \CRATE relies on WEBRTC and browser-to-browser
-connections to ensure easy deployement for end-users. Compared to
-state of art, \CRATE propose a new class of complexity for time,
-space, communication that better fit web constraints in order to run
-within browsers.
+On the other hand, decentralized real-time editors do not require any
+collaboration providers. Many algorithms has been
+proposed~\cite{sun1998operational, oster2006data, sun2009contextbased}, yet
+finding a good compromise for a full working system remains challenging: the
+holy Grail tradeoff between complexities in time, space and communications.
+\TODO{Furthermore, competing with centralized tools means to be as accessible as
+  them.}
+%% Due to the
+%% communication layer setup, It also difficult to achieve for a decentralized
+%% editor a 'one-click' deployement as Google doc can do.
 
-This main constribution of this paper are three-fold:
+In this paper, we propose \CRATE, a real-time editor that runs on a network of
+browsers. \CRATE relies on WebRTC and browser-to-browser communication to
+provide an easy access for end-users. Compared to state-of-art, \CRATE proposes
+a new complexity tradeoff between time, space, and communication that fits web
+constraints in order to run within browsers.
+
+This main contributions of this paper are three-fold:
 \begin{itemize}
-\item we describe the \CRATE system and its core-components, namely
-  \LSEQ and \SPRAY. \CRATE has a full implementation in pure
-  javascript than run in browsers.
-\item Compared to previous work~\cite{doceng}, we
-  demonstrate that the upper bound space complexity of \CRATE and
-  analyze the complete complexity of the crate system compared to
-  state of art.
-\item We conducted experimental studies to validate complexities of
-  the full implementation of \CRATE with real web browsers. With $500$
-  participants We observed logarithmic progession of generated
-  traffic according the size of shared document. 
+\item we describe \CRATE's system and its core-components, namely \LSEQ and
+  \SPRAY. \CRATE's Javascript implementation runs directly inside browsers
+  without any plugins.
+\item Compared to previous work~\cite{nedelec2013lseq}, we demonstrate the upper
+  bound on space complexity of \LSEQ and we analyze the complete complexity of
+  \CRATE compared to state of art.
+\item We conducted experimental studies to validate the complexities of the
+  \CRATE's implementation inside real web browsers. From $2$ to $600$
+  participants editing a document reaching more than $1$ million characters, we
+  observed a logarithmic growth of the traffic compared to the number of
+  participants, and a polylogarithmic growth of the traffic compared to the size
+  of the document.
 \end{itemize}
 
 The remainder of this paper is organized as
-follows. Section~\ref{sec:preliminaries} provides the necessary background to
-sequence data structures and the motivations. Section~\ref{sec:proposal}
-follows with a description of \LSEQ and the proof of its space
-complexity. Section \ref {sec:experiments} highlights the scalability of
-\CRATE while validating the space complexity analysis of
-\LSEQ. Section~\ref{sec:relatedwork} reviews related works. Finally,
-Section~\ref{sec:conclusion} concludes the paper.
-
-
-
-
-% The recent WebRTC technology has opened a new playground for large-scale
-% distributed web applications. Among others, distributed collaborative editors
-% such as Google Docs, SubEthaEdit, or Etherpad, have proven their
-% usefulness. Such editors allow distributing the work across space, time and
-% organizations. However, they have several limitations that preclude the
-% existence of a massive distributed collaborative editor. 
-
-% % due either to
-% % centralisation (e.g. single-point-of-failure, privacy issues, economic
-% % intelligence issues, limitations in terms of service) or to decentralisation
-% % (e.g. number of users, concurrency and synchronisation, number of
-% % operations). For instance Google~\cite{nichols1995high} allows only 50 users to
-% % write a document together at a same time. These scalability issues preclude the
-% % existence of a massive distributed collaborative editor.
-
-% Distributed collaborative editors use the optimistic replication
-% scheme~\cite{johnson1975maintenance, saito2005optimistic} to provide high
-% availability and responsiveness. Locally, each user involved in the
-% collaboration owns a copy of the document (replica). Local operations are
-% executed and become effective locally before being broadcast. Remotely, each
-% user integrates the received operations to her replica. The convergence property
-% of optimistic replication states that replicas are allowed to temporarily
-% diverge. Yet, the resulting replicas become identical when all collaborators
-% have received all changes~\cite{demers1987epidemic}.  Thus, optimistic
-% replication requires
-% \begin{inparaenum}[(i)]
-% \item a shared data type that ensures
-%   consistency and
-% \item an algorithm to disseminate changes.
-% \end{inparaenum}
-
-% As shared data type, most of state-of-the-art editors use operational
-% transformations~\cite{sun1998operational, sun2009contextbased}
-% (OT). Unfortunately, the time complexity of the integration of operations is
-% quadratically \TODO{upper}-bounded by the number of concurrent operations
-% relatively to the integrated one. In other terms, all collaborators suffer from
-% few concurrent operations making OT approaches non practical because of
-% \TODO{unpredictable latency}.
-
-% For the information dissemination, \TODO{most} of distributed collaborative
-% editors (REF) running as web applications rely on a central server to spread the
-% operations. The topology itself brings single-point-of-failure, privacy issues,
-% economic intelligence issues, limitations in terms of service, and lack of
-% scalability.
-
-% In this paper, we introduce \CRATE, a distributed and decentralized
-% collaborative editor running in web browsers. It uses a family of distributed
-% data structure called Conflict-free Replicated Data
-% Type~\cite{shapiro2011comprehensive, shapiro2011conflict} (CRDT) well-suited to
-% handle concurrency. To ensure convergence, a unique and immutable identifier is
-% associated with each element (e.g. character, words, line, paragraph) in the
-% sequence (i.e. document). \CRATE uses \LSEQ~\cite{nedelec2013concurrency,
-%   nedelec2013lseq} to allocate identifiers enjoying a sub-linear upper-bound on
-% space complexity compared to the number of insertions in the document. To
-% propagate the operations, \CRATE uses \SPRAY, a random peer sampling protocol
-% that automatically adjusts the neighborhood of each peer to reflect the editing
-% session membership. As such, it efficiently disseminates the changes performed
-% to the document, it is resilient to non-correlated failures, it balances the
-% load among peers etc.
-
-% Contribution of this paper are:
-% \begin{itemize}
-% \item An in-depth description of \CRATE and its core-components, namely \LSEQ
-%   and \SPRAY.
-% \item Experimental studies that validate the space complexity of \LSEQ and the
-%   scalability of \CRATE. Parts of theses experiments ran on the Grid'5000
-%   testbed and involved up to $500$ emulated peers creating a document of more
-%   than one million characters at a global rate of one hundred operations per
-%   second.
-% \end{itemize}
-
-% The remainder of this paper is organized as
-% follows. Section~\ref{sec:preliminaries} provides the necessary background to
-% sequence data structures and the motivations. Section~\ref{sec:proposal}
-% follows with a description of \LSEQ and the proof of its space
-% complexity. Section \ref {sec:experiments} highlights the scalability of
-% \CRATE while validating the space complexity analysis of
-% \LSEQ. Section~\ref{sec:relatedwork} reviews related works. Finally,
-% Section~\ref{sec:conclusion} concludes the paper.
+follows. Section~\ref{sec:relatedwork} reviews the related work with an emphasis
+on the complexity tradeoff proposed by other
+approaches. Section~\ref{sec:proposal} follows with a description of \CRATE and
+its core components. Section~\ref{sec:experiments} highlights the scalability of
+\CRATE while validating the space complexity analysis of \LSEQ and
+\SPRAY. Finally, Section~\ref{sec:conclusion} concludes the paper and discusses
+about perspectives.
 
 %%% Local Variables: 
 %%% mode: latex

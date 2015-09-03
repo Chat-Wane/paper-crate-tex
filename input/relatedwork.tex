@@ -1,6 +1,14 @@
 \section{Related Work}
 \label{sec:relatedwork}
 
+
+\begin{table*}
+  \centering
+  \input{./input/complexitiestable.tex}
+  \caption{\label{table:complexities}Complexities in time, space, and communication of decentralized approaches.}
+\end{table*}
+
+
 \begin{asparadesc}
 \item[Optimistic replication] is a replication strategy where each peer owns a
   local copy (or replica) of the document. Since users can directly modify this
@@ -36,21 +44,25 @@
   exist for text editing, image editing etc. In text editing context, OT can
   provide the usual insertion and deletion operations plus a range of
   string-wise operations such as move, cut-paste, etc. However, operational
-  transform approaches have drawbacks. First, the quadratic time complexity of
+  transform approaches have drawbacks. \TODO{First, the quadratic time complexity of
   the transformations compared to the number of concurrent operations which
   precludes its usage on the Internet subject to unpredictable latency and, in
   particular, the existence of an offline editing mode. Second, the structure to
   detect concurrency is expansive, i.e., it requires the history of all
-  operations and a causality tracking mechanism. \TODO{moar}.
-\item [Conflict-free replicated data types]. \TODO{moar}.
-
-\begin{table*}
-  \centering
-  \input{./input/complexitiestable.tex}
-  \caption{\label{table:complexities}Complexities in time, space, and communication of decentralized approaches.}
-\end{table*}
-
-
+  operations and a causality tracking mechanism}. \TODO{moar}.
+\item [Conflict-free replicated data types] for sequences constitute the latter
+  approaches which solve the concurrent cases by providing commutative and
+  idempotent operations. Thus, the receipt order of operations does not impact
+  the final resulting document. These approaches provide commutativity by
+  associating a unique and immutable identifier to each element. Defining a
+  total order among the identifiers allows retrieving the sequence. There exist
+  two class of CRDTs for sequences:
+  \begin{inparaenum}[(i)]
+  \item [Tombstone CRDTs] whose removals of elements only hide the latter to the
+    users. 
+  \item [Variable-size CRDTs] whose identifiers are allocated with different
+    size at generation.
+  \end{inparaenum}
 \item [As summary], Table~\ref{table:complexities} shows the complexities in
   space, time, and communication of decentralized approaches. \TODO{moar}
 \end{asparadesc}
