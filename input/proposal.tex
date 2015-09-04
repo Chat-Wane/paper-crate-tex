@@ -43,7 +43,7 @@ of version vectors.
 
   \SPRAY is an adaptive random peer sampling protocol whose primary target is
   WebRTC, a recent technology that allows peer-to-peer communication between web
-  browser. WebRTC has additional constraints such as the range of users which
+  browsers. WebRTC has additional constraints such as the range of users which
   includes small devices (e.g. smartphones, tablets, etc.), and its complex
   3-way connection establishment. Indeed, as depicted in \TODO{Figure}, a user
   $u_1$ wishing to establish a connection with a user $u_2$ must create an offer
@@ -60,8 +60,24 @@ of version vectors.
   the joining, the exchanges, and the leaving. They respectively aims to
   increase, keep unchanged, decrease the number of connections to follow a
   logarithmic progression.
-\end{asparadesc}
 
+  \TODO{talk about information dissemination speed.}
+
+  When a user perform an operation on the shared sequence, \CRATE prepares a
+  message including the result of the operation and broadcasts it to the whole
+  network using its neighborhood. In a second time, the neighbors receiving such
+  message forward it to their own neighbors. Hence, the message reaches all
+  participants transitively. The stopping condition checks if the message has
+  already been received previously using the version vector with
+  exceptions. Therefore, each message is forwarded only once. Thus, this layer
+  impacts the communication complexity of each peer as:
+  \begin{equation}
+    \mathcal{O}(m.\ln |\mathcal{R}| )
+  \end{equation}
+  where $m$ is the message size determined by the layers below, and
+  $|\mathcal{R}|$ is the number of replicas in the network. The latter includes
+  both writers and readers of the shared sequence.
+\end{asparadesc}
 
 
 \begin{asparadesc}
@@ -100,7 +116,32 @@ of version vectors.
   it receives the first operation of $p_1$, the exception disappears and the
   delete operation is performed.
 
-  The anti-entropy \TODO{Moar}.
+  The local space complexity of such data structure depends of the number of
+  writers $|\mathcal{W}|$, i.e., the users that modified the document at least
+  once:
+  \begin{equation}
+    \mathcal{O}(|\mathcal{W}|)
+  \end{equation}
+  The communication complexity is not impacted from this data structure. Therefore, 
+  its becomes:
+  \begin{equation}
+    \mathcal{O}(o.\ln |\mathcal{R}|)
+  \end{equation}
+  where $o$ is the operation size determined by the shared sequence structure,
+  and the rest is determined by the communication layer.
+
+  The anti-entropy periodically checks if the local replica diverges from
+  another neighbor's one at random. It aims to retrieve missing operations that
+  could have been lost during the transmissions. \TODO{example}. There is no
+  additionnal cost on local memory. However, the communication cost is
+  prohibitively high which encourages to perform this reconcialliation protocol
+  with great care:
+  \begin{equation}
+    \mathcal{O}(|\mathcal{W}|+|\mathcal{W}|+x.o)
+  \end{equation}
+  where the first $|\mathcal{W}|$ designates the initiating message, and
+  $|\mathcal{W}|+x.o$ the response to this message where $x.o$ are the missing
+  operations.
 
 \end{asparadesc}
 
@@ -134,52 +175,50 @@ of version vectors.
   $allocPath$. Each of these components fails to provide an efficient allocation
   function. Nevertheless, their composition allows to get the best of each by
   cancelling their respective deficiency.
+  \begin{enumerate}[leftmargin=*]
+  \item The first component is an exponential
+    tree~\cite{andersson1996faster,andersson2007dynamic}. Regarding the
+    formalisation of Section~\ref{sec:preliminaries}, it means a restriction
+    over $\mathcal{P}$. Indeed, the path is not a sequence of natural numbers
+    but a subset of $\mathbb{N}$, and the size of this subset is doubled at each
+    concatenation. For instance, let $p_1\in\mathcal{P}$ such that $|p_1|=1$,
+    then $p_1\subset \mathbb{N}_{<32}$ and $p_2\in\mathcal{P}$ such that
+    $|p_2|=2$, then $p_2\subset \mathbb{N}_{<32}.\mathbb{N}_{<64}$
+    etc. Similarly, let $i$ be the cardinal of the subset $\mathcal{P}$ with one
+    concatenation, let $p_n\in\mathcal{P}$ such that $n\in\mathbb{N}^+$ and
+    $|p_n|=n$, then
+    $p_n\subset \mathbb{N}_{<i}.\mathbb{N}_{<i*2}\ldots\mathbb{N}_{<i*2^{n-1}}$.
+    Due to the growth of the subsets, such representation of the paths requires
+    one additional bit to encode each concatenation. With the same examples, it
+    implies that $p_1$ is encoded using $log_2(32)=5$ bits, $p_2$ is encoded
+    using $5+6=11$ bits,~\ldots \\ The total order $<_{\mathcal{P}}$ is similar
+    to the lexicographic order. We define it as
+    $\forall p_j,\,p_k\in\mathcal{P}$ with $|p_j|=j$, $|p_k|=k$. There exists an
+    index $0\leq l\leq min(|p_j|,|p_k|)$ such that $p_j = X.Y$ and $p_k = X.Z$
+    with $X\subset \{\mathbb{N}\}^l$, $Y \subset \{\mathbb{N}\}^{j-l}$,
+    $Z \subset \{\mathbb{N}\}^{k-l}$. Finally, $p_j<_{\mathcal{P}}p_k$ iff
+    $Y[1]<Z[1]$.
+  \item The function $allocPath$ uses two sub-allocation functions both designed
+    for monotonic editing, i.e., inserting repeatedly at an adjacent position of
+    the previously inserted element. These are application dependent; one is
+    well-suited to end-editing (left-to-right) while the other is well-suited
+    for front-editing (right-to-left).
+  \item The function $allocPath$ uses a third component to choose the
+    sub-allocation function employed at each depth of the exponential tree. The
+    choice is made randomly using a hash function following a uniform
+    distribution. Such function does not favour any editing behaviour while
+    remaining efficient. This provides the independence of the allocation
+    function from any editing strategy/policy. Furthermore, as shown
+    in~\cite{nedelec2013concurrency}, using antagonist sub-allocation functions
+    forces all peers to make identical choices. To reach that goal, they all use
+    a similar hash function initialised with a same seed and shared within the
+    document.
+  \end{enumerate}
+
+  Combining the three components provides identifiers with a sub-linear average
+  size compared to the number of insertions performed which makes it well-suited
+  for text editing, and consequently, for distributed collaborative editing.
 \end{asparadesc}
-
-\begin{enumerate}[leftmargin=*]
-\item The first component is an exponential
-  tree~\cite{andersson1996faster,andersson2007dynamic}. Regarding the
-  formalisation of Section~\ref{sec:preliminaries}, it means a restriction over
-  $\mathcal{P}$. Indeed, the path is not a sequence of natural numbers but a
-  subset of $\mathbb{N}$, and the size of this subset is doubled at each
-  concatenation. For instance, let $p_1\in\mathcal{P}$ such that $|p_1|=1$,
-  then $p_1\subset \mathbb{N}_{<32}$ and $p_2\in\mathcal{P}$ such that
-  $|p_2|=2$, then $p_2\subset \mathbb{N}_{<32}.\mathbb{N}_{<64}$
-  etc. Similarly, let $i$ be the cardinal of the subset $\mathcal{P}$ with one
-  concatenation, let $p_n\in\mathcal{P}$ such that $n\in\mathbb{N}^+$ and
-  $|p_n|=n$, then
-  $p_n\subset
-  \mathbb{N}_{<i}.\mathbb{N}_{<i*2}\ldots\mathbb{N}_{<i*2^{n-1}}$.
-  Due to the growth of the subsets, such representation of the paths requires
-  one additional bit to encode each concatenation. With the same examples, it
-  implies that $p_1$ is encoded using $log_2(32)=5$ bits, $p_2$ is encoded
-  using $5+6=11$ bits,~\ldots \\ The total order $<_{\mathcal{P}}$ is similar
-  to the lexicographic order. We define it as $\forall p_j,\,p_k\in\mathcal{P}$
-  with $|p_j|=j$, $|p_k|=k$. There exists an index
-  $0\leq l\leq min(|p_j|,|p_k|)$ such that $p_j = X.Y$ and $p_k = X.Z$ with
-  $X\subset \{\mathbb{N}\}^l$, $Y \subset \{\mathbb{N}\}^{j-l}$,
-  $Z \subset \{\mathbb{N}\}^{k-l}$. Finally, $p_j<_{\mathcal{P}}p_k$ iff
-  $Y[1]<Z[1]$.
-\item The function $allocPath$ uses two sub-allocation functions both designed
-  for monotonic editing, i.e., inserting repeatedly at an adjacent position of
-  the previously inserted element. These are application dependent; one is
-  well-suited to end-editing (left-to-right) while the other is well-suited for
-  front-editing (right-to-left).
-\item The function $allocPath$ uses a third component to choose the
-  sub-allocation function employed at each depth of the exponential tree. The
-  choice is made randomly using a hash function following a uniform
-  distribution. Such function does not favour any editing behaviour while
-  remaining efficient. This provides the independence of the allocation
-  function from any editing strategy/policy. Furthermore, as shown
-  in~\cite{nedelec2013concurrency}, using antagonist sub-allocation functions
-  forces all peers to make identical choices. To reach that goal, they all use
-  a similar hash function initialised with a same seed and shared within the
-  document.
-\end{enumerate}
-
-Combining the three components provides identifiers with a sub-linear average
-size compared to the number of insertions performed which makes it well-suited
-for text editing, and consequently, for distributed collaborative editing.
 
 \begin{algorithm}[h]
 \input{input/allocpathalgo.tex}
@@ -187,129 +226,97 @@ for text editing, and consequently, for distributed collaborative editing.
 \label{algo:allocpathalgo}
 \end{algorithm}
 
-Algorithm~\ref{algo:allocpathalgo} presents the three components of the
-function $allocPath$. First, it gets the depth of the new path using the
-function $getDepthInterval$ which also returns the interval between the
-arguments (i.e., the number of available paths at the processed depth). Then,
-by calling the hash function $h$, it transfers the call to one of the two a
-sub-allocation functions $endEditing$ and $frontEditing$. These allocation
-functions work similarly:
-\begin{inparaenum}[(\#1)]
-\item Get the depth and the interval of the new path to allocate.
-\item Limit the range within the level for the allocation of the new path.
-\item However, while $endEditing$ uses the previous element in the sequence and
-  concatenates the value of a new edge in the tree to build the new path,
-  $frontEditing$ does the opposite.
-\end{inparaenum}
-Thus, by \#2 the allocation function is efficient in monotonic editing and by
-\#3 the allocation is efficient in left-to-right or right-to-left editing. The
-unexplicit function $subPath$ returns a truncated path from the root to the
-depth passed as argument.
-
-\begin{figure*}
-  \centering
-  \input{input/lseqtreeexample.tex}
-  \caption{\label{fig:lseqtreeexample} Example of \LSEQ's exponential trees
-    with two antagonist editing behaviours to create the sequence of characters
-    $QWERTY$. Thanks to its hash function, \LSEQ transfers the allocation of
-    paths to the sub-allocation functions designed for front-editing and
-    end-editing at first and second level respectively for this
-    example. Furthermore, the arity is doubled at each level of the
-    tree. Contrarily to the example given in Figure~\ref{fig:allocpathexample},
-    the trees do not grow linearly.}
-\end{figure*}
-
 \begin{asparadesc}
 \item[Example:] Similarly to the example of Figure~\ref{fig:allocpathexample})
-  the example given in Figure~\ref{fig:lseqtreeexample} depicts the resulting
-  trees after two antagonist scenarios creating the sequence
-  $QWERTY$ \begin{inparaenum}[(i)] \item the left-to-right editing sequence
-    [($Q,\,0$), ($W,\,1$), \ldots] and \item the right-to-left editing sequence
-    [($Y,\,0$), ($T,\,0$), \ldots]. \end{inparaenum} In both cases, the
-  exponential tree of \LSEQ starts with an arity $32$ and doubles it at each
-  level. Also, it uses the $frontEditing$ and $endEditing$ sub-allocation
-  functions at the first and the second level of the tree respectively. Since
-  the first level of the tree uses the function $endEditing$, the scenario
-  involving the left-to-right editing sequence results in a tree of depth 1. On
-  the other hand, contrarily to the allocation function presented in
-  Figure\ref{fig:allocpathexample}), the antagonist scenario does not increase
-  very much the depth of the tree. Indeed, the identifiers of \LSEQ quickly
-  reach a level of the tree where the sub-allocation function is designed to
-  handle the right-to-left editing behaviour.
+   the example given in Figure~\ref{fig:lseqtreeexample} depicts the resulting
+   trees after two antagonist scenarios creating the sequence
+   $QWERTY$ \begin{inparaenum}[(i)] \item the left-to-right editing sequence
+     [($Q,\,0$), ($W,\,1$), \ldots] and \item the right-to-left editing sequence
+     [($Y,\,0$), ($T,\,0$), \ldots]. \end{inparaenum} In both cases, the
+   exponential tree of \LSEQ starts with an arity $32$ and doubles it at each
+   level. Also, it uses the $frontEditing$ and $endEditing$ sub-allocation
+   functions at the first and the second level of the tree respectively. Since
+   the first level of the tree uses the function $endEditing$, the scenario
+   involving the left-to-right editing sequence results in a tree of depth 1. On
+   the other hand, contrarily to the allocation function presented in
+   Figure\ref{fig:allocpathexample}), the antagonist scenario does not increase
+   very much the depth of the tree. Indeed, the identifiers of \LSEQ quickly
+   reach a level of the tree where the sub-allocation function is designed to
+   handle the right-to-left editing behaviour.
 \end{asparadesc}
 
-\begin{asparadesc}
-\item [The function allocDis] creates the di\-sam\-bi\-gua\-tors which have two
-  goals.  It ensures the uniqueness of the triples, even in presence of
-  concurrency and it guarantees that triples can always be inserted between two
-  other triples even when the paths of the latter are identical. The example of
-  Figure~\ref{fig:allocpathexample} illustrates the need of comparisons that
-  preserve the order given by the paths and also examines the
-  disambiguators. During the editing session, the insertion between the
-  elements $W$ and $T$ resulted in an identical path [$29$]. Therefore, without
-  $allocDis$, the order among $W$ and $T$ is ambiguous, and inserting between
-  them becomes impossible. Indeed, if any path [$29.X$] is greater than [$29$],
-  the newly inserted elements will always end up after the $W$ and $T$ in the
-  sequence. Consequently, the disambiguators are necessary to build an
-  allocation function for sequences.
-\end{asparadesc}
+% \begin{asparadesc}
+% \item [The function allocDis] creates the di\-sam\-bi\-gua\-tors which have two
+%   goals.  It ensures the uniqueness of the triples, even in presence of
+%   concurrency and it guarantees that triples can always be inserted between two
+%   other triples even when the paths of the latter are identical. The example of
+%   Figure~\ref{fig:allocpathexample} illustrates the need of comparisons that
+%   preserve the order given by the paths and also examines the
+%   disambiguators. During the editing session, the insertion between the
+%   elements $W$ and $T$ resulted in an identical path [$29$]. Therefore, without
+%   $allocDis$, the order among $W$ and $T$ is ambiguous, and inserting between
+%   them becomes impossible. Indeed, if any path [$29.X$] is greater than [$29$],
+%   the newly inserted elements will always end up after the $W$ and $T$ in the
+%   sequence. Consequently, the disambiguators are necessary to build an
+%   allocation function for sequences.
+% \end{asparadesc}
 
-A disambiguator is a list of pairs $\langle source,\, clock\rangle$. Similarly
-to the tree of paths, the set of all disambiguators can be represented as a
-tree equipped with a lexicographic total order
-$(\mathcal{D},\, <_{\mathcal{D}})$. While the total order $<_{\mathcal{P}}$
-ultimately compares two numbers, the total order $<_{\mathcal{D}}$ compares two
-pairs. With the same notation than $allocPath$, let $\langle s_1,\, c_1\rangle$
-and $\langle s_2,\,c_2\rangle$ be the $l+1$ couples of the disambiguators $d_j$
-and $d_k$ respectively. $d_j <_{\mathcal{D}}d_k$ iff $s_1 < s_2$, or if
-$s_1=s_2$, $c_1 < c_2$.
+% A disambiguator is a list of pairs $\langle source,\, clock\rangle$. Similarly
+% to the tree of paths, the set of all disambiguators can be represented as a
+% tree equipped with a lexicographic total order
+% $(\mathcal{D},\, <_{\mathcal{D}})$. While the total order $<_{\mathcal{P}}$
+% ultimately compares two numbers, the total order $<_{\mathcal{D}}$ compares two
+% pairs. With the same notation than $allocPath$, let $\langle s_1,\, c_1\rangle$
+% and $\langle s_2,\,c_2\rangle$ be the $l+1$ couples of the disambiguators $d_j$
+% and $d_k$ respectively. $d_j <_{\mathcal{D}}d_k$ iff $s_1 < s_2$, or if
+% $s_1=s_2$, $c_1 < c_2$.
 
-\begin{algorithm}
-  \input{input/allocdesalgo.tex}
-  \caption{\label{algo:allocdis}The function $allocDis$ of \LSEQ}
-\end{algorithm}
+% \begin{algorithm}
+%   \input{input/allocdesalgo.tex}
+%   \caption{\label{algo:allocdis}The function $allocDis$ of \LSEQ}
+% \end{algorithm}
 
-Algorithm~\ref{algo:allocdis} describes the allocation of a disambiguator which
-preserves the intention of the peer that performed the insertion. Identically
-to Lamport timestamps, it uses a unique site identifier and a monotonically
-increasing counter. Basically, it copies the disambiguator of its neighbours at
-the depth where they are equal, and, if none is equal, it copies its own site
-and counter. The latter case happens at least once per insertion which
-guarantees the uniqueness of each identifier. The space complexity of
-disambiguator is upper-bounded by the length of the new path. Furthermore,
-depending on the scenario, it can be drastically compressed.
+% Algorithm~\ref{algo:allocdis} describes the allocation of a disambiguator which
+% preserves the intention of the peer that performed the insertion. Identically
+% to Lamport timestamps, it uses a unique site identifier and a monotonically
+% increasing counter. Basically, it copies the disambiguator of its neighbours at
+% the depth where they are equal, and, if none is equal, it copies its own site
+% and counter. The latter case happens at least once per insertion which
+% guarantees the uniqueness of each identifier. The space complexity of
+% disambiguator is upper-bounded by the length of the new path. Furthermore,
+% depending on the scenario, it can be drastically compressed.
 
-Let us go back to the example in Figure~\ref{fig:treemodelexample}. In this
-tree, collaborator $p_1$ inserts the character $R$ between the two pairs
-$\langle [3],\, E\rangle$ and $\langle [4],\, T\rangle$. The resulting path is
-$[3.1]$. Now, we add the disambiguators $\delta_E = [\langle 2,\,1\rangle]$
-meaning that it is the first insertion of collaborator $p_2$, and
-$\delta_T = [\langle 3,\,1\rangle]$ meaning that it is the first insertion of
-collaborator $p_3$. The resulting path associated with $R$ is $[3.1]$. Since
-the first integer of the path of $R$ is similar to the path of the character
-$E$, the algorithm copies the first part of $\delta_E$. Then, since none of the
-adjacent pairs have a length of $2$, the algorithm copies the values of $p_1$,
-i.e. $\langle 1,\,1\rangle$. The resulting disambiguator is
-$[\langle 2,\,1\rangle,\, \langle 1,\,1\rangle]$. This way, $p_1$ inserts a new
-character between $E$ and $R$. As we get the path $[3.0.X]$, the resulting
-disambiguator is
-$[\langle 2,\,1\rangle,\,\langle 1,\,2\rangle,\,\langle 1,\,2\rangle]$.
+% Let us go back to the example in Figure~\ref{fig:treemodelexample}. In this
+% tree, collaborator $p_1$ inserts the character $R$ between the two pairs
+% $\langle [3],\, E\rangle$ and $\langle [4],\, T\rangle$. The resulting path is
+% $[3.1]$. Now, we add the disambiguators $\delta_E = [\langle 2,\,1\rangle]$
+% meaning that it is the first insertion of collaborator $p_2$, and
+% $\delta_T = [\langle 3,\,1\rangle]$ meaning that it is the first insertion of
+% collaborator $p_3$. The resulting path associated with $R$ is $[3.1]$. Since
+% the first integer of the path of $R$ is similar to the path of the character
+% $E$, the algorithm copies the first part of $\delta_E$. Then, since none of the
+% adjacent pairs have a length of $2$, the algorithm copies the values of $p_1$,
+% i.e. $\langle 1,\,1\rangle$. The resulting disambiguator is
+% $[\langle 2,\,1\rangle,\, \langle 1,\,1\rangle]$. This way, $p_1$ inserts a new
+% character between $E$ and $R$. As we get the path $[3.0.X]$, the resulting
+% disambiguator is
+% $[\langle 2,\,1\rangle,\,\langle 1,\,2\rangle,\,\langle 1,\,2\rangle]$.
 
-\begin{asparadesc}
-\item [The global total order] $(\mathcal{I}, <_{\mathcal{I}})$ is a
-  composition of the aforementioned sets $\mathcal{P}$ and $\mathcal{D}$, and
-  their respective total orders $(\mathcal{P},\, <_{\mathcal{P}})$ and
-  $(\mathcal{D},\, <_{\mathcal{D}})$.
-\end{asparadesc}
+% \begin{asparadesc}
+% \item [The global total order] $(\mathcal{I}, <_{\mathcal{I}})$ is a
+%   composition of the aforementioned sets $\mathcal{P}$ and $\mathcal{D}$, and
+%   their respective total orders $(\mathcal{P},\, <_{\mathcal{P}})$ and
+%   $(\mathcal{D},\, <_{\mathcal{D}})$.
+% \end{asparadesc}
 
-The global total order is defined as:
-$\forall p,\,q \in \mathcal{I}, p<q \Leftrightarrow \exists i$ with
-$\forall_{k=0}^{i-1}, \, p.P(k) = q.P(k) \wedge p.D(k) = q.D(k)$ such that
-$\exists j=i+1$ with
-$p.P(j) < q.P(j) \vee (p.P(j) = q.P(j) \wedge p.D(j) < q.D(j))$.
+% The global total order is defined as:
+% $\forall p,\,q \in \mathcal{I}, p<q \Leftrightarrow \exists i$ with
+% $\forall_{k=0}^{i-1}, \, p.P(k) = q.P(k) \wedge p.D(k) = q.D(k)$ such that
+% $\exists j=i+1$ with
+% $p.P(j) < q.P(j) \vee (p.P(j) = q.P(j) \wedge p.D(j) < q.D(j))$.
 
-\subsection{Space complexity}
-\label{sec:spacecomplexity}
+% \subsection{Space complexity}
+% \label{sec:spacecomplexity}
 
 In text editing, most of the editing behaviours can be empirically summarised
 as a composition of two basic editing behaviours.
