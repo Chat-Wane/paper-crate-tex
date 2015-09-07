@@ -1,30 +1,24 @@
 \begin{abstract}
-  Distributed real-time editors such as Google Docs, or Etherpad allow
-  people to work distributed in space and across
-  organizations. However, main stream solutions rely on centrals
-  servers with issues in privacy, censorship, single-point-of-failure,
-  economic intelligence and scalability. 
-%
-Building a fully
-  decentralized, scalable real-time editor requires to find a
-  difficult compromise between time, space, and communication
-  complexities with respect to the number of users and the size of
-  shared documents.
-%
-  In this paper, we propose \CRATE; n real-time editor that runs on a
-  network of browsers i.e. without servers. \CRATE relies on a new
-  shared document structure in order to support large number of users
-  working on large documents. Thanks to WebRTC, \CRATE can be easily
-  deployed.
-%
-We extensively
-  describe each core component and provide the proof of the
-  polylogarithmic upper-bound on the space complexity of the shared
-  document. We evaluate \CRATE in large-scale experiments on the
-  Grid'5000 testbed uptil 600 participants. As expected, we observe
-  a logarithmic progession of the generated traffic according to the
-  size of the
-  shared document and the number of participants.
+  Distributed real-time editors such as Google Docs, or Etherpad allow people to
+  work distributed in space and across organizations. However, main stream
+  solutions rely on central servers with issues in privacy, censorship,
+  single-point-of-failure, economic intelligence and scalability.
+
+  Building a fully decentralized, scalable real-time editor requires to find a
+  difficult compromise between time, space, and communication complexities with
+  respect to the number of users and the size of shared documents.
+
+  In this paper, we propose \CRATE; a real-time editor that runs on a network of
+  browsers i.e. without servers. \CRATE relies on a new shared document
+  structure in order to support large number of users working on large
+  documents. Thanks to WebRTC, \CRATE can be easily deployed.
+
+  We extensively describe each core component and provide the proof of the
+  polylogarithmic upper-bound on the space complexity of the shared document. We
+  evaluate \CRATE in large-scale experiments on the Grid'5000 testbed uptil 600
+  participants. As expected, we observe a logarithmic progression of the
+  generated traffic according to the size of the shared document and the number
+  of participants.
 \end{abstract}
 
 %%% Local Variables: 
