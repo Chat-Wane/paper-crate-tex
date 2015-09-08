@@ -1,25 +1,42 @@
 
 \section{Introduction}
 
-Distributed real-time editors such as Google Docs, or Etherpad allow
-people to work distributed in space and across organizations. Millions of users
-uses these editors. 
+Real-time collaborative editors are used by millions of users and allow them to
+distribute the work over locations and across organizations.
 
-However, main stream real-time editors such Google Doc rely on centralized
-servers. It implies issues in privacy, censorship and economic intelligence. It
-also brings restrictions in terms of service. For instance, Google Docs
-restricts the writing access of its documents to 50 users simultaneously.
+However, the most well-known editors such as Google Docs rely on central
+servers. The topology itself implies issues in privacy, censorship and economic
+intelligence. Indeed, since all communications transit a server, the owner of
+the latter is able to intercept and use the information without the users'
+consent (REF).  It also implies restrictions in terms of service. For instance,
+Google Docs restricts the writing access of its documents to 50 users
+simultaneously. Beyond, the users are readers. Such limitations preclude the
+existence of crowd edited documents which could be useful in educational cases.
+\TODO{moar}.
 
-On the other hand, decentralized real-time editors do not require any
-collaboration providers. Many algorithms has been
-proposed~\cite{sun1998operational, oster2006data, sun2009contextbased}, yet
-finding a good compromise for a full working system remains challenging: the
-holy Grail tradeoff between complexities in time, space and communications.
-\TODO{Furthermore, competing with centralized tools means to be as accessible as
-  them.}
-%% Due to the
-%% communication layer setup, It also difficult to achieve for a decentralized
-%% editor a 'one-click' deployement as Google doc can do.
+Recently, WebRTC allowed decentralized applications to run directly inside web
+browsers. Hence, they become as easy-to-deploy as centralized solutions and do
+not require any collaboration providers. Many algorithms~\cite{oster2006data,
+  sun1998operational, sun2009contextbased} exist proposing different tradeoff
+between complexities in space, time and communications. Yet, finding a suitable
+compromise for browsers remains challenging since the range of users includes
+small devices such as smartphones with limited memory, CPU, and bandwidth.
+
+The most difficult part that distributed algorithms have to tackle concerns
+concurrent operations, i.e., when multiple users perform changes on a document
+simultaneously. Users can experience different results after receipt of
+operations. To solve this, former algorithms~\cite{} are transforming the
+operations against concurrent ones in order to properly adapt their arguments.
+Unfortunately, these approaches do not scale in number of users (communication
+and memory) and concurrency (time at integration). Latter algorithms~\cite{}
+propose sequence data types providing commutative operations. Therefore, the
+integration order of concurrent operations does not matter since they will
+converge to an identical structure. However, the first class of these shared
+sequences uses tombstones which simply hides removed elements. Consequently,
+they do not scale number of operations (space and time). The second class of
+these shared sequences uses identifiers that have variable sizes. Unfortunately,
+the editing behavior (i.e., the position of insertions in the document) can
+badly impact the size of these identifiers (space, time, and communication).
 
 In this paper, we propose \CRATE, a real-time editor that runs on a network of
 browsers. \CRATE relies on WebRTC and browser-to-browser communication to
