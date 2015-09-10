@@ -1,50 +1,60 @@
 
 \section{Introduction}
 
-Real-time collaborative editors are used by millions of users and allow them to
-distribute the work over locations and across organizations.
+%Real-time collaborative editors are used by millions of users and allow them to
+%distribute the work over locations and across organizations.
 
-However, the most well-known editors such as Google Docs rely on central
-servers. The topology itself implies issues in privacy, censorship and economic
-intelligence. Indeed, since all communications transit a server, the owner of
-the latter is able to intercept and use the information without the users'
-consent (REF).  It also implies restrictions in terms of service. For instance,
-Google Docs restricts the writing access of its documents to 50 users
-simultaneously. Beyond, the users are readers. Such limitations preclude the
-existence of crowd edited documents which could be useful in educational cases.
-\TODO{moar}.
 
-Recently, WebRTC allowed decentralized applications to run directly inside web
-browsers. Hence, they become as easy-to-deploy as centralized solutions and do
-not require any collaboration providers. Many algorithms~\cite{oster2006data,
-  sun1998operational, sun2009contextbased} exist proposing different tradeoff
-between complexities in space, time and communications. Yet, finding a suitable
-compromise for browsers remains challenging since the range of users includes
-small devices such as smartphones with limited memory, CPU, and bandwidth.
+Google Doc or Etherpad allow millions of users to start a real-time
+editing session by just clicking on a URL in their web
+browsers. However, main real-time editors require collboration
+providers to setup servers to enable
+collaboration. This implies issues in privacy, censorship and economic
+intelligence, single point of failure and
+scalability.% . Central servers also introduce single point of
+% failures and scalability issues.  For instance, Google Docs restricts
+% the writing access of its documents to 50 users
+% simultaneously. Beyond, the users are readers. Such limitations
+% preclude the existence of crowd edited documents which could be useful
+% in educational cases.  \TODO{moar}.
+Decentralized real-time editors ~\cite{oster2006data,
+  sun1998operational, sun2009contextbased} do not require intermediate
+servers but scalability issues remains. According to the different
+approaches, linear or polynomial complexities exists on time, space or
+communications. This prevents decentralized editors to scale to many
+users or on large documents. If currently real-time editors is mainly
+used by small groups, supporting large groups occurs in new contexts
+such as massive online courses, conferences, TV-shows where
+people want to share their notes. Google doc supports large groups but
+currently only fifty first users can edit in real-time, next users can
+only view the shared document without editing. We think that
+decentralized editors should be able to allow anybody to edit anytime
+whatever the number of participant.
 
-The most difficult part that distributed algorithms have to tackle concerns
-concurrent operations, i.e., when multiple users perform changes on a document
-simultaneously. Users can experience different results after receipt of
-operations. To solve this, former algorithms~\cite{} are transforming the
-operations against concurrent ones in order to properly adapt their arguments.
-Unfortunately, these approaches do not scale in number of users (communication
-and memory) and concurrency (time at integration). Latter algorithms~\cite{}
-propose sequence data types providing commutative operations. Therefore, the
-integration order of concurrent operations does not matter since they will
-converge to an identical structure. However, the first class of these shared
-sequences uses tombstones which simply hides removed elements. Consequently,
-they do not scale number of operations (space and time). The second class of
-these shared sequences uses identifiers that have variable sizes. Unfortunately,
-the editing behavior (i.e., the position of insertions in the document) can
-badly impact the size of these identifiers (space, time, and communication).
+% Pascal: keep that for related work...
+% A scalable real-time 
+% The most difficult part that distributed algorithms have to tackle concerns
+% concurrent operations, i.e., when multiple users perform changes on a document
+% simultaneously. Users can experience different results after receipt of
+% operations. To solve this, former algorithms~\cite{} are transforming the
+% operations against concurrent ones in order to properly adapt their arguments.
+% Unfortunately, these approaches do not scale in number of users (communication
+% and memory) and concurrency (time at integration). Latter algorithms~\cite{}
+% propose sequence data types providing commutative operations. Therefore, the
+% integration order of concurrent operations does not matter since they will
+% converge to an identical structure. However, the first class of these shared
+% sequences uses tombstones which simply hides removed elements. Consequently,
+% they do not scale number of operations (space and time). The second class of
+% these shared sequences uses identifiers that have variable sizes. Unfortunately,
+% the editing behavior (i.e., the position of insertions in the document) can
+% badly impact the size of these identifiers (space, time, and communication).
 
-In this paper, we propose \CRATE, a real-time editor that runs on a network of
+In this paper, we propose \CRATE, a scalable real-time editor that runs on a network of
 browsers. \CRATE relies on WebRTC and browser-to-browser communication to
-provide an easy access for end-users. Compared to state-of-art, \CRATE proposes
-a new complexity tradeoff between time, space, and communication that fits web
-constraints in order to run within browsers.
-
-This main contributions of this paper are three-fold:
+provide an easy access for end-users. Compared to state-of-art, \CRATE
+support large number of users workiing on large shared
+documents i.e. the number of users only impact communication
+complexity. This main contributions of this paper are three-fold:
 \begin{itemize}
 \item we describe \CRATE's system and its core-components, namely \LSEQ and
   \SPRAY. \CRATE's Javascript implementation runs directly inside browsers
