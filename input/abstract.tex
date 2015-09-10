@@ -9,21 +9,25 @@
   communications in presence of large number of users or large shared
   documents. If currently real-time editors is mainly used by small
   groups, supporting large groups allow real-editing to be used in
-  large events such as massive online courses, conferences, TV-shows \ldots.
+  large events such as massive online courses, conferences, TV-shows \ldots
 
-  Building a fully decentralized, scalable real-time editor requires
-  to find a difficult compromise between time, space, and
-  communication complexities.  In this paper, we propose \CRATE; a
-  decentralized real-time editor that supports large number of users
-  working on large documents. Thanks to WebRTC, \CRATE can be easily
-  deployed on a network of browsers i.e. without servers.
+  % Building a fully decentralized, scalable real-time editor requires
+  % to find a difficult compromise between time, space, and
+  % communication complexities. 
 
-  We extensively describe each core component and provide the proof of the
-  polylogarithmic upper-bound on the space complexity of the shared document. We
-  evaluate \CRATE in large-scale experiments on the Grid'5000 testbed uptil 600
-  participants. As expected, we observe a logarithmic progression of the
-  generated traffic according to the size of the shared document and the number
-  of participants.
+
+  In this paper, we propose \CRATE; a decentralized real-time editor
+  that supports large number of users working on large
+  documents. Compared to state of art, we prove a polylogarithmic
+  upper-bound on the space complexity of the shared document without
+  changing degrading time and communication complexities. Thanks to
+  WebRTC, \CRATE can be easily deployed on a network of browsers
+  i.e. without servers.
+
+  We evaluate \CRATE in large-scale experiments on the Grid'5000
+  testbed uptil 600 participants. As expected, we observe a
+  logarithmic progression of the generated traffic according to the
+  size of the shared document and the number of participants.
 \end{abstract}
 
 %%% Local Variables: 
