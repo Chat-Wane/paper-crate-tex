@@ -50,21 +50,24 @@ whatever the number of participants.
 % the editing behavior (i.e., the position of insertions in the document) can
 % badly impact the size of these identifiers (space, time, and communication).
 
-In this paper, we propose \CRATE, a scalable real-time editor that runs on a network of
-browsers. \CRATE relies on WebRTC and browser-to-browser communication to
-provide an easy access for end-users. Compared to state-of-art, \CRATE
-support large number of users working on large shared
-documents i.e. the number of users only impact communication
-complexity. This main contributions of this paper are three-fold:
+In this paper, we propose \CRATE, a scalable real-time editor that
+runs on a network of browsers. \CRATE relies on WebRTC and
+browser-to-browser communication to provide an easy access for
+end-users. \CRATE belongs to Conflict-Free Replicated Datatypes (CRDT)
+class of real-time editors. Compared to state of art, we reduced space
+complexity of a shared document from linear to polylogarithmic
+whithout changing time and space complexities of this class of editors
+. This main contributions of this paper are three-fold:
 \begin{itemize}
-\item we describe \CRATE's system and its core-components, namely \LSEQ and
-  \SPRAY. \CRATE's Javascript implementation runs directly inside browsers
-  without any plugins.
+\item we describe \CRATE's system and its core-components, namely
+  \LSEQ for managing the shared document and \SPRAY for maintaining
+  membership and propagating operations. \CRATE's Javascript
+  implementation runs directly inside browsers without any plugins.
 \item Compared to previous work~\cite{nedelec2013lseq}, we demonstrate the upper
   bound on space complexity of \LSEQ and we analyze the complete complexity of
   \CRATE compared to state of art.
 \item We conducted experimental studies to validate the complexities of the
-  \CRATE's implementation inside real web browsers. From $2$ to $600$
+  \CRATE's implementation inside real web browsers. As expected, from $2$ to $600$
   participants editing a document reaching more than $1$ million characters, we
   observed a logarithmic growth of the traffic compared to the number of
   participants, and a polylogarithmic growth of the traffic compared to the size
