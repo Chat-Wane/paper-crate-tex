@@ -4,7 +4,7 @@
 \begin{table*}
   \centering
   \input{./input/complexitiestable.tex}
-  \caption{\label{table:complexities}Complexities in time, space, and communication of decentralized approaches.}
+  \caption{\label{table:complexities}Upper-bound ($\mathcal{O}$) on complexities in time, space, and communication of decentralized approaches.}
 \end{table*}
 
 \begin{asparadesc}
@@ -14,25 +14,40 @@
   an operation on the local document, the information is spread to all owners of
   the shared document where they are integrated. Optimistic replication
   approaches guarantee eventual consistency~\cite{bailis2013eventual}. Hence,
-  after the receipt and integration of all operations by the members, the
+  after the receipt and integration of all operations by the participants, the
   replicas converge to an identical state.
 \item[Centralized] collaborative editors constitute an easy way to ensure
-  documents eventually consistent. There exist a plethora of these
-  (\TODO{examples}).  Nevertheless, the topology itself lack of scalablity and
-  suffer of issues in privacy, censorship, single-point-of-failure, ease of
-  deployment, economic intelligence, and restriction in terms of service.
-\item[Decentralized] collaborative editors are rare in comparison. With such
-  topology, the algorithms and data structures are rethought to handle the
-  operations arriving disorderly.  To insert a character in a shared document,
-  one cannot just use the standard well-known operation \emph{insert element at
-    index} of arrays and expect guaranties on convergence. For instance, if two
-  users concurrently edit a sequence ERTY: the first user inserts a Q at index
-  0, while the second user inserts a W at index 0. They respectively obtains
-  QERTY and WERTY as resulting sequence. On receipt of each other's operation
-  they respectively obtain WQERTY and QWERTY. Hence the need to inspect these
-  concurrent cases to ensure convergent replicas.  Many approaches have been
-  proposed with the challenging task to find a good compromise between
-  complexities in time, space, and communication.
+  documents eventually consistent. Until recently, they suited very well the web
+  context since browsers were limited to the traditionnal client-server
+  paradigm. Therefore, there exist a plethora of these centralized editors
+  (e.g. Google Docs, Etherpad, Apache Wave).  Nevertheless, the topology itself
+  suffers issues in privacy, censorship, and economic intelligence.  Indeed,
+  since all communications transit a server, the owner of the latter is able to
+  intercept and use the information without the users' consent (\TODO{REF}).
+  Additionally, centralized solution lacks of scalability and ease of
+  deployment. People who wants to build their own document provider must set a
+  server and carefully check the latter's capacity to hold the load of users
+  (\TODO{REF}).  Finally, users must agree to restriction in terms of service.
+  For instance, Google Docs restricts the writing access of its documents to 50
+  users simultaneously. Beyond, the users are readers (\TODO{REF}). \TODO{Such
+    limitations preclude the existence of crowd edited documents which could be
+    useful in educational cases.}
+\item[Decentralized] collaborative editors are uncommon comparatively. Yet, the
+  appearance of peer-to-peer connections from browser-to-browser opens the field
+  to such editors which become directly accessible in end-user web
+  browsers. Consequently, they are as practicable as centralized web editors and
+  solve all the latter's aforementioned issues except the scalability. Indeed,
+  with such topology, the algorithms and data structures are rethought to handle
+  the operations arriving disorderly.  To insert a character in a shared
+  document, one cannot just use the standard well-known operation \emph{insert
+    element at index} of arrays and expect guaranties on convergence. For
+  instance, if two users concurrently edit a sequence ERTY: the first user
+  inserts a Q at index 0, while the second user inserts a W at index 0. They
+  respectively obtains QERTY and WERTY as resulting sequence. On receipt of each
+  other's operation they respectively obtain WQERTY and QWERTY. Hence the need
+  to inspect these concurrent cases to ensure convergent replicas.  Many
+  approaches have been proposed with the challenging task to find a good
+  compromise between complexities in time, space, and communication.
 \item [Operational transformation] constitute the former approaches aiming to
   solve the concurrent cases. Their principle lies in modifying the arguments of
   the received operation against its concurrent ones. For instance, in the prior
@@ -42,12 +57,13 @@
   exist for text editing, image editing etc. In text editing context, OT can
   provide the usual insertion and deletion operations plus a range of
   string-wise operations such as move, cut-paste, etc. However, operational
-  transform approaches have drawbacks. \TODO{First, the quadratic time complexity of
-  the transformations compared to the number of concurrent operations which
-  precludes its usage on the Internet subject to unpredictable latency and, in
-  particular, the existence of an offline editing mode. Second, the structure to
-  detect concurrency is expansive, i.e., it requires the history of all
-  operations and a causality tracking mechanism}. \TODO{moar}.
+  transform approaches have drawbacks. \TODO{First, the quadratic time
+    complexity of the transformations compared to the number of concurrent
+    operations which precludes its usage on the Internet subject to
+    unpredictable latency and, in particular, the existence of an offline
+    editing mode. Second, the structure to detect concurrency is expansive,
+    i.e., it requires the history of all operations and a causality tracking
+    mechanism}. \TODO{moar}.
 \item [Conflict-free replicated data types] for sequences constitute the latter
   approaches which solve the concurrent cases by providing commutative and
   idempotent operations. Thus, the receipt order of operations does not impact
