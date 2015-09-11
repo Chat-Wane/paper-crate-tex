@@ -35,8 +35,6 @@ of version vectors.
   \caption{\label{fig:architecture}\CRATE architecture}
 \end{figure}
 
-\begin{asparadesc}
-
 \begin{figure}
   \centering
   \input{input/networkexample.tex}
@@ -45,211 +43,203 @@ of version vectors.
     browser-to-browser. \TODO{show information dissemination.}}
 \end{figure}
 
-\item [The communication layers] includes both an information dissemination
-  protocol and a random peer sampling protocol. While the former is very simple
-  since it is only in charge of sending and receiving the operations, the latter
-  is complex.
+\subsection{Communication}
+The communication layers includes both an information dissemination protocol and
+a random peer sampling protocol. While the former is very simple since it is
+only in charge of sending and receiving the operations, the latter is complex.
 
-  \SPRAY is an adaptive random peer sampling protocol whose primary target is
-  WebRTC, a recent technology that allows peer-to-peer communication between web
-  browsers. WebRTC has additional constraints such as the range of users which
-  includes small devices (e.g. smartphones, tablets, etc.), and its complex
-  3-way connection establishment. Indeed, as depicted in \TODO{Figure}, a user
-  $u_1$ wishing to establish a connection with a user $u_2$ must create an offer
-  ticket and send it to $u_2$ through a mediator (e.g. by mail, dedicated
-  servers, peers already connected in the network). Then, $u_2$ must answer with
-  another offer (referred to as \emph{stamped ticket}) using a mediator
-  too. Finally, $u_1$ must confirm the connection to establish the bidirectional
-  link. Due to this complex protocol, the peer sampling protocols are encouraged
-  to keep a small number of connections.
+\SPRAY is an adaptive random peer sampling protocol whose primary target is
+WebRTC, a recent technology that allows peer-to-peer communication between web
+browsers. WebRTC has additional constraints such as the range of users which
+includes small devices (e.g. smartphones, tablets, etc.), and its complex 3-way
+connection establishment. Indeed, as depicted in \TODO{Figure}, a user $u_1$
+wishing to establish a connection with a user $u_2$ must create an offer ticket
+and send it to $u_2$ through a mediator (e.g. by mail, dedicated servers, peers
+already connected in the network). Then, $u_2$ must answer with another offer
+(referred to as \emph{stamped ticket}) using a mediator too. Finally, $u_1$ must
+confirm the connection to establish the bidirectional link. Due to this complex
+protocol, the peer sampling protocols are encouraged to keep a small number of
+connections.
 
-  \SPRAY is adaptive in the sense that the neighborhood maintained at each peer
-  grows and shrinks logarithmically compared to the number of members in the
-  editing session. \SPRAY divides the life-cycle of a peer into three phases:
-  the joining, the exchanges, and the leaving. They respectively aims to
-  increase, keep unchanged, and decrease the number of connections to follow a
-  logarithmic progression.
+\SPRAY is adaptive in the sense that the neighborhood maintained at each peer
+grows and shrinks logarithmically compared to the number of members in the
+editing session. \SPRAY divides the life-cycle of a peer into three phases: the
+joining, the exchanges, and the leaving. They respectively aims to increase,
+keep unchanged, and decrease the number of connections to follow a logarithmic
+progression.
   
-  When a user perform an operation on the shared sequence, \CRATE prepares a
-  message including the result of the operation and broadcasts it to the whole
-  network using its neighborhood. In a second time, the neighbors receiving such
-  message forward it to their own neighbors. Hence, the message reaches all
-  participants transitively. The stopping condition checks if the message has
-  already been received previously using the version vector with
-  exceptions. Therefore, each message is forwarded only once. Thus, this layer
-  impacts the communication complexity of each peer as:
-  \begin{equation}
-    \mathcal{O}(m.\ln |\mathcal{R}| )
-  \end{equation}
-  where $m$ is the message size determined by the layers below, and
-  $|\mathcal{R}|$ is the number of replicas in the network. The latter includes
-  both writers and readers of the shared sequence.
+When a user perform an operation on the shared sequence, \CRATE prepares a
+message including the result of the operation and broadcasts it to the whole
+network using its neighborhood. In a second time, the neighbors receiving such
+message forward it to their own neighbors. Hence, the message reaches all
+participants transitively. The stopping condition checks if the message has
+already been received previously using the version vector with
+exceptions. Therefore, each message is forwarded only once. Thus, this layer
+impacts the communication complexity of each peer as:
+\begin{equation}
+  \mathcal{O}(m.\ln |\mathcal{R}| )
+\end{equation}
+where $m$ is the message size determined by the layers below, and
+$|\mathcal{R}|$ is the number of replicas in the network. The latter includes
+both writers and readers of the shared sequence.
   
-  \SPRAY also has properties similar of those of random
-  graphs~\cite{erdos1959random}. In particular,
-  \begin{inparaenum}[(i)]
-  \item the shortest average distance to reach all peers stays low, even with a
-    large number of participants. Thus, messages disseminates quickly to
-    everyone.
-  \item The load of peers is balanced, i.e., no peer is more important than
-    another in terms of connections. Therefore, the network is robust to random
-    crashes of peers.
-  \end{inparaenum}
+\SPRAY also has properties similar of those of random
+graphs~\cite{erdos1959random}. In particular,
+\begin{inparaenum}[(i)]
+\item the shortest average distance to reach all peers stays low, even with a
+  large number of participants. Thus, messages disseminates quickly to everyone.
+\item The load of peers is balanced, i.e., no peer is more important than
+  another in terms of connections. Therefore, the network is robust to random
+  crashes of peers.
+\end{inparaenum}
 
-\item [The causality tracking layer] guarantees that operations are not
-  delivered more than once, and that operations depending on another operation
-  is delivered after the latter. \CRATE uses a version vector with
-  exceptions~\cite{malkhi2007concise} which stores for each
-  site
-  \begin{inparaenum}[(i)]
-  \item an integer denoting the maximum counter of operations originated from
-    this site and
-  \item a list of integers denoting the exceptions, i.e., the counter of
-    operations known as not received yet.
-  \end{inparaenum}
+\subsection{Causality tracking}
+The causality tracking layer guarantees that operations are not delivered more
+than once, and that operations depending on another operation is delivered after
+the latter. \CRATE uses a version vector with
+exceptions~\cite{malkhi2007concise} which stores for each site
+\begin{inparaenum}[(i)]
+\item an integer denoting the maximum counter of operations originated from this
+  site and
+\item a list of integers denoting the exceptions, i.e., the counter of
+  operations known as not received yet.
+\end{inparaenum}
 
-  Each operations is uniquely identified by its unique site identifier and a
-  monotonically growing counter. On operation reception, \CRATE discards the
-  operation if it has already been received before. Otherwise, it modifies the
-  version vector entry either by updating the maximum counter or removing an
-  entry in the exceptions.
+Each operations is uniquely identified by its unique site identifier and a
+monotonically growing counter. On operation reception, \CRATE discards the
+operation if it has already been received before. Otherwise, it modifies the
+version vector entry either by updating the maximum counter or removing an entry
+in the exceptions.
 
-  \begin{figure}
-    \input{./input/timelineexample.tex}
-    \caption{\label{fig:timeline}Causality tracking example.}
-  \end{figure}
+\begin{figure}
+  \input{./input/timelineexample.tex}
+  \caption{\label{fig:timeline}Causality tracking example.}
+\end{figure}
 
-  Figure~\ref{fig:timeline} depicts a scenario where 3 peers are involved. Thus,
-  all peers have a vector of three entries. Peer $p_1$ inserts two elements in
-  the sequence and broadcasts the operations. Peer $p_3$ immediately receives
-  both operations and increments the entry in its version vector accordingly.
-  In the meantime, Peer $p_2$ only receives the second operation which leads to
-  an update of the maximum counter and an exception concerning the first
-  operation of Peer $p_1$. Then, Peer $p_3$ removes the first element inserted
-  by $p_1$ and broadcast it. While $p_1$ delivers the removal immediately, Peer
-  $p_2$ has to wait since the targeted operation belongs to the exceptions. Once
-  it receives the first operation of $p_1$, the exception disappears and the
-  delete operation is performed.
+Figure~\ref{fig:timeline} depicts a scenario where 3 peers are involved. Thus,
+all peers have a vector of three entries. Peer $p_1$ inserts two elements in the
+sequence and broadcasts the operations. Peer $p_3$ immediately receives both
+operations and increments the entry in its version vector accordingly.  In the
+meantime, Peer $p_2$ only receives the second operation which leads to an update
+of the maximum counter and an exception concerning the first operation of Peer
+$p_1$. Then, Peer $p_3$ removes the first element inserted by $p_1$ and
+broadcast it. While $p_1$ delivers the removal immediately, Peer $p_2$ has to
+wait since the targeted operation belongs to the exceptions. Once it receives
+the first operation of $p_1$, the exception disappears and the delete operation
+is performed.
 
-  The local space complexity of such data structure depends of the number of
-  writers $|\mathcal{W}|$, i.e., the users that modified the document at least
-  once:
-  \begin{equation}
-    \mathcal{O}(|\mathcal{W}|)
-  \end{equation}
-  The communication complexity is not impacted from this data structure. Therefore, 
-  its becomes:
-  \begin{equation}
-    \mathcal{O}(o.\ln |\mathcal{R}|)
-  \end{equation}
-  where $o$ is the operation size determined by the shared sequence structure,
-  and the rest is determined by the communication layer.
+The local space complexity of such data structure depends of the number of
+writers $|\mathcal{W}|$, i.e., the users that modified the document at least
+once:
+\begin{equation}
+  \mathcal{O}(|\mathcal{W}|)
+\end{equation}
+The communication complexity is not impacted from this data
+structure. Therefore, its becomes:
+\begin{equation}
+  \mathcal{O}(o.\ln |\mathcal{R}|)
+\end{equation}
+where $o$ is the operation size determined by the shared sequence structure,
+and the rest is determined by the communication layer.
 
-  The anti-entropy periodically checks if the local replica diverges from
-  another neighbor's one at random. It aims to retrieve missing operations that
-  could have been lost during the transmissions. \TODO{example}. There is no
-  additional cost on local memory. However, the communication cost is
-  prohibitively high which encourages to perform this reconciliation protocol
-  with great care:
-  \begin{equation}
-    \mathcal{O}(|\mathcal{W}|+|\mathcal{W}|+x.o)
-  \end{equation}
-  where the first $|\mathcal{W}|$ designates the initiating message, and
-  $|\mathcal{W}|+x.o$ the response to this message where $x.o$ are the missing
-  operations.
+The anti-entropy periodically checks if the local replica diverges from another
+neighbor's one at random. It aims to retrieve missing operations that could have
+been lost during the transmissions. \TODO{example}. There is no additional cost
+on local memory. However, the communication cost is prohibitively high which
+encourages to perform this reconciliation protocol with great care:
+\begin{equation}
+  \mathcal{O}(|\mathcal{W}|+|\mathcal{W}|+x.o)
+\end{equation}
+where the first $|\mathcal{W}|$ designates the initiating message, and
+$|\mathcal{W}|+x.o$ the response to this message where $x.o$ are the missing
+operations.
 
-\end{asparadesc}
+\subsection{Shared sequence}
+The shared sequence layer uses a conflict-free replicated data type for
+sequences~\cite{shapiro2011comprehensive, shapiro2011conflict}. It is an
+abstract data type for sequences that provides two commutative operations:
+insert and delete. As such, the delivery order of operations does not matter as
+long as the deletion of an element follows its insertion. This property makes
+these shared sequences tolerant to concurrency. However, their complexity lies
+in their space consumption. Indeed, each insert operation allocates a unique and
+immutable identifier to the element. A global total order among the identifiers
+guarantees that replicas eventually converge to an identical states.
 
+\CRATE uses \LSEQ, a polyLogarithmic identifier allocator for SEQuences. Its
+underlying structure is an exponential tree which, when linearized using its
+global total order, results in the sequence of elements representing the
+document. \LSEQ comprises two parts:
+\begin{inparaenum}[(i)]
+\item the function $allocPath$ which chooses the path in the tree for the
+  newly allocated identifier.
+\item the function $allocDis$ which decorates the path in order to ensure its
+  uniqueness even in presence of concurrent insertions.
+\end{inparaenum}
+
+The function $allocPath$ chooses the path associated with each element in order
+to encode its relative position with regard to its adjacent elements in the
+sequence. For the sake of performance, the aim of $allocPath$ is to keep the
+underlying tree with a small depth. Three components compose $allocPath$. Each
+of these components fails to provide an efficient allocation
+function. Nevertheless, their composition allows to get the best of each by
+canceling their respective deficiency.
 \begin{asparadesc}
-\item [The shared sequence layer] uses a conflict-free replicated data type for
-  sequences~\cite{shapiro2011comprehensive, shapiro2011conflict}. It is an
-  abstract data type for sequences that provides two commutative operations:
-  insert and delete. As such, the delivery order of operations does not matter
-  as long as the deletion of an element follows its insertion. This property
-  makes these shared sequences tolerant to concurrency. However, their
-  complexity lies in their space consumption. Indeed, each insert operation
-  allocates a unique and immutable identifier to the element. A global total
-  order among the identifiers guarantees that replicas eventually converge to an
-  identical states.
-
-  \CRATE uses \LSEQ, a polyLogarithmic identifier allocator for SEQuences. Its
-  underlying structure is an exponential tree which, when linearized using its
-  global total order, results in the sequence of elements representing the
-  document. \LSEQ comprises two parts:
-  \begin{inparaenum}[(i)]
-  \item the function $allocPath$ which chooses the path in the tree for the
-    newly allocated identifier.
-  \item the function $allocDis$ which decorates the path in order to ensure its
-    uniqueness even in presence of concurrent insertions.
-  \end{inparaenum}
-
-  The function $allocPath$ chooses the path associated with each element in
-  order to encode its relative position with regard to its adjacent elements in
-  the sequence. For the sake of performance, the aim of $allocPath$ is to keep
-  the underlying tree with a small depth. Three components compose
-  $allocPath$. Each of these components fails to provide an efficient allocation
-  function. Nevertheless, their composition allows to get the best of each by
-  canceling their respective deficiency.
-  \begin{enumerate}[leftmargin=*]
-  \item The first component is an exponential
-    tree~\cite{andersson1996faster,andersson2007dynamic}. The path is a sequence
-    of numbers chosen among a subset of numbers whose size is doubled at each
-    concatenation. For instance, if a path $p_1$ of size 1 is chosen among
-    [$\mathbb{N}_{<32}$], a path $p_2$ of size 2 is chosen among
-    [$\mathbb{N}_{<32}.\mathbb{N}_{<64}$] etc. Let $r$ be the number of possible
-    paths with one concatenation (i.e., the maximum arity of the root of the
-    tree), a path $p_k$ of size $k$ is chosen among
-    [$\mathbb{N}_{<r}.\mathbb{N}_{<2r}\ldots\mathbb{N}_{<2^{k-1}r}$].  Due to
-    the growth of the subsets, such representation of the paths requires one
-    additional bit to encode each concatenation. With the same examples, it
-    implies that $p_1$ is encoded using $log_2(32)=5$ bits, $p_2$ is encoded
-    using $5+6=11$ bits,~\ldots Thus, a path is encoded by:
-    \begin{equation}
-      \sum\limits_{i=0}^{k-1}(\log_2(r)+i) =
-      k\log_2(r) + k(k+1)/2 = \mathcal{O}(k^2) \,\, bits
-    \end{equation}
-    When an exponential tree of depth $k$ is balanced (i.e., all its branches
-    are filled) it holds uptil:
-    \begin{equation} \sum\limits_{i=0}^{k-1} {2^{(i^2-i)/2}} \,\, elements
-    \end{equation}
-    When an exponential tree of depth $k$ \TODO{has one branch filled of elements per
+\item [An exponential tree]~\cite{andersson1996faster,andersson2007dynamic}
+  represents the shared document. The path is a sequence of numbers chosen among
+  a subset of numbers whose size is doubled at each concatenation. For instance,
+  if a path $p_1$ of size 1 is chosen among [$\mathbb{N}_{<32}$], a path $p_2$
+  of size 2 is chosen among [$\mathbb{N}_{<32}.\mathbb{N}_{<64}$] etc. Let $r$
+  be the number of possible paths with one concatenation (i.e., the maximum
+  arity of the root of the tree), a path $p_k$ of size $k$ is chosen among
+  [$\mathbb{N}_{<r}.\mathbb{N}_{<2r}\ldots\mathbb{N}_{<2^{k-1}r}$].  Due to the
+  growth of the subsets, such representation of the paths requires one
+  additional bit to encode each concatenation. With the same examples, it
+  implies that $p_1$ is encoded using $log_2(32)=5$ bits, $p_2$ is encoded using
+  $5+6=11$ bits,~\ldots Thus, a path is encoded by:
+  \begin{equation}
+    \sum\limits_{i=0}^{k-1}(\log_2(r)+i) =
+    k\log_2(r) + k(k+1)/2 = \mathcal{O}(k^2) \,\, bits
+  \end{equation}
+  When an exponential tree of depth $k$ is balanced (i.e., all its branches
+  are filled) it holds uptil:
+  \begin{equation} \sum\limits_{i=0}^{k-1} {2^{(i^2-i)/2}} \,\, elements
+  \end{equation}
+  When an exponential tree of depth $k$ \TODO{has one branch filled of elements per
     element}, it holds uptil:
-    \begin{equation} 2^{k+1}-1  \,\, elements\end{equation}
-
-
-    The total order $<_{\mathcal{P}}$ is similar to the lexicographic order. We
-    define it as $\forall p_j,\,p_k\in\mathcal{P}$ with $|p_j|=j$,
-    $|p_k|=k$. There exists an index $0\leq l\leq min(|p_j|,|p_k|)$ such that
-    $p_j = X.Y$ and $p_k = X.Z$ with $X\subset \{\mathbb{N}\}^l$,
-    $Y \subset \{\mathbb{N}\}^{j-l}$, $Z \subset \{\mathbb{N}\}^{k-l}$. Finally,
-    $p_j<_{\mathcal{P}}p_k$ iff $Y[1]<Z[1]$.
-  \item The function $allocPath$ uses two sub-allocation functions both designed
-    for monotonic editing, i.e., inserting repeatedly at an adjacent position of
-    the previously inserted element. These are application dependent; one is
-    well-suited to end-editing (left-to-right) while the other is well-suited
-    for front-editing (right-to-left).
-  \item The function $allocPath$ uses a third component to choose the
-    sub-allocation function employed at each depth of the exponential tree. The
-    choice is made randomly using a hash function following a uniform
-    distribution. Such function does not favor any editing behavior while
-    remaining efficient. This provides the independence of the allocation
-    function from any editing strategy/policy. Furthermore, as shown
-    in~\cite{nedelec2013concurrency}, using antagonist sub-allocation functions
-    forces all peers to make identical choices. To reach that goal, they all use
-    a similar hash function initialized with a same seed and shared within the
-    document.
-  \end{enumerate}
-
-  Combining the three components provides identifiers with a sub-linear average
-  size compared to the number of insertions performed which makes it well-suited
-  for text editing, and consequently, for distributed collaborative editing.
+  \begin{equation} 2^{k+1}-1 \,\, elements\end{equation}
+  
+  
+  The total order $<_{\mathcal{P}}$ is similar to the lexicographic order. We
+  define it as $\forall p_j,\,p_k\in\mathcal{P}$ with $|p_j|=j$,
+  $|p_k|=k$. There exists an index $0\leq l\leq min(|p_j|,|p_k|)$ such that
+  $p_j = X.Y$ and $p_k = X.Z$ with $X\subset \{\mathbb{N}\}^l$,
+  $Y \subset \{\mathbb{N}\}^{j-l}$, $Z \subset \{\mathbb{N}\}^{k-l}$. Finally,
+  $p_j<_{\mathcal{P}}p_k$ iff $Y[1]<Z[1]$.
+\item [Two sub-allocation functions] following the $allocPath$ signature. They
+  are designed for monotonic editing, i.e., inserting repeatedly at an adjacent
+  position of the previously inserted element. These are application dependent;
+  one is well-suited to end-editing (left-to-right) while the other is
+  well-suited for front-editing (right-to-left).
+\item [A hash function] chooses among the two sub-allocation functions. The
+  choice is made randomly using a hash function following a uniform
+  distribution. Such function does not favor any editing behavior while
+  remaining efficient. This provides the independence of the allocation function
+  from any editing strategy/policy. Furthermore, as shown
+  in~\cite{nedelec2013concurrency}, using antagonist sub-allocation functions
+  forces all peers to make identical choices. To reach that goal, they all use a
+  similar hash function initialized with a same seed and shared within the
+  document.
 \end{asparadesc}
 
-\begin{algorithm}[h]
-\input{input/allocpathalgo.tex}
-\caption{The $allocPath$ function of \LSEQ}
-\label{algo:allocpathalgo}
-\end{algorithm}
+Combining the three components provides identifiers with a sub-linear average
+size compared to the number of insertions performed which makes it well-suited
+for text editing, and consequently, for distributed collaborative editing.
+  
+  \begin{algorithm}[h]
+    \input{input/allocpathalgo.tex}
+    \caption{The $allocPath$ function of \LSEQ}
+    \label{algo:allocpathalgo}
+  \end{algorithm}
 
 \begin{asparadesc}
 \item[Example:] Similarly to the example of Figure~\ref{fig:allocpathexample})
