@@ -93,7 +93,7 @@ of version vectors.
     everyone.
   \item The load of peers is balanced, i.e., no peer is more important than
     another in terms of connections. Therefore, the network is robust to random
-    crashs of peers.
+    crashes of peers.
   \end{inparaenum}
 
 \item [The causality tracking layer] guarantees that operations are not
@@ -121,7 +121,7 @@ of version vectors.
 
   Figure~\ref{fig:timeline} depicts a scenario where 3 peers are involved. Thus,
   all peers have a vector of three entries. Peer $p_1$ inserts two elements in
-  the sequence and broadcasts the operations. Peer $p_3$ immediatly receives
+  the sequence and broadcasts the operations. Peer $p_3$ immediately receives
   both operations and increments the entry in its version vector accordingly.
   In the meantime, Peer $p_2$ only receives the second operation which leads to
   an update of the maximum counter and an exception concerning the first
@@ -148,8 +148,8 @@ of version vectors.
   The anti-entropy periodically checks if the local replica diverges from
   another neighbor's one at random. It aims to retrieve missing operations that
   could have been lost during the transmissions. \TODO{example}. There is no
-  additionnal cost on local memory. However, the communication cost is
-  prohibitively high which encourages to perform this reconcialliation protocol
+  additional cost on local memory. However, the communication cost is
+  prohibitively high which encourages to perform this reconciliation protocol
   with great care:
   \begin{equation}
     \mathcal{O}(|\mathcal{W}|+|\mathcal{W}|+x.o)
@@ -163,10 +163,10 @@ of version vectors.
 \begin{asparadesc}
 \item [The shared sequence layer] uses a conflict-free replicated data type for
   sequences~\cite{shapiro2011comprehensive, shapiro2011conflict}. It is an
-  abstract data type for sequences that provides two commutatives operations:
+  abstract data type for sequences that provides two commutative operations:
   insert and delete. As such, the delivery order of operations does not matter
   as long as the deletion of an element follows its insertion. This property
-  makes these shared sequences tolerent to concurrency. However, their
+  makes these shared sequences tolerant to concurrency. However, their
   complexity lies in their space consumption. Indeed, each insert operation
   allocates a unique and immutable identifier to the element. A global total
   order among the identifiers guarantees that replicas eventually converge to an
@@ -189,28 +189,40 @@ of version vectors.
   the underlying tree with a small depth. Three components compose
   $allocPath$. Each of these components fails to provide an efficient allocation
   function. Nevertheless, their composition allows to get the best of each by
-  cancelling their respective deficiency.
+  canceling their respective deficiency.
   \begin{enumerate}[leftmargin=*]
   \item The first component is an exponential
     tree~\cite{andersson1996faster,andersson2007dynamic}. The path is a sequence
-    of numbers chosen among a subset of number whose size is doubled at each
-    concatenation. For instance, let $p_1\in\mathcal{P}$ such that $|p_1|=1$,
-    then $p_1\subset \mathbb{N}_{<32}$ and $p_2\in\mathcal{P}$ such that
-    $|p_2|=2$, then $p_2\subset \mathbb{N}_{<32}.\mathbb{N}_{<64}$
-    etc. Similarly, let $i$ be the cardinal of the subset $\mathcal{P}$ with one
-    concatenation, let $p_n\in\mathcal{P}$ such that $n\in\mathbb{N}^+$ and
-    $|p_n|=n$, then
-    $p_n\subset \mathbb{N}_{<i}.\mathbb{N}_{<i*2}\ldots\mathbb{N}_{<i*2^{n-1}}$.
-    Due to the growth of the subsets, such representation of the paths requires
-    one additional bit to encode each concatenation. With the same examples, it
+    of numbers chosen among a subset of numbers whose size is doubled at each
+    concatenation. For instance, if a path $p_1$ of size 1 is chosen among
+    [$\mathbb{N}_{<32}$], a path $p_2$ of size 2 is chosen among
+    [$\mathbb{N}_{<32}.\mathbb{N}_{<64}$] etc. Let $r$ be the number of possible
+    paths with one concatenation (i.e., the maximum arity of the root of the
+    tree), a path $p_k$ of size $k$ is chosen among
+    [$\mathbb{N}_{<r}.\mathbb{N}_{<2r}\ldots\mathbb{N}_{<2^{k-1}r}$].  Due to
+    the growth of the subsets, such representation of the paths requires one
+    additional bit to encode each concatenation. With the same examples, it
     implies that $p_1$ is encoded using $log_2(32)=5$ bits, $p_2$ is encoded
-    using $5+6=11$ bits,~\ldots \\ The total order $<_{\mathcal{P}}$ is similar
-    to the lexicographic order. We define it as
-    $\forall p_j,\,p_k\in\mathcal{P}$ with $|p_j|=j$, $|p_k|=k$. There exists an
-    index $0\leq l\leq min(|p_j|,|p_k|)$ such that $p_j = X.Y$ and $p_k = X.Z$
-    with $X\subset \{\mathbb{N}\}^l$, $Y \subset \{\mathbb{N}\}^{j-l}$,
-    $Z \subset \{\mathbb{N}\}^{k-l}$. Finally, $p_j<_{\mathcal{P}}p_k$ iff
-    $Y[1]<Z[1]$.
+    using $5+6=11$ bits,~\ldots Thus, a path is encoded by:
+    \begin{equation}
+      \sum\limits_{i=0}^{k-1}(\log_2(r)+i) =
+      k\log_2(r) + k(k+1)/2 = \mathcal{O}(k^2) \,\, bits
+    \end{equation}
+    When an exponential tree of depth $k$ is balanced (i.e., all its branches
+    are filled) it holds uptil:
+    \begin{equation} \sum\limits_{i=0}^{k-1} {2^{(i^2-i)/2}} \,\, elements
+    \end{equation}
+    When an exponential tree of depth $k$ \TODO{has one branch filled of elements per
+    element}, it holds uptil:
+    \begin{equation} 2^{k+1}-1  \,\, elements\end{equation}
+
+
+    The total order $<_{\mathcal{P}}$ is similar to the lexicographic order. We
+    define it as $\forall p_j,\,p_k\in\mathcal{P}$ with $|p_j|=j$,
+    $|p_k|=k$. There exists an index $0\leq l\leq min(|p_j|,|p_k|)$ such that
+    $p_j = X.Y$ and $p_k = X.Z$ with $X\subset \{\mathbb{N}\}^l$,
+    $Y \subset \{\mathbb{N}\}^{j-l}$, $Z \subset \{\mathbb{N}\}^{k-l}$. Finally,
+    $p_j<_{\mathcal{P}}p_k$ iff $Y[1]<Z[1]$.
   \item The function $allocPath$ uses two sub-allocation functions both designed
     for monotonic editing, i.e., inserting repeatedly at an adjacent position of
     the previously inserted element. These are application dependent; one is
@@ -219,12 +231,12 @@ of version vectors.
   \item The function $allocPath$ uses a third component to choose the
     sub-allocation function employed at each depth of the exponential tree. The
     choice is made randomly using a hash function following a uniform
-    distribution. Such function does not favour any editing behaviour while
+    distribution. Such function does not favor any editing behavior while
     remaining efficient. This provides the independence of the allocation
     function from any editing strategy/policy. Furthermore, as shown
     in~\cite{nedelec2013concurrency}, using antagonist sub-allocation functions
     forces all peers to make identical choices. To reach that goal, they all use
-    a similar hash function initialised with a same seed and shared within the
+    a similar hash function initialized with a same seed and shared within the
     document.
   \end{enumerate}
 
@@ -255,7 +267,7 @@ of version vectors.
    Figure\ref{fig:allocpathexample}), the antagonist scenario does not increase
    very much the depth of the tree. Indeed, the identifiers of \LSEQ quickly
    reach a level of the tree where the sub-allocation function is designed to
-   handle the right-to-left editing behaviour.
+   handle the right-to-left editing behavior.
 \end{asparadesc}
 
 % \begin{asparadesc}
@@ -331,15 +343,15 @@ of version vectors.
 % \subsection{Space complexity}
 % \label{sec:spacecomplexity}
 
-In text editing, most of the editing behaviours can be empirically summarised
-as a composition of two basic editing behaviours.
+In text editing, most of the editing behaviors can be empirically summarized
+as a composition of two basic editing behaviors.
 \begin{inparaenum}[(i)]
-\item The random editing behaviour where the author inserts new elements at
-  what appears random positions in the sequence. For instance, this behaviour
+\item The random editing behavior where the author inserts new elements at
+  what appears random positions in the sequence. For instance, this behavior
   mostly arises when syntactic corrections are performed, e.g., the author
-  writes $QWETY$ and realises that the $R$ is missing. She adds the missing
+  writes $QWETY$ and realizes that the $R$ is missing. She adds the missing
   character in a second time.
-\item The monotonic editing behaviour where the author repeatedly inserts new
+\item The monotonic editing behavior where the author repeatedly inserts new
   elements between the last inserted element and an adjacent element (after or
   before exclusively). For instance, when an author writes $QWERTY$, she
   generally starts from the first letter $Q$ to the last letter of the word
@@ -348,7 +360,7 @@ as a composition of two basic editing behaviours.
 \end{inparaenum}
 
 As a consequence, we focus on the space complexity analysis of \LSEQ to
-random and monotonic editing behaviours to which we add a worst-case complexity
+random and monotonic editing behaviors to which we add a worst-case complexity
 analysis.  The analysis does not include an average case since it requires to
 know the average distribution of the position of edits performed by a human
 collaborator which is obviously very complex.
@@ -359,7 +371,7 @@ analysis of the path is reduced to the space complexity of the identifiers of
 \LSEQ.
 
 \begin{asparadesc}
-\item [Random editing behaviour] is equivalent to a uniform distribution of the
+\item [Random editing behavior] is equivalent to a uniform distribution of the
   positions of the insert operations within the range of the sequence. As a
   consequence, the underlying tree of the allocation function is
   balanced. Depending on the depth $k$, the tree can hold a number $n$ of
@@ -377,7 +389,7 @@ analysis of the path is reduced to the space complexity of the identifiers of
   bound:
   \begin{equation} O(log\,n) \, bits \end{equation}
   
-\item[Monotonic editing behaviour] is similar to repeatedly:
+\item[Monotonic editing behavior] is similar to repeatedly:
   \begin{inparaenum}[(i)]
   \item fill one branch of the tree and
   \item increase the depth of the tree.
@@ -389,7 +401,7 @@ analysis of the path is reduced to the space complexity of the identifiers of
   concatenations of the path is:
   \begin{equation} O(log\,n) \end{equation} After the replacement of the
   variable $k$, we obtain the following space complexity of the monotonic
-  editing behaviour:
+  editing behavior:
   \begin{equation} O((log\,n)^2) \, bits \end{equation}
 
 \item [The worst-case] corresponds to one element per level in the
@@ -419,16 +431,16 @@ analysis of the path is reduced to the space complexity of the identifiers of
     composing the identifiers.}
 \end{table}
 
-To summarise, the space complexity analysis reveals that the allocation
+To summarizes, the space complexity analysis reveals that the allocation
 function \LSEQ sacrifices on the worst-case space complexity to improve the
-space complexity of the monotonic editing behaviours. Nevertheless, in text
+space complexity of the monotonic editing behaviors. Nevertheless, in text
 editing, the worst-case happens with a very low probability compared the other
 cases. Furthermore, it is worth noting that usually, the authors do not write a
 document in a single round, starting from the beginning to go straight up to
 the end (as the monotonic analysis could suggest). On the contrary, the authors
 write sections, structure the documents, perform corrections, rewrite parts of
-the document, reorganise, etc. This behaviour (between random and monotonic
-behaviour) tends to even up the branches of the underlying tree of \LSEQ. In
+the document, reorganize, etc. This behavior (between random and monotonic
+behavior) tends to even up the branches of the underlying tree of \LSEQ. In
 the case of random editing, the space complexity is asymptotically optimal
 $O(log\,n)$ while it is very interesting in a "normal setting" $O((log\,n)^2)$.
 
