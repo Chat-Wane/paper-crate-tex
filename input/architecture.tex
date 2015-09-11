@@ -12,7 +12,7 @@
 
 \draw[fill=white](-2*\X, -0.25*\Y)
 node{broadcast}+(-0.75*\X,-0.5*\Y)rectangle+(0.75*\X,0.5*\Y);
-\draw[fill=white, thick]( 0*\X, 0.25*\Y)
+\draw[fill=white, very thick]( 0*\X, 0.25*\Y)
 node{\SPRAY}+(-0.75*\X,-0.5*\Y)rectangle+(0.75*\X,0.5*\Y);
 \draw[fill=white]( 2*\X, -0.25*\Y)
 node{unicast}+(-0.75*\X,-0.5*\Y)rectangle+(0.75*\X,0.5*\Y);
@@ -28,7 +28,7 @@ node{unicast}+(-0.75*\X,-0.5*\Y)rectangle+(0.75*\X,0.5*\Y);
 node[align=center]{version vector\\with\\exceptions}
 +(-1.0*\X,-0.6*\Y)rectangle+(1.0*\X,0.6*\Y);
 
-\draw[<->, thick](-2*\X, -0.75*\Y)--(-2*\X, -1.4*\Y);
+\draw[<->, very thick](-2*\X, -0.75*\Y)--(-2*\X, -1.4*\Y);
 \draw[<->]( 2*\X, -0.75*\Y)--( 1*\X, -2.5*\Y);
 
 %% sequence structure
@@ -38,12 +38,12 @@ node[align=center]{version vector\\with\\exceptions}
 
 \draw[fill=white, shading=axis,top color=\LIGHTGRAY, bottom color=white, shading angle=0](1*\X, -3*\Y)
 node{anti-entropy}+(-0.95*\X,-0.5*\Y) rectangle +(0.95 *\X, 0.5*\Y);
-\draw[fill=white, thick](-2*\X, -4*\Y)
+\draw[fill=white, very thick](-2*\X, -4*\Y)
 node{\LSEQ}+(-0.75*\X,-0.5*\Y) rectangle +(0.75 *\X, 0.5*\Y);
 
 \draw[->] (0.05*\X, -2.75*\Y)--(-1*\X,-2*\Y);
 \draw[->] (0.05*\X, -3.25*\Y)--(-1.25*\X,-4*\Y);
-\draw[<->, thick] (-2*\X, -3.5*\Y)--(-2*\X, -2.6*\Y);
+\draw[<->, very thick] (-2*\X, -3.5*\Y)--(-2*\X, -2.6*\Y);
 
 %% gui
 \draw[rounded corners=2mm, fill=\LIGHTGRAY](0pt, -6*\Y)+(-4*\X,-\Y)rectangle+(4*\X,\Y);
@@ -53,5 +53,5 @@ node{\LSEQ}+(-0.75*\X,-0.5*\Y) rectangle +(0.75 *\X, 0.5*\Y);
 node{web editor}+(-0.85*\X,-0.5*\Y) rectangle +(0.85 *\X, 0.5*\Y);
 
 %%\draw[<->] (-2*\X, -4.5*\Y) -- (0*\X, -5.5*\Y);
-\draw[<->, thick] (-2*\X, -4.5*\Y) -- (-0.85*\X, -6*\Y);
+\draw[<->, very thick] (-2*\X, -4.5*\Y) -- (-0.85*\X, -6*\Y);
 \end{tikzpicture}

@@ -64,27 +64,57 @@
     editing mode. Second, the structure to detect concurrency is expansive,
     i.e., it requires the history of all operations and a causality tracking
     mechanism}. \TODO{moar}.
-\item [Conflict-free replicated data types] for sequences constitute the latter
-  approaches which solve the concurrent cases by providing commutative and
-  idempotent operations. Thus, the receipt order of operations does not impact
-  the final resulting document. These approaches provide commutativity by
+\item [Conflict-free replicated data types] (CRDTs) for sequences constitute the
+  latter approaches which solve the concurrent cases by providing commutative
+  and idempotent operations. Thus, the receipt order of operations does not
+  impact the final resulting document. These approaches provide commutativity by
   associating a unique and immutable identifier to each element. Defining a
   total order among the identifiers allows retrieving the sequence. There exist
-  two class of CRDTs for sequences:
-  \begin{inparaenum}[(i)]
-  \item [Tombstone CRDTs] whose removals of elements only hide the latter to the
-    users. 
-  \item [Variable-size CRDTs] whose identifiers are allocated with different
-    size at generation.
-  \end{inparaenum}
-\item [As summary], Table~\ref{table:complexities} shows the complexities in
-  space, time, and communication of decentralized approaches. \TODO{moar}
+  two class of CRDTs for sequences exposing different tradeoff between their
+  complexities.
+\item [Tombstone-based] CRDTs (\TODO{REF}) which associate a constant size
+  identifier to each element but whose removals of elements only hide them to
+  the users. Therefore, removed elements keep consumming space and impact on
+  performance. For instance, documents like Wikipedia pages which are subject to
+  vandalism and edit wars (\TODO{REF}) could appear empty while weighting
+  heavy. Such approaches eventually need a garbage collecting mechanism
+  (\TODO{REF}).  Unfortunately, decentralized garbage collecting algorithms
+  require consensus (\emph{does everyone see the removal and agree on definitely
+    throw out the element}) which is prohibitevely costly and does not scale in
+  number of users, especially in network subject to churn (where members join
+  and leave the network frequently and freely).
+\item [Variable-size identifiers] CRDTs whose removals truely destroy the
+  targeted elements but whose identifiers are allocated with different size at
+  generation. In these approaches, the allocation function is crucial to
+  maintain identifiers under acceptable boundaries. Unfortunately, they depend
+  of the insert position of elements. For instance, writing the sequence QWERTY
+  left-to-right allocates the identifiers [1] to Q, [2] to W, [3] to E, \ldots,
+  [6] to Y. But with an identical strategy, writing the same sequence
+  right-to-left allocates the identifiers [1] to Y, [1.1] to T, [1.1.1] to R,
+  \ldots As we observe, depending on the editing behaviour, the identifiers
+  can grow quickly. \TODO{moar}.
+\item [As summary] Table~\ref{table:complexities} shows the upper-bound
+  ($\mathcal{O}$) of complexities in space, time, and communication of
+  decentralized approaches. In this table, we can see that both operationnal
+  transformations approaches, namely SOCT2/TTF and COT-DO, do not scale in
+  communication since they send messages that grows linearly compared to the
+  number of writers. Conversely, the representatives of tombstone-based CRDTs
+  (WOOT, WOOT, WOOTH, RGA, SW, PPS, Neil) communication complexity only depends
+  of the dissemination protocol (in logarithm of the number of replicas),
+  however their space and time complexities include the removals. In other
+  terms, these approaches are monotonically growing structure, hence, they do
+  not scale in number of operations performed on the document. The variable-size
+  identifiers CRDTs comprise Treedoc, Logoot, and \LSEQ. Their complexities
+  depend of insert positions (or editing behaviour) of the elements. Treedoc, as
+  a hybrid solution, uses tombstones and suffers of the aforementionned
+  issue. Like Logoot, it mainly targets monotonic editing at the end of the
+  sequence. Unfortunately, when the editing behaviour does not comply with this
+  assumption, the space complexity grows quadratically. \LSEQ provides a
+  sublinear upper-bound on its space complexity. Thus, it scales in document
+  size, and communications. Yet, it requires a local causality tracking
+  mechanism increasing linearly compared to the number of
+  writers. \TODO{cf. proposal?}.
 \end{asparadesc}
-
-\begin{algorithm}
-  \input{input/crdtabstractalgo.tex}
-  \caption{\label{algo:crdtabsract}Conflict-free replicated data types.}
-\end{algorithm}
 
 %%% Local Variables: 
 %%% mode: latex
