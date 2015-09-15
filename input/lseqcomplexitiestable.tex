@@ -1,0 +1,16 @@
+
+\begin{tabular}{@{}lcccccc@{}}
+  \toprule
+  \textsc{Editing behavior} & \multicolumn{2}{c}{\textsc{Space}} & \multicolumn{4}{c}{\textsc{Time}} \\ \midrule
+  & & & \multicolumn{2}{c}{\textsc{Local}} & \multicolumn{2}{c}{\textsc{Remote}} \\ \midrule
+  & \textsc{Identifier} & \textsc{Sequence} & \textsc{ins} & \textsc{del} & \textsc{ins} & \textsc{del}  \\ \midrule
+  Random editing & $\mathcal{O}(\log I)$ & $\mathcal{O}(I\log I)$ & $\mathcal{O}(2^{\sqrt{\log I}}+\sqrt{\log I})$ & $\mathcal{O}(2^{\sqrt{\log I}})$ & $\mathcal{O}(\log I - \sqrt{\log I})$ & $\mathcal{O}(\log I - \sqrt{\log I})$ \\
+  Monotonic editing & $\mathcal{O}((\log I)^2)$ & & & & & \\
+  Worst case & & & & & & \\ \bottomrule
+\end{tabular}
+
+
+%%  Id.size & $O(\sqrt{log\,n})$ & $O(log\,n)$ & $O(n)$ \\ \midrule
+%%  Id.bit-length & \multicolumn{3}{c}{ $\sum\limits_{i=1}^{k}b+i =
+%%                  kb + k(k+1)/2 = O(k^2)$} \\ \midrule
+%%  Space complexity & $O(log\,n)$ & $O((log\,n)^2)$ & $O(n^2)$ \\ \bottomrule

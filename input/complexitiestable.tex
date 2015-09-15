@@ -1,35 +1,13 @@
 
-\newcommand\GRAY{gray!30}
-\newcommand\MO[1]{\mathcal{O}(#1)}
-\scriptsize
-\begin{tabular}{@{}lcccccccccc@{}}
 
+\begin{tabular}{@{}lcc@{}}
   \toprule
-  & \multicolumn{3}{c}{\textsc{insert position}} & \multicolumn{4}{c}{\textsc{time}} & \multicolumn{2}{c}{\textsc{space}} & \textsc{communication} \\ \cmidrule{5-8}
-  & & & & \multicolumn{2}{c}{\textsc{local}} & \multicolumn{2}{c}{\textsc{remote}} & & & \\ \cmidrule{2-10}
-  & \textsc{rand} & \textsc{front} & \textsc{end} & \textsc{ins} & \textsc{del} & \textsc{ins} & \textsc{del} & \textsc{sequence} & \textsc{causality} & \textsc{message} \\ \midrule
-  SOCT2/TTF & $\bullet$ & $\bullet$ & $\bullet$  &  &  &  &  &  &  &  \\ \midrule
-  \TODO{COT-DO} & $\bullet$ & $\bullet$ & $\bullet$ &  &  &  &  &  &  &  \\ \midrule
-
-  WOOT~\cite{oster2006data} & $\bullet$ & $\bullet$ & $\bullet$ & \multirow{2}{*}{\TODO{$I(D+C)^2$}} & \multirow{4}{*}{$I+D$} & $I(D+C)^2$ & \multirow{2}{*}{$I+D$} & \multirow{4}{*}{$I+D$} & \multirow{4}{*}{$1$} & \multirow{4}{*}{$1$} \\ \cmidrule{1-4} \cmidrule{7-7}
-  WOOTO~\cite{weiss2007wooki} & $\bullet$ & $\bullet$ & $\bullet$ & & & $I+(D+C)^2$ & & & & \\ \cmidrule{1-5} \cmidrule{7-8}
-  WOOTH~\cite{ahmed2011evaluating} & $\bullet$ & $\bullet$ & $\bullet$ & $I+(D+C)^2$ & & $(D+C)^2$ & $1$ & & & \\ \midrule
-
-  RGA & $\bullet$ & $\bullet$ & $\bullet$ &  &  &  &  &  &  &  \\ \midrule
-  \TODO{SW} & $\bullet$ & $\bullet$ & $\bullet$ &  &  &  &  &  &  &  \\ \midrule
-  \TODO{PPS} & $\bullet$ & $\bullet$ & $\bullet$ &  &  &  &  &  &  &  \\ \midrule
-  \TODO{Neil Conway} & $\bullet$ & $\bullet$ & $\bullet$ &  &  &  &  &  &  &  \\ \midrule
-
-  \multirow{4}{*}{Treedoc~\cite{preguica2009commutative}} & $\bullet$ & & & & & & & $I+D$ & & \\ \cmidrule{2-11}
-  & & $\bullet$ & & & & & & $I+D$ & & \\ \cmidrule{2-11}
-  & & & $\bullet$ & & & & & $I+D$ & & \\ \midrule
-  
-  \multirow{4}{*}{Logoot~\cite{weiss2009logoot}} & $\bullet$ & & & $\log I$ & \multirow{4}{*}{$1$} & $(\log I)^2$ & $I+\log I$ & $I\log I$ & \multirow{7}{*}{$|\mathcal{W}|$} & $\log I \ln|\mathcal{R}|$ \\ \cmidrule{2-5} \cmidrule{7-9} \cmidrule{11-11} %%logoot rand
-  & & $\bullet$ & & $I$ &  & $I\log I$ & $I + I\log I$ & $I^2$ &  & $I\ln|\mathcal{R}|$ \\ \cmidrule{2-5} \cmidrule{7-9} \cmidrule{11-11} %% logoot front
-  & & & $\bullet$ & ${I\over{k}}$ &  & ${{I\log I}\over{k}}$ & $I + {I\log I\over{k}}$ & ${I^2\over{k}}$ &  & ${I\over{k}}\ln|\mathcal{R}|$ \\ \cmidrule{1-9} \cmidrule{11-11} %% logoot end
-  
-  \multirow{2}{*}{\LSEQ~\cite{nedelec2013lseq}} & $\bullet$ &  &  & $\sqrt{\log I}$ & & \TODO{$\sqrt{\log I}$} & \TODO{$\sqrt{\log I}$} & $I\log I$ &  & $\sqrt{\log I} \ln |\mathcal{R}|$ \\ \cmidrule{2-5} \cmidrule{7-9} \cmidrule{11-11} %% lseq rand
-  &  & $\bullet$ & $\bullet$ & $\log I$ & & &  & $I(\log I)^2$ &  & $\log I \ln|\mathcal{R}|$ \\  \bottomrule  %% lseq queue end
+  \textsc{Algorithms} & \textsc{Communication} & \textsc{Space} \\ \midrule 
+  Operational transformation~\cite{suleiman1997serialization, sun2009contextbased} & $\mathcal{O}(|\mathcal{W}|\ln|\mathcal{R}|)$ & $\Omega (|\mathcal{W}|(I+2D))$ \\ \midrule
+  Tombstones~\cite{ahmed2011evaluating, oster2006data, weiss2007wooki} & $\Omega (\ln|\mathcal{R}|)$ & $\Omega (I+2D)$ \\ \midrule
+  Variable-size array-based~\cite{weiss2009logoot} & $\mathcal{O}(I\ln |\mathcal{R}|)$ & $\mathcal{O}(I^2)$ \\ \midrule
+  Variable-size tree-based~\cite{preguica2009commutative} & $\mathcal{O}(I\log I \ln |\mathcal{R}|)$ or $\mathcal{O}(\log I\ln|\mathcal{R}|)$ & $\mathcal{O}(I\log I + |\mathcal{W}|)$ or $\mathcal{O}(I + |\mathcal{W}|)$ \\ \midrule
+  This paper~\cite{nedelec2013lseq} & $\mathcal{O}((\log \mathcal{I})^2\ln|\mathcal{R}|)$ & $\mathcal{O}(I\log I + |\mathcal{W}|)$ \\ \bottomrule
 \end{tabular}
 
 %%% Local Variables:

@@ -404,22 +404,15 @@ analysis of the path is reduced to the space complexity of the identifiers of
   \begin{equation} O(n^2) \, bits \end{equation}
 \end{asparadesc}
 
-\begin{table}
+\begin{table*}
   \centering
-  \begin{tabular}{@{}lccc@{}}
-    \toprule
-    & Random & Monotonic & Worst \\ \cmidrule{2-4}
-    Id.size & $O(\sqrt{log\,n})$ & $O(log\,n)$ & $O(n)$ \\ \midrule
-    Id.bit-length & \multicolumn{3}{c}{ $\sum\limits_{i=1}^{k}b+i =
-      kb + k(k+1)/2 = O(k^2)$} \\ \midrule
-    Space complexity & $O(log\,n)$ & $O((log\,n)^2)$ &
-    $O(n^2)$ \\ \bottomrule
-  \end{tabular}
-  \caption{Spatial complexity of \LSEQ. Where $n$ is the number
+  \input{input/lseqcomplexitiestable.tex}
+  \caption{\label{table:lseqcomplexities}
+    Spatial complexity of \LSEQ. Where $n$ is the number
     of insert operations performed. $k$ is the size of an identifier, i.e.,
     the number of concatenations. And $b$ the starting bit-length of numbers
     composing the identifiers.}
-\end{table}
+\end{table*}
 
 To summarizes, the space complexity analysis reveals that the allocation
 function \LSEQ sacrifices on the worst-case space complexity to improve the
