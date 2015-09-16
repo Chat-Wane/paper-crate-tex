@@ -1,12 +1,12 @@
 
 \begin{tabular}{@{}lcccccc@{}}
   \toprule
-  \textsc{Editing behavior} & \multicolumn{2}{c}{\textsc{Space}} & \multicolumn{4}{c}{\textsc{Time}} \\ \midrule
-  & & & \multicolumn{2}{c}{\textsc{Local}} & \multicolumn{2}{c}{\textsc{Remote}} \\ \midrule
+  \textsc{Editing behavior} & \multicolumn{2}{c}{\textsc{Space}} & \multicolumn{4}{c}{\textsc{Time}} \\ \cmidrule{4-7}
+  & & & \multicolumn{2}{c}{\textsc{Local}} & \multicolumn{2}{c}{\textsc{Remote}} \\ \cmidrule{2-7}
   & \textsc{Identifier} & \textsc{Sequence} & \textsc{ins} & \textsc{del} & \textsc{ins} & \textsc{del}  \\ \midrule
-  Random editing & $\mathcal{O}(\log I)$ & $\mathcal{O}(I\log I)$ & $\mathcal{O}(2^{\sqrt{\log I}}+\sqrt{\log I})$ & $\mathcal{O}(2^{\sqrt{\log I}})$ & $\mathcal{O}(\log I - \sqrt{\log I})$ & $\mathcal{O}(\log I - \sqrt{\log I})$ \\
-  Monotonic editing & $\mathcal{O}((\log I)^2)$ & & & & & \\
-  Worst case & & & & & & \\ \bottomrule
+  Random editing & $\mathcal{O}(\log_2 I)$ & $\mathcal{O}(I\log_2 I)$ & $\mathcal{O}(2^{\sqrt{\log I}}+\sqrt{\log I})$ & $\mathcal{O}(2^{\sqrt{\log I}})$ & $\mathcal{O}(\log I - \sqrt{\log I})$ & $\mathcal{O}(\log I - \sqrt{\log I})$ \\
+  Monotonic editing & $\mathcal{O}((\log_2 I)^2)$ & $\mathcal{O}(I(\log_2 I)^2)$ & $\mathcal{O}(2^{\log I}+\log I)$ & $\mathcal{O}(2^{\log I})$ & $\mathcal{O}((\log I)^2-\log I)$ & $\mathcal{O}((\log I)^2-\log I)$ \\
+  Worst case & $\mathcal{O}(I^2)$ & $\mathcal{O}(I^2)$ & $\mathcal{O}(I)$ & $\mathcal{O}(I)$ & $\mathcal{O}(I)$ & $\mathcal{O}(I)$\\ \bottomrule
 \end{tabular}
 
 

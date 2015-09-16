@@ -3,11 +3,11 @@
 \begin{tabular}{@{}lcc@{}}
   \toprule
   \textsc{Algorithms} & \textsc{Communication} & \textsc{Space} \\ \midrule 
-  Operational transformation~\cite{suleiman1997serialization, sun2009contextbased} & $\mathcal{O}(|\mathcal{W}|\ln|\mathcal{R}|)$ & $\Omega (|\mathcal{W}|(I+2D))$ \\ \midrule
-  Tombstones~\cite{ahmed2011evaluating, oster2006data, weiss2007wooki} & $\Omega (\ln|\mathcal{R}|)$ & $\Omega (I+2D)$ \\ \midrule
-  Variable-size array-based~\cite{weiss2009logoot} & $\mathcal{O}(I\ln |\mathcal{R}|)$ & $\mathcal{O}(I^2)$ \\ \midrule
-  Variable-size tree-based~\cite{preguica2009commutative} & $\mathcal{O}(I\log I \ln |\mathcal{R}|)$ or $\mathcal{O}(\log I\ln|\mathcal{R}|)$ & $\mathcal{O}(I\log I + |\mathcal{W}|)$ or $\mathcal{O}(I + |\mathcal{W}|)$ \\ \midrule
-  This paper~\cite{nedelec2013lseq} & $\mathcal{O}((\log \mathcal{I})^2\ln|\mathcal{R}|)$ & $\mathcal{O}(I\log I + |\mathcal{W}|)$ \\ \bottomrule
+  \textbf{Operational transformation~\cite{suleiman1997serialization, sun2009contextbased}} & $\mathcal{O}(\pmb{|\mathcal{W}|}\ln|\mathcal{R}|)$ & $\Omega (\pmb{|\mathcal{W}|}(I+\pmb{2D}))$ \\ \midrule
+  \textbf{Tombstones~\cite{ahmed2011evaluating, oster2006data, weiss2007wooki}} & $\Omega (\ln|\mathcal{R}|)$ & $\Omega (I+\pmb{2D})$ \\ \midrule
+  \textbf{Variable-size array-based~\cite{weiss2009logoot}} & $\mathcal{O}(\pmb{I}\ln |\mathcal{R}|)$ & $\mathcal{O}(\pmb{I^2+|\mathcal{W}|})$ \\ \midrule
+  \textbf{Variable-size tree-based~\cite{preguica2009commutative}} & $\mathcal{O}(\pmb{I\log I} \ln |\mathcal{R}|)$ or $\mathcal{O}(\log I\ln|\mathcal{R}|)$ & $\mathcal{O}(I\log I + \pmb{|\mathcal{W}|})$ or $\mathcal{O}(I + \pmb{|\mathcal{W}|})$ \\ \midrule
+  \textbf{This paper~\cite{nedelec2013lseq}} & $\mathcal{O}((\log \mathcal{I})^2\ln|\mathcal{R}|)$ & $\mathcal{O}(I\log I + \pmb{|\mathcal{W}|})$ \\ \bottomrule
 \end{tabular}
 
 %%% Local Variables:

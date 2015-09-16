@@ -186,26 +186,26 @@ canceling their respective deficiency.
 \begin{asparadesc}
 \item [An exponential tree]~\cite{andersson1996faster,andersson2007dynamic}
   represents the shared document. The path is a sequence of numbers chosen among
-  a subset of numbers whose size is doubled at each concatenation. For instance,
-  if a path $p_1$ of size 1 is chosen among [$\mathbb{N}_{<32}$], a path $p_2$
-  of size 2 is chosen among [$\mathbb{N}_{<32}.\mathbb{N}_{<64}$] etc. Let $r$
-  be the number of possible paths with one concatenation (i.e., the maximum
-  arity of the root of the tree), a path $p_k$ of size $k$ is chosen among
-  [$\mathbb{N}_{<r}.\mathbb{N}_{<2r}\ldots\mathbb{N}_{<2^{k-1}r}$].  Due to the
-  growth of the subsets, such representation of the paths requires one
+  a subset of numbers the size of which is doubled at each concatenation. For
+  instance, if a path $p_1$ of size 1 is chosen among [$\mathbb{N}_{<32}$], a
+  path $p_2$ of size 2 is chosen among [$\mathbb{N}_{<32}.\mathbb{N}_{<64}$]
+  etc. Let $r$ be the number of possible paths with one concatenation (i.e., the
+  maximum arity of the root of the tree), a path $p_k$ of size $k$ is chosen
+  among [$\mathbb{N}_{<r}.\mathbb{N}_{<2r}\ldots\mathbb{N}_{<2^{k-1}r}$].  Due
+  to the growth of the subsets, such representation of the paths requires one
   additional bit to encode each concatenation. With the same examples, it
   implies that $p_1$ is encoded using $log_2(32)=5$ bits, $p_2$ is encoded using
   $5+6=11$ bits,~\ldots Thus, a path is encoded by:
   \begin{equation}
-    \sum\limits_{i=0}^{k-1}(\log_2(r)+i) =
-    k\log_2(r) + k(k+1)/2 = \mathcal{O}(k^2) \,\, bits
+    \sum\limits_{i=1}^{k}(\log_2(r)+i) =
+    k\log_2(r) + {k(k+1)\over{2}} = \mathcal{O}(k^2) \,\, bits
   \end{equation}
   When an exponential tree of depth $k$ is balanced (i.e., all its branches
   are filled) it holds uptil:
   \begin{equation} \sum\limits_{i=0}^{k-1} {2^{(i^2-i)/2}} \,\, elements
   \end{equation}
-  When an exponential tree of depth $k$ \TODO{has one branch filled of elements per
-    element}, it holds uptil:
+  When an exponential tree of depth $k$ has one branch filled per level, it
+  holds uptil:
   \begin{equation} 2^{k+1}-1 \,\, elements\end{equation}
   
   
@@ -333,6 +333,8 @@ for text editing, and consequently, for distributed collaborative editing.
 % \subsection{Space complexity}
 % \label{sec:spacecomplexity}
 
+
+
 In text editing, most of the editing behaviors can be empirically summarized
 as a composition of two basic editing behaviors.
 \begin{inparaenum}[(i)]
@@ -413,6 +415,8 @@ analysis of the path is reduced to the space complexity of the identifiers of
     the number of concatenations. And $b$ the starting bit-length of numbers
     composing the identifiers.}
 \end{table*}
+
+
 
 To summarizes, the space complexity analysis reveals that the allocation
 function \LSEQ sacrifices on the worst-case space complexity to improve the
