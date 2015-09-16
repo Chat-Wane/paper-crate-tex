@@ -1,23 +1,9 @@
-\begin{tikzpicture}[scale=1.15]
+\begin{tikzpicture}[scale=0.9]
 
 \newcommand\Y{-45}
 \newcommand\ADDY{-8}
 
-  \small
-  \draw[dashed] (0pt,10pt) -- (0pt,3*\Y pt);
-  \draw[dashed] (-50pt,0 pt) -- node[anchor=south]{allocation} (10pt,0 pt);
-  \draw[dashed] (-50pt,\Y pt) -- (10pt,\Y pt);
-  \draw[dashed] (-50pt,2*\Y pt) -- (10pt,2*\Y pt);
-  \draw[dashed] (-50pt,3*\Y pt) -- (10pt,3*\Y pt);
-
-  \draw (0pt,0.5*\Y pt)
-  node[anchor=east, align=center]{$h(1) =$\\$endEditing$};
-  \draw (0pt,1.5*\Y pt)
-  node[anchor=east, align=center]{$h(2) =$\\$frontEditing$};
-  \draw (0pt,2.5*\Y pt)
-  node[anchor=east]{$h(3) =$ \ldots};
-
-  \small
+  \scriptsize
   \draw[dashed] (340pt,10pt) -- (340pt,3*\Y pt);
   \draw[dashed] (390pt,0 pt) --node[anchor=south]{arity}(330pt,0 pt);
   \draw[dashed] (390pt,\Y pt) -- (330pt,\Y pt);
@@ -32,84 +18,6 @@
   node[anchor=west, align=center]{$128$};
 
   \begin{scope}[shift={(90pt,0pt)}]
-  \draw[->,dashed](-50pt,3*\Y + 10 pt) -- node[anchor=north]{insertion order}
-  (50pt, 3*\Y + 10 pt);
-
-  %% node to node
-  \scriptsize
-  \draw[dashed, thick] (0pt,0pt) -- node[anchor=south east]{0} (-70pt,\Y pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=east]{1} (-50pt,\Y pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=east]{8} (-30pt,\Y pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=east]{9} (-10pt,\Y pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=north east]{12} ( 10pt,\Y pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=north]{17} ( 30pt,\Y pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=north]{21} ( 50pt,\Y pt);
-  \draw[dashed, thick] (0pt,0pt) -- node[anchor=south west]{32} ( 70pt,\Y pt);
-  \small
-  %% node to element
-  \draw[->] (-50pt,\Y pt) -- (-50pt,\ADDY + \Y pt);
-  \draw[->] (-30pt,\Y pt) -- (-30pt,\ADDY + \Y pt);
-  \draw[->] (-10pt,\Y pt) -- (-10pt,\ADDY + \Y pt);
-  \draw[->] ( 10pt,\Y pt) -- ( 10pt,\ADDY + \Y pt);
-  \draw[->] ( 30pt,\Y pt) -- ( 30pt,\ADDY + \Y pt);
-  \draw[->] ( 50pt,\Y pt) -- ( 50pt,\ADDY + \Y pt);
-
-  %% element to desambiguator
-  \draw[->,densely dashdotted] ( -50pt,\ADDY + \Y pt) --
-  ( -50pt,2.75*\ADDY + \Y pt);
-  \draw[->,densely dashdotted] ( -30pt,\ADDY + \Y pt) --
-  ( -30pt,2.75*\ADDY + \Y pt);
-  \draw[->,densely dashdotted] ( -10pt,\ADDY + \Y pt) --
-  ( -10pt,2.75*\ADDY + \Y pt);
-  \draw[->,densely dashdotted] (  10pt,\ADDY + \Y pt) --
-  (  10pt,2.75*\ADDY + \Y pt);
-  \draw[->,densely dashdotted] (  30pt,\ADDY + \Y pt) --
-  (  30pt,2.75*\ADDY + \Y pt);
-  \draw[->,densely dashdotted] (  50pt,\ADDY + \Y pt) --
-  (  50pt,2.75*\ADDY + \Y pt);
-
-  \draw[fill=black] (  0pt,  0pt) circle (1pt);
-  \draw[fill=black] (-70pt,\Y pt) circle (1pt);
-  \draw[fill=white] (-50pt,\Y pt) circle (1pt);
-  \draw[fill=white] (-30pt,\Y pt) circle (1pt);
-  \draw[fill=white] (-10pt,\Y pt) circle (1pt);
-  \draw[fill=white] ( 10pt,\Y pt) circle (1pt);
-  \draw[fill=white] ( 30pt,\Y pt) circle (1pt);
-  \draw[fill=white] ( 50pt,\Y pt) circle (1pt);
-  \draw[fill=black] ( 70pt,\Y pt) circle (1pt);
-
-  %% elements
-  \draw[fill=white](-50pt,-4 + \ADDY + \Y pt)
-  node{\textbf{Q}}+(-4pt,-4pt)rectangle+(4pt,4pt) ;
-  \draw[fill=white](50pt,-4 + \ADDY + \Y pt)
-  node{\textbf{Y}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-  \draw[fill=white]( 10pt,-4 + \ADDY + \Y pt)
-  node{\textbf{R}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-  \draw[fill=white] ( -30pt,-4 + \ADDY + \Y pt)
-  node{\textbf{W}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-  \draw[fill=white] ( -10pt,-4 + \ADDY + \Y pt)
-  node{\textbf{E}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-  \draw[fill=white]( 30pt,-4 + \ADDY + \Y pt)
-  node{\textbf{T}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-
-  %% desambiguator
-  \draw[fill=gray!20] (-50pt,-2.5 + 2.75 * \ADDY + \Y pt)
-  +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] (-30pt,-2.5 + 2.75 * \ADDY + \Y pt)
-  +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] (-10pt,-2.5 + 2.75 * \ADDY + \Y pt)
-  +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] ( 10pt,-2.5 + 2.75 * \ADDY + \Y pt)
-  +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] ( 30pt,-2.5 + 2.75 * \ADDY + \Y pt)
-  +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] ( 50pt,-2.5 + 2.75 * \ADDY + \Y pt)
-  +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  \draw[dashed] (80pt,0pt) -- (80pt,-132pt);
-
 \begin{scope}[shift={(160pt,0pt)}]
   \draw[->,dashed](50pt,3*\Y + 10 pt)--node[anchor=north]{insertion order}
   (-50pt,3*\Y + 10 pt);
@@ -123,7 +31,6 @@
   \draw[thick] (-70pt, \Y pt) -- node[anchor=north]{48}(-30pt,2 * \Y pt); %% W
   \draw[thick] (-70pt, \Y pt) -- node[anchor=east]{44}(-50pt,2 * \Y pt); %% Q
   \draw[dashed, thick] (0pt,0pt) -- node[anchor=south west]{32} (70pt,\Y pt);
-  \small
 
   %% node to element
   \draw[->] ( 50pt, \Y pt) -- ( 50pt, \ADDY + \Y pt); %% Y
