@@ -5,17 +5,17 @@
   servers with issues in privacy, single point of failure and
   scalability.  Decentralized editors can tackle privacy problems but
   scalability issues remain. According to the different approaches,
-  decentralized editors deliver poor performances on cpu, space or
+  decentralized editors deliver poor performances on CPU, space or
   communications in presence of large number of users or large shared
   documents. 
 % 
   In this paper, we propose \CRATE; a decentralized real-time editor
-  that supports large number of users working on large
-  documents. Compared to state of art, we prove a polylogarithmic
-  upper-bound on the space complexity of the shared document without
-  changing degrading time and communication complexities. Thanks to
-  WebRTC, \CRATE can be easily deployed on a network of browsers
-  i.e. without servers.
+  that supports large number of users working on large documents.
+  \TODO{ \CRATE is based on a replicated sequence data structure the
+    size of which grows sublinearly and solely for insertions without
+    impacting time and communication complexities.}  Thanks to WebRTC,
+  \CRATE can be easily deployed on a network of browsers i.e. without
+  servers.
 %4
   We evaluate \CRATE in large-scale experiments on the Grid'5000
   testbed uptil 600 participants. As expected, we observe a

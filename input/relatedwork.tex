@@ -8,14 +8,7 @@
 \end{table*}
 
 \begin{asparadesc}
-\item[Optimistic replication] is a replication strategy where each peer owns a
-  local copy (or replica) of the document. Since users can directly modify this
-  copy, it improves both availability and responsiveness. When a user performs
-  an operation on the local document, the information is spread to all owners of
-  the shared document where they are integrated. Optimistic replication
-  approaches guarantee eventual consistency~\cite{bailis2013eventual}. Hence,
-  after the receipt and integration of all operations by the participants, the
-  replicas converge to an identical state.
+
 \item[Centralized] collaborative editors constitute an easy way to ensure
   documents eventually consistent. Until recently, they suited very well the web
   context since browsers were limited to the traditionnal client-server
@@ -48,6 +41,36 @@
   to inspect these concurrent cases to ensure convergent replicas.  Many
   approaches have been proposed with the challenging task to find a good
   compromise between complexities in time, space, and communication.
+
+\end{asparadesc}
+
+A Real-time Distributed Collaborative Editor considers $n$ sites
+hosting a copy of a shared sequence of characters. Each site can
+update locally its copy immediately without locking by applying an
+insert or delete operation. Next, operations are broadcast to others
+sites to be re-executed. The broadcast system has to ensure eventual
+delivery of operation. Finally, The whole system is correct if it, at
+least, converges i.e. when system is idle, all copies are
+identicals~\cite{bailis2013eventual}. A correct system has also to
+ensure intentions i.e. effects observed at generation time should be
+re-observed at re-execution time whatever concurrent
+operation~\cite{sun1998achieving}.
+
+A distributed real-time editor is characterized by several
+complexities:
+\begin{itemize}
+\item Generation time: complexity to generate locally an operation
+\item Integration time: complexity to re-execute a remote operation
+\item Space complexity: complexity to store local copy of the shared
+  sequence and eventually logs
+\item Communication complexity: amount of bytes exchanged on the
+  network by participants. 
+\end{itemize}
+
+
+\begin{asparadesc}
+
+
 \item [Operational transformation] constitute the former approaches aiming to
   solve the concurrent cases. Their principle lies in modifying the arguments of
   the received operation against its concurrent ones. For instance, in the prior
