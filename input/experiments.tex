@@ -1,52 +1,12 @@
 \section{Experiments}
 \label{sec:experiments}
 
-In this section, we evualuate the core components of \CRATE both individually
-and together. It aims to:
-\begin{enumerate}[leftmargin=*]
-\item Validate the adaptiveness of \SPRAY, i.e., it automatically resizes the
-  neigbhorhood of peers to follow a logarithmic growth compared to the editing
-  session membership.
-\item Validate the space complexity of \LSEQ and highlight the improvement
-  over the state-of-the-art.
-\item Show that \CRATE scales with respect to the number of
-  collaborators simultaneously involved in a document editing.
-\item Show that concurrency does not impact the size of
-  identifiers. Consequently, the space complexity of the identifiers can be
-  studies in scenarios without concurrency.
-\end{enumerate}
-
-Two kinds of environments hosted the experiments. First, a single machine
-emulating multiple peers. Despite the poor scalability of these experiments due
-to replication, it allows running the experiments in a controlled
-environment. Then, multiple machines distributed in a cluster of the Grid'5000
-testbed are considered. A single machine can host multiple peers and
-communicate with other machines. The magnitude of these experiments grows up to
-$500$ connected peers. \TODO{Moar}.
-
-In these experiments, we focus our analysis on two editing behaviours: random
-and monotonic. In random editing, when a peer inserts an element, it randomises
-the position of the new element in the document following a uniform
-distribution. In monotonic editing, when a peer inserts an element, it inserts
-the new element at the end of the document. It worth noting that the latter case
-is not favourable since it tends to unbalance the underlying tree representing
-the sequence. On the opposite, performing insertions at different locations
-tends to even up the branch of the tree, i.e., the average size of identifiers
-is lowered.
-
-We focus our measurements on the average size of the messages broadcast by each
-peer. Since the delete messages have a low and constant size, we focus on
-messages corresponding to insert operations. Therefore, the measurements
-reflect the average size of the identifiers. The initial base parameter, i.e.,
-the maximum number of children at the root of the exponential tree, starts from
-a low value in order to accelerate the growth of the identifiers. In this
-section, we are more interested in the shape of the curves than in the actual
-values.
-
-We evaluate the Javascript implementation of \CRATE's core released on the
-Github platform\footnote{\url{https://github.com/Chat-Wane/CRATE-core.git}}
-under the MIT license.
-\ \\
+\begin{figure}
+  \centering
+  \includegraphics[width=0.475\textwidth]{./img/partialview.eps}
+  \caption{\label{fig:partialview} Average neighborhood size of each peer over
+  the global network size.}
+\end{figure}
 
 \begin{asparadesc}
 \item [Objective:]
@@ -55,153 +15,13 @@ under the MIT license.
 \item [Reasons:]
 \end{asparadesc}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.475\textwidth]{./img/partialview.eps}
-  \caption{\label{fig:partialview} Average partial view size at each peer over
-  the global membership size.}
-\end{figure}
-
-\begin{asparadesc}
-\item [Objective:] Validate the space complexity analysis of \LSEQ. In
-  particular, when the editing behaviour is monotonic, \LSEQ has a
-  polylogarithmic upper-bound on space complexity with respect to the number of
-  insert operations. When the editing behaviour is random, \LSEQ has a
-  logarithmic space complexity. A second objective is to compare \LSEQ with
-  an existing sequence structure
-  Logoot~\cite{weiss2009logoot,weiss2010logootundo}.
-\item [Description:]
-
-\begin{figure}
-  \centering
-  \includegraphics[angle=-90,width=0.475\textwidth]{./img/complexities.eps}
-  \caption{\label{fig:complexities} Average size of the messages exchanged
-    between two peers during repeated insertions of elements in the
-    sequence. The measurements concern two editing behaviours (monotonic and
-    random) with two \CRATE using different sequence structures (Logoot
-    and \LSEQ-based). The replicated document grows up to half a million
-    characters.}
-\end{figure}
-
-\item [Results:] Figure~\ref{fig:complexities} shows the result of the
-  experiments. The y-axis corresponds to the average size of messages in
-  bytes. The x-axis corresponds to the size of the document, i.e., the number
-  of insert operations performed on the sequence. The random editing behaviour
-  leads to a logarithmic growth of the size of messages with both sequences
-  with a barely noticeable difference. On the other hand, for a monotonic
-  editing behaviour Logoot exposes a linear growth of the size of its messages
-  while the \LSEQ-based sequence has a polylogarithmic validating the proof
-  given in Section~\ref{sec:proposal}. Thus, even if Logoot starts with a
-  smaller size messages, it quickly becomes less efficient than the
-  \LSEQ-based sequence when the number of insertions increases.
-
-\item [Reasons:] The random editing behaviour is slightly better for the
-  \LSEQ-based sequence compared to Logoot because \LSEQ starts with a lower
-  departure base. Nonetheless, a random editing behaviour leads to a same space
-  complexity for both sequences. For monotonic editing, the identifiers of
-  Logoot linearly grow because Logoot uses a K-ary tree. Consequently, it does
-  not adapt itself to the growing number of insertions in the sequence, i.e.,
-  each node in the tree can store as many nodes as its parent. On the opposite
-  side, \LSEQ doubles the number of available children when
-  required. Consequently, when the document size increases, the number of
-  possible identifiers grows even more.
-\end{asparadesc}
-
 \ \\
-
-\begin{asparadesc}
-\item [Objective:] \TODO{Show that \CRATE scales in terms of the number of
-  peers. In other words, the size of the network does not impact the space
-  complexity upper bound of messages.}
-\item [Description:] \TODO{A cluster of the Grid'5000 testbed hosts a varying number
-  of peers using the application \CRATE. The peers produce a
-  document of 500 thousand characters by repeatedly inserting at the end of the
-  document (monotonic editing). The experiments last $50$ minutes. The number
-  of peers varies from $2$ to $450$. The generation of $166$ operations
-  per second is uniformly distributed among the peers and time. We measure the
-  average size of messages.}
 
 \begin{figure}
   \centering
   \includegraphics[width=0.475\textwidth]{./img/identifiers.eps}
-  \caption{\label{fig:scalability}Average size of messages sent during a
-    session of document editing. The number of peers varies from $2$ to $450$
-    collaboratively producing a document of $500$ thousand characters in $50$
-    minutes. The editing behaviour is monotonic.}
+  \caption{\label{fig:identifiers} Average identifiers size.}
 \end{figure}
-
-\item [Results:] \TODO{Figure~\ref{fig:scalability} shows the results of these
-  experiments. The y-axis corresponds to the average size of messages in
-  bytes. The x-axis corresponds to the number of insert operations performed on
-  the sequence. Figure~\ref{fig:scalability} shows that, independently of the
-  number of involved peers, the average size of messages grows
-  polylogarithmically compared to the size of the document. Also, even if the
-  values of the 2-peers curve are invariably above the others, they do not
-  demonstrate significant differences. Consequently, \CRATE scales in
-  two dimensions: number of peers and number of insertions.}
-\item [Reasons:] \TODO{The size of messages reflects the size of the identifiers and
-  the additional causality tracking metadata. In Section~\ref{subsec:crdt} that
-  describes \CRATE, we saw only two scalars are required to track
-  semantically related operations. Since these scalars also exist within the
-  identifiers, we reuse them. Consequently, the average size of messages only
-  depends of the average size of the identifiers. Since the space complexity of
-  \LSEQ is independent of the number of peers, so are the messages of the
-  \CRATE. Still, the latter locally requires a linearly growing vector
-  in terms of the number of peers. Figure~\ref{fig:scalability} shows small
-  measurement variations between the different runs. This result is due to a
-  growing number of peers that implies an increasing concurrency rate. When
-  some peers perform operations concurrently at a same position, they call the
-  function $insert$ with the same bounds as arguments. Therefore the resulting
-  paths share a same allocating range. Thus, they are closer from each other
-  compared to a sequential execution. Therefore, the average size of messages
-  slightly decreases when the number of peers increases.}
-\end{asparadesc}
-
-\begin{figure}
-  \centering
-  \includegraphics[angle=-90,width=0.475\textwidth]{./img/latency.eps}
-  \caption{\label{fig:latency} Average size of messages sent by peers during
-    sessions of document editing. Ten peers produce documents of 10 thousand
-    characters by repeatedly inserting at the end of the document at the rate
-    of 3 operations per second. Five editing sessions with different network
-    latencies are studied.}
-\end{figure}
-
-\ \\
-
-\begin{asparadesc}
-\item [Objective:] Show that concurrency does not negatively impact the size
-  of identifiers. Hence, scenarios without concurrency show the upper-bound on
-  the size of identifiers.
-\item [Description:] A single machine emulates 10 peers using the application
-  \CRATE. The peers produce a document of $10$ thousand characters at a
-  rate of 3 insertions per second uniformly distributed among the peers. The
-  tool $netem$ provides the network emulation functionality. In particular, it
-  allows us to change the transmission delay of messages transmitted through a
-  specific network interface. We designed five runs with the approximate
-  following latencies: $0.02ms$, $100ms$, $500ms$, $1s$, and $10s$. As usual,
-  we measure the average size of the messages.
-\item [Results:] Figure~\ref{fig:latency} shows the results of the measurements
-  done with the different editing sessions. The y-axis corresponds to the
-  average size of messages in bytes and the x-axis corresponds to the number of
-  insert operations performed on the sequence. In all cases, the growth of the
-  average size of messages follows the expectation given by the space
-  complexity analysis in Section~\ref{sec:proposal}. Also, when the latency
-  increases, the average size of messages decreases. Thus, the curve that
-  corresponds to an almost sequential execution represents the largest
-  messages in average.
-\item [Reasons:] The explanation behind the decreasing in the average size of
-  messages when the latency increases is similar to the one provided in
-  previous experiment due to the latency instead of the number of peers.
-  Ultimately, when the latency is higher than the run time, each peer of the
-  set of collaborator works alone and shares its operations afterwards. The
-  resulting tree becomes populated with 10 local executions. Nevertheless, its
-  depth does not grow. The bounces in the average message size are due to an
-  addition of a level in the paths. Indeed, depending on the depth of the tree,
-  the average tends to a specific value. When the depth increases, this average
-  value suddenly changes to an higher value. A finer grain of measurements in
-  this experiment allows us observing these changes.
-\end{asparadesc}
 
 \begin{asparadesc}
 \item [Objective:]
@@ -210,25 +30,21 @@ under the MIT license.
 \item [Reasons:]
 \end{asparadesc}
 
+\ \\
+
 \begin{figure}
   \centering
   \includegraphics[width=0.475\textwidth]{./img/traffic.eps}
-  \caption{\label{fig:traffic} Average traffic per peer over time.}
+  \caption{\label{fig:traffic} Average traffic per second at each peer
+    during the experiments.}
 \end{figure}
 
-\subsection{Synthesis}
-This section detailed a complete distributed collaborative editor.  Using the
-outline, we developed \CRATE and used it to perform the experiments. The
-first experiment confirmed the space complexity analysis of
-Section~\ref{sec:proposal}. Therefore, \CRATE scales with respect to the
-number of insert operations performed on the document. The second experiment
-showed that using a causality tracking mechanism focused on semantically
-dependent operations does not impact the size of messages. As a consequence,
-\CRATE scales with respect to the number of peers. Finally, the third
-experiment confirmed the observations made in the second one: the concurrency
-rate does not negatively impact the size of identifiers. Also, the sequential
-execution gives the upper bound on the average size of messages.
-
+\begin{asparadesc}
+\item [Objective:]
+\item [Description:]
+\item [Results:]
+\item [Reasons:]
+\end{asparadesc}
 
 %%% Local Variables:
 %%% mode: latex
