@@ -7,42 +7,41 @@
   \caption{\label{table:complexities}Upper-bound ($\mathcal{O}$) on complexities in time, space, and communication of decentralized approaches.}
 \end{table*}
 
-\begin{asparadesc}
+%\begin{asparadesc}
 
-\item[Centralized] collaborative editors constitute an easy way to ensure
-  documents eventually consistent. Until recently, they suited very well the web
-  context since browsers were limited to the traditionnal client-server
-  paradigm. Therefore, there exist a plethora of these centralized editors
-  (e.g. Google Docs, Etherpad, Apache Wave).  Nevertheless, the topology itself
-  suffers issues in privacy, censorship, and economic intelligence.  Indeed,
-  since all communications transit a server, the owner of the latter is able to
-  intercept and use the information without the users' consent (\TODO{REF}).
-  Additionally, centralized solution lacks of scalability and ease of
-  deployment. People who wants to build their own document provider must set a
-  server and carefully check the latter's capacity to hold the load of users
-  (\TODO{REF}).  Finally, users must agree to restriction in terms of service.
-  For instance, Google Docs restricts the writing access of its documents to 50
-  users simultaneously. Beyond, the users are readers (\TODO{REF}). \TODO{Such
-    limitations preclude the existence of crowd edited documents which could be
-    useful in educational cases.}
-\item[Decentralized] collaborative editors are uncommon comparatively. Yet, the
-  appearance of peer-to-peer connections from browser-to-browser opens the field
-  to such editors which become directly accessible in end-user web
-  browsers. Consequently, they are as practicable as centralized web editors and
-  solve all the latter's aforementioned issues except the scalability. Indeed,
-  with such topology, the algorithms and data structures are rethought to handle
-  the operations arriving disorderly.  To insert a character in a shared
-  document, one cannot just use the standard well-known operation \emph{insert
-    element at index} of arrays and expect guaranties on convergence. For
-  instance, if two users concurrently edit a sequence ERTY: the first user
-  inserts a Q at index 0, while the second user inserts a W at index 0. They
-  respectively obtains QERTY and WERTY as resulting sequence. On receipt of each
-  other's operation they respectively obtain WQERTY and QWERTY. Hence the need
-  to inspect these concurrent cases to ensure convergent replicas.  Many
-  approaches have been proposed with the challenging task to find a good
-  compromise between complexities in time, space, and communication.
-
-\end{asparadesc}
+% \item[Centralized] collaborative editors constitute an easy way to ensure
+%   documents eventually consistent. Until recently, they suited very well the web
+%   context since browsers were limited to the traditionnal client-server
+%   paradigm. Therefore, there exist a plethora of these centralized editors
+%   (e.g. Google Docs, Etherpad, Apache Wave).  Nevertheless, the topology itself
+%   suffers issues in privacy, censorship, and economic intelligence.  Indeed,
+%   since all communications transit a server, the owner of the latter is able to
+%   intercept and use the information without the users' consent (\TODO{REF}).
+%   Additionally, centralized solution lacks of scalability and ease of
+%   deployment. People who wants to build their own document provider must set a
+%   server and carefully check the latter's capacity to hold the load of users
+%   (\TODO{REF}).  Finally, users must agree to restriction in terms of service.
+%   For instance, Google Docs restricts the writing access of its documents to 50
+%   users simultaneously. Beyond, the users are readers (\TODO{REF}). \TODO{Such
+%     limitations preclude the existence of crowd edited documents which could be
+%     useful in educational cases.}
+% \item[Decentralized] collaborative editors are uncommon comparatively. Yet, the
+%   appearance of peer-to-peer connections from browser-to-browser opens the field
+%   to such editors which become directly accessible in end-user web
+%   browsers. Consequently, they are as practicable as centralized web editors and
+%   solve all the latter's aforementioned issues except the scalability. Indeed,
+%   with such topology, the algorithms and data structures are rethought to handle
+%   the operations arriving disorderly.  To insert a character in a shared
+%   document, one cannot just use the standard well-known operation \emph{insert
+%     element at index} of arrays and expect guaranties on convergence. For
+%   instance, if two users concurrently edit a sequence ERTY: the first user
+%   inserts a Q at index 0, while the second user inserts a W at index 0. They
+%   respectively obtains QERTY and WERTY as resulting sequence. On receipt of each
+%   other's operation they respectively obtain WQERTY and QWERTY. Hence the need
+%   to inspect these concurrent cases to ensure convergent replicas.  Many
+%   approaches have been proposed with the challenging task to find a good
+%   compromise between complexities in time, space, and communication.
+% \end{asparadesc}
 
 A Real-time Distributed Collaborative Editor considers $n$ sites
 hosting a copy of a shared sequence of characters. Each site can
@@ -67,9 +66,16 @@ complexities:
   network by participants. 
 \end{itemize}
 
+Addressing the scalabilty issue require to find a good trade-off
+between communication, space and time complexities. First, to be
+scalable, communication complexity of decentralized editors has to be
+sublinear to the number of participants. In the best case, if we have
+$n$ participants, sending a typed character to others requires to
+contact $log(n)$ participants. But consistency maintenance of
+real-time editors requires to piggy back to each message extra
+informations that impact greatly the whole communication complexity.
 
 \begin{asparadesc}
-
 
 \item [Operational transformation] constitute the former approaches aiming to
   solve the concurrent cases. Their principle lies in modifying the arguments of
