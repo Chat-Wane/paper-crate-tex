@@ -80,6 +80,28 @@ the editor distributed among 101 machines.
 
 \begin{figure}
   \centering
+  \includegraphics[width=0.475\textwidth]{./img/bench.eps}
+  \caption{\label{fig:bench} Time performance of operations.}
+\end{figure}
+
+\begin{asparadesc}
+\item [Objective:] To confirm the time complexity of the operations of
+  \LSEQ.
+\item [Description:] This experiment involves only one user performing
+  operations on its local copy. The benchmark ran on a MacBook Pro with 2.5 GHz
+  Intel Core i5, with \emph{Node.js 4.1.1 on Darwin 64-bit}. Yet, we are more
+  interested in tendencies than absolute values. Indeed, since Javascript does a
+  lot of optimisation on-the-fly, performances are better than they appear in
+  this benchmark. To expose the behavior of operations individually, we limit
+  the buit-in optimisation to the maximum.
+\item [Results:]
+\item [Reasons:]
+\end{asparadesc}
+
+\ \\
+
+\begin{figure}
+  \centering
   \includegraphics[width=0.475\textwidth]{./img/identifiers.eps}
   \caption{\label{fig:identifiers} Average identifiers size.}
 \end{figure}
