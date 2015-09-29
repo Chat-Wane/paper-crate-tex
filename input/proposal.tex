@@ -3,8 +3,8 @@
 \label{sec:proposal}
 
 \CRATE (stands for CollaboRATive Editor) is a distributed and decentralized
-collaborative editor running as a web application. As depicted in
-Figure~\ref{fig:architecture}, \CRATE's architecture comprises four layers:
+collaborative editor running directly inside web browsers.
+Figure~\ref{fig:architecture} depicts \CRATE's architecture with four layers:
 \begin{inparaenum}[(i)]
 \item communication: includes the editing session membership mechanism and the
   information dissemination protocols.
@@ -35,31 +35,31 @@ of version vectors.
   \caption{\label{fig:architecture}\CRATE architecture}
 \end{figure}
 
-\begin{figure}
-  \centering
-  \input{input/networkexample.tex}
-  \caption{\label{fig:network}Small network example. Each square represents a
-    web browser. Each arrow represents a WebRTC connections established from
-    browser-to-browser. \TODO{show information dissemination.}}
-\end{figure}
+%%\begin{figure}
+%%  \centering
+%%  \input{input/networkexample.tex}
+%%  \caption{\label{fig:network}Small network example. Each square represents a
+%%    web browser. Each arrow represents a WebRTC connections established from
+%%    browser-to-browser. \TODO{show information dissemination.}}
+%%\end{figure}
 
 \subsection{Communication}
 The communication layers includes both an information dissemination protocol and
 a random peer sampling protocol. While the former is very simple since it is
 only in charge of sending and receiving the operations, the latter is complex.
 
-\SPRAY is an adaptive random peer sampling protocol whose primary target is
-WebRTC, a recent technology that allows peer-to-peer communication between web
-browsers. WebRTC has additional constraints such as the range of users which
-includes small devices (e.g. smartphones, tablets, etc.), and its complex 3-way
-connection establishment. Indeed, as depicted in \TODO{Figure}, a user $u_1$
-wishing to establish a connection with a user $u_2$ must create an offer ticket
-and send it to $u_2$ through a mediator (e.g. by mail, dedicated servers, peers
-already connected in the network). Then, $u_2$ must answer with another offer
-(referred to as \emph{stamped ticket}) using a mediator too. Finally, $u_1$ must
-confirm the connection to establish the bidirectional link. Due to this complex
-protocol, the peer sampling protocols are encouraged to keep a small number of
-connections.
+\SPRAY~\cite{nedelec2015spray} is an adaptive random peer sampling protocol
+whose primary target is WebRTC, a recent technology that allows peer-to-peer
+communication between web browsers. WebRTC has additional constraints such as
+the range of users which includes small devices (e.g. smartphones, tablets,
+etc.), and its complex 3-way connection establishment. Indeed, as depicted in
+\TODO{Figure}, a user $u_1$ wishing to establish a connection with a user $u_2$
+must create an offer ticket and send it to $u_2$ through a mediator (e.g. by
+mail, dedicated servers, peers already connected in the network). Then, $u_2$
+must answer with another offer (referred to as \emph{stamped ticket}) using a
+mediator too. Finally, $u_1$ must confirm the connection to establish the
+bidirectional link. Due to this complex protocol, the peer sampling protocols
+are encouraged to keep a small number of connections.
 
 \SPRAY is adaptive in the sense that the neighborhood maintained at each peer
 grows and shrinks logarithmically compared to the number of members in the
