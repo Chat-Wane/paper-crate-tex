@@ -39,6 +39,8 @@ them.
 \end{figure}
 
 \subsection{Communication}
+\label{subsec:communication}
+
 To collaboratively edit a document, users must establish a form of communication
 between them. It firstly requires to build a network of communication
 channels. It secondly requires to use it to disseminate the changes performed on
@@ -104,7 +106,7 @@ semantically related operations, \CRATE uses a version vector with
 exceptions~\cite{malkhi2007concise, mukund2014optimized}.
 
 \begin{asparadesc}
-\item [Version vector with exceptions] stores for each member
+\item [Version vector with exceptions] store for each member
   \begin{inparaenum}[(i)]
   \item an integer denoting the maximum counter of operations originated from
     this site and
@@ -143,46 +145,54 @@ exceptions~\cite{malkhi2007concise, mukund2014optimized}.
   belongs to the exceptions. Once it receives the missing first operation of
   $m_1$, the exception disappears and the delete operation is performed.
 
-  The local space complexity of such data structure depends of the number of
-  writers $|\mathcal{W}|$, i.e., the users that modified the document at least
-  once:
+  The local upper-bound on space complexity is:
   \begin{equation}
     \mathcal{O}(|\mathcal{W}|)
   \end{equation}
-  The communication complexity is not impacted from this data
-  structure. Therefore, its becomes:
+  where $|\mathcal{W}|$ is the number of writers, i.e., users who modified the
+  document at least once.  Such structure only requires to piggyback the
+  identifiers of operation. Hence, the upper-bound on communication complexity
+  is:
   \begin{equation}
     \mathcal{O}(o.\ln |\mathcal{R}|)
   \end{equation}
-  where $o$ is the operation size determined by the shared sequence structure,
-  and the rest is determined by the communication layer.
+  where $o$ is the operation size determined by the shared sequence structure
+  (cf. Section~\ref{subsec:sequence}), and the rest is determined by the
+  communication layer (cf. Section~\ref{subsec:communication}).
   
 \item [The anti-entropy protocol] periodically checks if the local replica
   diverges from another neighbor's one at random. It aims to retrieve missing
-  operations that could have been lost during the
-  transmissions. \TODO{example}. There is no additional cost on local
-  memory. However, the communication cost is prohibitively high which encourages
-  to perform this reconciliation protocol with great care:
+  operations that could have been lost during transmissions. For this purpose, a
+  simple difference between vectors suffices.
+
+  For instance, in the prior example depicted by Figure~\ref{fig:timeline},
+  Member $m_2$ receives the second operation of $m_1$ before its first. To catch
+  up, $m_2$ could send its version vector with exceptions to one of its
+  neighbors chosen at random. Assuming that it picks $m_3$, the latter detects
+  that, compared to its own vector, the remote member missed the first operation
+  of $m_1$. Then, it sends it back to $m_2$ along with its own vector. Finally,
+  $m_2$ follows the normal process for the received operations, and additionnaly
+  merges its vector with the received one.
+
+  Such protocol does not require any additional local metadata. However, the
+  communication cost is prohibitively high which encourages to perform this
+  reconciliation protocol with great care:
   \begin{equation}
     \mathcal{O}(|\mathcal{W}|+|\mathcal{W}|+x.o)
   \end{equation}
-  where the first $|\mathcal{W}|$ designates the initiating message, and
-  $|\mathcal{W}|+x.o$ the response to this message where $x.o$ are the missing
-  operations.
+  where the first $|\mathcal{W}|$ designates the vector contained in the
+  initiating message, and $|\mathcal{W}|+x.o$ the response to this message where
+  $x.o$ are the missing operations.
 \end{asparadesc}
 
 \subsection{Shared sequence}
 \label{subsec:sequence}
 
-The shared sequence layer uses a conflict-free replicated data type for
-sequences~\cite{shapiro2011comprehensive, shapiro2011conflict}. It is an
-abstract data type for sequences that provides two commutative operations:
-insert and delete. As such, the delivery order of operations does not matter as
-long as the deletion of an element follows its insertion. This property makes
-these shared sequences tolerant to concurrency. However, their complexity lies
-in their space consumption. Indeed, each insert operation allocates a unique and
-immutable identifier to the element. A global total order among the identifiers
-guarantees that replicas eventually converge to an identical states.
+To guarantee eventually consistent\cite{bailis2013eventual} replicas of the
+shared document, \CRATE uses a conflict-free replicated data type for
+sequences~\cite{shapiro2011comprehensive, shapiro2011conflict} with the
+allocation function \LSEQ~\cite{nedelec2013concurrency, nedelec2013lseq} for its
+unique and immutable identifiers.
 
 \CRATE uses \LSEQ, a polyLogarithmic identifier allocator for SEQuences. Its
 underlying structure is an exponential tree which, when linearized using its
