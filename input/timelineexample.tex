@@ -1,54 +1,58 @@
-\begin{tikzpicture}[scale=1.1]
+\begin{tikzpicture}[scale=0.965]
   
-  \draw (-10pt,0pt) node[anchor=east]{$p_1$};
-  \draw (-10pt,-30pt) node[anchor=east]{$p_2$};
-  \draw (-10pt,-60pt) node[anchor=east]{$p_3$};
+  \newcommand\X{ 20pt}
+  \newcommand\Y{-30pt}
 
-  \draw[->] (-10pt,0pt) -- (190pt,0pt);
-  \draw[->] (-10pt,-30pt) -- (190pt,-30pt);
-  \draw[->] (-10pt,-60pt) -- (190pt,-60pt);
+  \draw[->] (0pt,0pt) node[anchor=east]{$\pmb{m_1}$} -- (11*\X,0pt);
+  \draw[->] (0pt,-30pt) node[anchor=east]{$\pmb{m_2}$} -- (11*\X,\Y);
+  \draw[->] (0pt,-60pt) node[anchor=east]{$\pmb{m_3}$} -- (11*\X,2*\Y);
 
   \scriptsize
-  \draw (10pt,1pt) node[anchor=south]{[$\{\};\{\};\{\}]$} --
-  (10pt,-1pt);
-  \draw (10pt,-29pt) node[anchor=south]{[$\{\};\{\};\{\}]$} --
-  (10pt,-31pt);
-  \draw (10pt,-59pt) node[anchor=south]{[$\{\};\{\};\{\}]$} --
-  (10pt,-61pt);
+  \draw (0.5*\X,2+0*\Y) node[anchor=south]{[ ]} -- (0.5*\X,-2+0*\Y);
+  \draw (0.5*\X,2+1*\Y) node[anchor=south]{[ ]} -- (0.5*\X,-2+1*\Y);
+  \draw (0.5*\X,2+2*\Y) node[anchor=south]{[ ]} -- (0.5*\X,-2+2*\Y);
 
-  \draw[->,densely dashdotted] (30pt,0pt) -- (40pt,-60pt);
-  \draw[->,densely dashdotted] (50pt,0pt) -- (60pt,-30pt);
-  \draw[->,densely dashdotted] (50pt,0pt) -- (60pt,-60pt);
+  \draw[->,densely dashdotted] (1.5*\X,0pt) -- (2.5*\X,2*\Y);
+  \draw[->,densely dashdotted] (2.5*\X,0pt) -- (3.5*\X,1*\Y);
+  \draw[->,densely dashdotted] (2.5*\X,0pt) -- (3.5*\X,2*\Y);
 
 
-  \draw (82pt,-29pt) node[anchor=south]{[$\{2\};\{\};\{\}]$} --
-  (82pt,-31pt);
-  \draw (82pt,-59pt) node[anchor=south]{[$\{1,2\};\{\};\{\}]$} --
-  (82pt,-61pt);
+  \draw (5*\X,2+1*\Y) node[anchor=south]{[$\langle m_1,\,2,\,\pmb{\{1\}}\rangle$]}
+  -- (5*\X,-2+1*\Y);
+  \draw (5*\X,2+2*\Y) node[anchor=south]{[$\langle m_1,\,2,\,\varnothing\rangle$]}
+  -- (5*\X,-2+2*\Y);
 
-  \draw [->,densely dashdotted] (30pt,0pt) to[out=35,in=135] (125pt,0pt)
-  to[out=-45,in=125] (145pt,-30pt);
+  \draw [->,densely dashdotted, very thick] (1.5*\X,0pt) to[out=35,in=135] (6.65*\X,0pt)
+  to[out=-45,in=110] (7.5*\X,\Y);
 
-  \draw[fill=white] (30pt,0pt) circle (1.5pt);
-  \draw[fill=white] (50pt,0pt) circle (1.5pt);
+  \draw[fill=white] (1.5*\X,0pt) circle (2pt);
+  \draw[fill=white] (2.5*\X,0pt) circle (2pt);
 
-  \draw[->,densely dashdotted] (105pt,-60pt)--(115pt,-30pt);
-  \draw[->,densely dashdotted] (105pt,-60pt)--(115pt,0pt);
+  \draw[->,densely dashdotted] (6*\X,2*\Y)--(6.5*\X,1*\Y);
+  \draw[->,densely dashdotted] (6*\X,2*\Y)--(6.5*\X,0pt);
 
-  \draw[fill=black] (105pt,-60pt) circle (1.5pt);
+  \draw[fill=black] (6*\X,2*\Y) circle (2pt);
   
-  \draw[->,densely dashdotted]
-  (115pt,-30pt)to[out=-35,in=-145]node[anchor=north]{wait}(155pt,-30pt);
+  \draw[->,densely dashdotted, very thick]
+  (6.5*\X,1*\Y)to[out=-35,in=-145]node[anchor=north]{\textbf{wait}}(8.5*\X,1*\Y);
 
 
-  \draw (175pt,1pt) node[anchor=south]{$[\{1,2\};\{\};\{\}]$}-- (175pt,-1pt);
-  \draw (175pt,-29pt) node[anchor=south]{$[\{1,2\};\{\};\{\}]$}--(175pt,-31pt);
-  \draw (175pt,-59pt) node[anchor=south]{$[\{1,2\};\{\};\{\}]$}--(175pt,-61pt);
+  \draw (9.5*\X,2pt) node[anchor=south]
+  {[$\langle m_1,\,2,\,\varnothing\rangle \langle m_3,\,1,\,\varnothing\rangle$]}
+  -- (9.5*\X,-2pt);
+  \draw (9.5*\X,2+1*\Y) node[anchor=south]
+  {[$\langle m_1,\,2,\,\varnothing\rangle \langle m_3,\,1,\,\varnothing\rangle$]}
+  -- (9.5*\X,-2+1*\Y);
+  \draw (9.5*\X,2+2*\Y) node[anchor=south]
+  {[$\langle m_1,\,2,\,\varnothing\rangle \langle m_3,\,1,\,\varnothing\rangle$]}
+  -- (9.5*\X,-2+2*\Y);
   
-  \draw[->,densely dashdotted] (155pt,-69pt) -- (163pt,-69pt)
+  \begin{scope}[shift={(2*\X, 2.5*\Y)}]
+  \draw[->,densely dashdotted] (0pt,-1pt) -- (10pt,-1pt)
   node[anchor=west]{messages};
-  \draw[fill=white] (160pt,-75pt)node[anchor=west]{$insert$}circle (1.5pt);
-  \draw[fill=black] (160pt,-82pt)
-  node[anchor=west]{$delete(p_1,1)$} circle (1.5pt);
+  \draw[fill=white] (55pt,0pt)node[anchor=west]{$insert$}circle (2pt);
+  \draw[fill=black] (92.5pt,0pt)
+  node[anchor=west]{$delete(\langle m_1,\,1\rangle)$} circle (2pt);
+  \end{scope}
 
 \end{tikzpicture}
