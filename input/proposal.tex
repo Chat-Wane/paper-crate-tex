@@ -74,23 +74,26 @@ properties to efficiently disseminate the messages.
   exchanges, and the leaving. They respectively aim to increase, retain, and
   decrease the number of connections to follow a logarithmic progression.
 
-\item [The information dissemination protocol] relies on the neighborhood
-  provided by \SPRAY to propagate the changes performed by the users on their
-  shared document. When a user performs an operation, \CRATE prepares a message
-  including the result of the operation and broadcasts it to the whole network
-  using its neighborhood. In a second time, the neighbors receiving such message
-  forward it to their own neighbors. Hence, the message reaches all participants
-  transitively. The stopping condition checks if the message has already been
-  received previously using the version vector with exceptions
-  (cf. Section~\ref{subsec:causality}). Therefore, members forwards messages
-  only once. Thus, the communication layer's impact on complexity at each peer
-  is:
+\item [The information dissemination protocol]\cite{birman1999bimodal} aims to
+  propagate the changes performed by the user on their shared document. Any
+  operation must reach all members (broadcast) to guarantee eventual
+  consistency. The dissemination relies on the neighborhood provided by
+  \SPRAY. When a user performs an operation, \CRATE prepares a message including
+  the result of the operation and sends it to the whole network using its
+  neighborhood. Neighbors receiving such message forward it to their own
+  neighbors. Hence, messages reach all participants transitively. To guarantee
+  termination and limit the flooding, each member forwards each message to their
+  neigbhors only once by using a version vector with exceptions
+  (cf. Section~\ref{subsec:causality}).
+
+  The information dissemination protocol impacts the communication complexity at
+  each peer:
   \begin{equation}
     \mathcal{O}(m.\ln |\mathcal{R}| )
   \end{equation}
   where $m$ is the message size determined by the layers below, and
-  $|\mathcal{R}|$ is the number of replicas in the network. The latter includes
-  both writers and readers of the shared sequence.
+  $|\mathcal{R}|$ is the number of replicas in the network including both
+  writers and readers of the shared sequence.
 \end{asparadesc}
 
 \subsection{Causality tracking}
