@@ -91,7 +91,7 @@ properties to efficiently disseminate the messages.
   The information dissemination protocol impacts the communication complexity at
   each peer:
   \begin{equation}
-    \mathcal{O}(m.\ln |\mathcal{R}| )
+    \mathcal{O}(m.\ln |\mathcal{R}|)
   \end{equation}
   where $m$ is the message size determined by the layers below, and
   $|\mathcal{R}|$ is the number of replicas in the network including both
@@ -188,97 +188,51 @@ exceptions~\cite{malkhi2007concise, mukund2014optimized}.
 \subsection{Shared sequence}
 \label{subsec:sequence}
 
-To guarantee eventually consistent\cite{bailis2013eventual} replicas of the
+To guarantee eventually consistent~\cite{bailis2013eventual} replicas of the
 shared document, \CRATE uses a conflict-free replicated data type for
 sequences~\cite{shapiro2011comprehensive, shapiro2011conflict} with the
 allocation function \LSEQ~\cite{nedelec2013concurrency, nedelec2013lseq} for its
 unique and immutable identifiers.
 
-\CRATE uses \LSEQ, a polyLogarithmic identifier allocator for SEQuences. Its
-underlying structure is an exponential tree which, when linearized using its
-global total order, results in the sequence of elements representing the
-document. \LSEQ comprises two parts:
-\begin{inparaenum}[(i)]
-\item the function $allocPath$ which chooses the path in the tree for the
-  newly allocated identifier.
-\item the function $allocDis$ which decorates the path in order to ensure its
-  uniqueness even in presence of concurrent insertions.
-\end{inparaenum}
+\LSEQ stands for polyLogarithmic identifier allocator for SEQuences. It
+allocates identifiers the size of which is polylogarithmically upper-bounded
+(compared to the document size) and determined at generation (unique and
+immutable). Thus, each identifier comprises a path and a globally unique marker
+called disambiguator. We note the former as a list [$p_1.p_2\ldots p_k$] where
+$p_k$ belongs to Integers. The union of paths produces a tree. For instance, the
+factorization of paths [$13.37$] and [$13.42$] produces a tree where the element
+$13$ has two children: $37$ and $42$. The challenge consists in keeping the
+identifiers size growth under a sub-linear upper-bound on space complexity. The
+rest of this section reviews \LSEQ's internal components and provides its
+complexity analysis.
 
-The function $allocPath$ chooses the path associated with each element in order
-to encode its relative position with regard to its adjacent elements in the
-sequence. For the sake of performance, the aim of $allocPath$ is to keep the
-underlying tree with a small depth. Three components compose $allocPath$. Each
-of these components fails to provide an efficient allocation
-function. Nevertheless, their composition allows to get the best of each by
-canceling their respective deficiency.
 \begin{asparadesc}
-\item [An exponential tree]~\cite{andersson1996faster,andersson2007dynamic}
-  represents the shared document. The path is a sequence of numbers chosen among
-  a subset of numbers the size of which is doubled at each concatenation. For
-  instance, if a path $p_1$ of size 1 is chosen among [$\mathbb{N}_{<32}$], a
-  path $p_2$ of size 2 is chosen among [$\mathbb{N}_{<32}.\mathbb{N}_{<64}$]
-  etc. Let $r$ be the number of possible paths with one concatenation (i.e., the
-  maximum arity of the root of the tree), a path $p_k$ of size $k$ is chosen
-  among [$\mathbb{N}_{<r}.\mathbb{N}_{<2r}\ldots\mathbb{N}_{<2^{k-1}r}$].  Due
-  to the growth of the subsets, such representation of the paths requires one
-  additional bit to encode each concatenation. With the same examples, it
-  implies that $p_1$ is encoded using $log_2(32)=5$ bits, $p_2$ is encoded using
-  $5+6=11$ bits,~\ldots Thus, a path is encoded by:
-  \begin{equation}
-    \sum\limits_{i=1}^{k}(\log_2(r)+i) =
-    k\log_2(r) + {k(k+1)\over{2}} = \mathcal{O}(k^2) \,\, bits
-  \end{equation}
-  When an exponential tree of depth $k$ is balanced (i.e., all its branches
-  are filled) it holds uptil:
-  \begin{equation} \sum\limits_{i=0}^{k-1} {2^{(i^2-i)/2}} \,\, elements
-  \end{equation}
-  When an exponential tree of depth $k$ has one branch filled per level, it
-  holds uptil:
-  \begin{equation} 2^{k+1}-1 \,\, elements\end{equation} 
-  In the worst case, the tree contains one element per level.
-  
-  An alphabetical order maintains a dense total order among elements in the
-  tree. It primary uses the path of elements alongside globally unique markers
-  called disambiguators. The latter's objective is twofold:
-  \begin{inparaenum}[(i)]
-  \item to order concurrent operations that happen to have an identical path and
-  \item to allow the allocation of new identifiers in-between them.
-  \end{inparaenum}
-  For instance, let [3] be the path of Element Q inserted by User $u_x$, and let
-  [4] the path of Element T inserted by User $u_y$. When a user $u_1$ inserts W
-  between those elements, the depth of the tree must grow to welcome the new
-  element. Assuming that depth 1 has a maximum arity of 8, the identifier is
-  allocated in the range from [3.0] to [3.15].  In this example, the resulting
-  path is [3.6]. In the meantime, another user $u_2$ inserts R between Q and T
-  which happens to result in the path [3.6] too. To ensure a total order,
-  disambiguators are associated with each path composed of a monotonically
-  growing counter and a globally unique site identifier. Here, the identifier of
-  Element W is composed of the path [3.6] and disambiguator
-  [$\langle u_x,\,1\rangle$, $\langle u_1,\,1$] and the Element R is composed of
-  the path [3.6] and disambiguator [$\langle u_x,\,1\rangle$,
-  $\langle u_2,\,1\rangle$].  The comparison starts to examine the first
-  concatenations which are equal.  Then, the comparison concerns the path of the
-  second level of the tree which are equals too. Hence, it examines the
-  disambiguators to determine that W is located before R because $u_x < u_y$ in
-  this case. The resulting sequence is QWRT.
-  
-\item [Two sub-allocation functions] designed for monotonic editing, i.e.,
-  inserting repeatedly at an adjacent position of the previously inserted
-  element. These are application dependent. While one is well-suited to
-  end-editing (left-to-right), the other is well-suited for front-editing
-  (right-to-left). To achieve this, they respectively allocate paths close of
-  the leftmost path, and rightmost path in order to preserve space for the
-  future insertions. Hence, the left-to-right allocation function leaves
-  available paths at the right of the tree, while the right-to-left function
-  aims the opposite. For instance, a user writes QWERTY starting from the Q to
-  the Y. Using the left-to-right allocation function leads to identifiers like
-  [2], [4], [7], [7.2], [7.5], [7.9]. Small space is left in-between paths to
-  handle mistakes, e.g., a user misses some characters while typing.  Since
-  accurately predicting the editing behavior of users is \TODO{impossible},
-  \LSEQ uses these two antagonist strategies to adapt to any editing behaviors
-  assuming that edition is mostly about compositions of sequences of monotonic
-  insertions.
+\item [Two sub-allocation functions] with antagonist objectives allow \LSEQ to
+  be independent of the application. Indeed, the editing behavior of users is
+  unpredictable, i.e., get the \emph{a priori} knowledge of where and in which
+  order the operations will be performed is impossible. Hence, instead of
+  characterizing with complex machine learning the editing behaviors of users,
+  \LSEQ uses two sub-allocation functions designed to handle trivial editing
+  sequences such as left-to-right editing and right-to-left editing. It assumes
+  that the editing behavior is either one of these two, or a composition of
+  them. 
+
+  We refer to left-to-right and right-to-left editing as monotonic editing since
+  they come from the repeated insertions of characters at an adjacent position of
+  the previously inserted one.
+
+  These sub-allocation functions application dependent. They respectively
+  allocate paths close of the leftmost path, and rightmost path in order to
+  preserve space for the future insertions. Hence, the left-to-right allocation
+  function leaves available paths at the right of the tree, while the
+  right-to-left function aims the opposite. For instance, a user writes QWERTY
+  starting from the Q to the Y. Using the left-to-right allocation function
+  leads to identifiers like [$2$], [$4$], [$7$], [$7.2$], [$7.5$],
+  [$7.9$]. Small space is left in-between paths to handle mistakes, e.g., a user
+  misses some characters while typing.  Since accurately predicting the editing
+  behavior of users is \TODO{impossible}, \LSEQ uses these two antagonist
+  strategies to adapt to any editing behaviors assuming that edition is mostly
+  about compositions of sequences of monotonic insertions.
   
 \item [A hash function] chooses among the two sub-allocation functions. The
   choice is made randomly using a hash function following a uniform
@@ -291,19 +245,76 @@ canceling their respective deficiency.
   document. When a user inserts a new element in the sequence, \LSEQ firstly
   processes the depth of the new path, and secondly defers the allocation to the
   function designated by the hash of the depth.
-\end{asparadesc}
 
-% \begin{algorithm}[h]
-%   \input{input/allocpathalgo.tex}
-%   \caption{The $allocPath$ function of \LSEQ}
-%   \label{algo:allocpathalgo}
-% \end{algorithm}
+\item [An exponential tree]~\cite{andersson1996faster, andersson2007dynamic}
+  represents the shared document. Such tree has the particularity that each
+  element has twice as much children as its parent.  Hence, paths are sequence
+  of numbers where each concatenation belongs to a subset of Integer the size of
+  which doubles compared to the prior concatenation. For instance, if a path of
+  size 1 is chosen among [$\mathbb{N}_{<32}$], a path of size 2 is chosen among
+  [$\mathbb{N}_{<32}.\mathbb{N}_{<64}$] etc.
+
+  An exponential tree with a root of maximum arity $r$ has paths of size $k$
+  chosen among [$\mathbb{N}_{<r}.\mathbb{N}_{<2r}\ldots\mathbb{N}_{<2^{k-1}r}$].
+  Due to the subsets growth, the binary representation of paths requires one
+  additional bit to encode each concatenation. For instance, a path chosen among
+  [$\mathbb{N}_{<32}$] is encoded on $log_2(32)=5$ bits, a path chosen among
+  [$\mathbb{N}_{<32}.\mathbb{N}_{<64}$] is encoded on $log_2(32)+log_2(64)=11$
+  bits, etc.
   
+  An exponential tree with a root of maximum arity $r$ has paths of size $k$
+  encoded on:
+  \begin{equation}
+    \sum\limits_{i=0}^{k-1}(\log_2(r)+i) =k^2+(log_2(r)-{1\over{2}})k =
+    \mathcal{O}(k^2) \,\, bits
+  \end{equation}
 
-% \begin{algorithm}
-%   \input{input/allocdesalgo.tex}
-%   \caption{\label{algo:allocdis}The function $allocDis$ of \LSEQ}
-% \end{algorithm}
+  A balanced exponential tree reaching a depth $k$ (i.e., all its branches are
+  filled) holds uptill:
+  \begin{equation}
+    \sum\limits_{i=1}^{k} {2^{(i^2+i)/2}} \,\, elements
+  \end{equation}
+
+  An exponential tree reaching a depth $k$ with only one branch filled per level
+  holds uptill:
+  \begin{equation}
+    2^{k+1}-2 \,\, elements
+  \end{equation}
+
+  An exponential tree reaching a depth $k$ with only one element per level
+  (worst case) holds uptill: 
+  \begin{equation}
+    k \,\, elements
+  \end{equation}
+  
+  An alphabetical order maintains a dense total order among elements. It uses
+  both the path and disambiguators of the identifier. While the former aims to
+  give a fast and easy way to create and order elements relatively from each
+  other. The objective of the latter is twofold:
+  \begin{inparaenum}[(i)]
+  \item to order concurrent operations that happen to have an identical path and
+  \item to allow the allocation of new identifiers in-between them.
+  \end{inparaenum}
+
+  For instance, let [$3$] be the path of Element Q inserted by User $u_x$, and let
+  [$4$] the path of Element T inserted by User $u_y$. When a user $u_1$ inserts W
+  between those elements, the depth of the tree must grow to welcome the new
+  element. Assuming that depth 1 has a maximum arity of 8, the identifier is
+  allocated in the range from [$3.0$] to [$3.15$].  In this example, the resulting
+  path is [$3.6$]. In the meantime, another user $u_2$ inserts R between Q and T
+  which happens to result in the path [$3.6$] too. To ensure a total order,
+  disambiguators are associated with each path composed of a monotonically
+  growing counter and a globally unique site identifier. Here, the identifier of
+  Element W is composed of the path [$3.6$] and disambiguator
+  [$\langle u_x,\,1\rangle$, $\langle u_1,\,1\rangle$] and the Element R is composed of
+  the path [$3.6$] and disambiguator [$\langle u_x,\,1\rangle$,
+  $\langle u_2,\,1\rangle$].  The comparison starts to examine the first
+  concatenations which are equal.  Then, the comparison concerns the path of the
+  second level of the tree which are equals too. Hence, it examines the
+  disambiguators to determine that W is located before R because $u_x < u_y$ in
+  this case. The resulting sequence is QWRT.  
+
+\end{asparadesc}
 
 % In text editing, most of the editing behaviors can be empirically summarized
 % as a composition of two basic editing behaviors.
