@@ -321,7 +321,16 @@ complexity analysis.
   From this counting, we deduce the space complexity of
   \LSEQ. Table~\ref{table:lseqspace} shows both the space complexity of each
   identifier and the space complexity of whole tree structure representing the
-  sequence.
+  sequence. When the tree is balanced, its depth is upper-bounded by
+  $\mathcal{O}(\sqrt{\log I})$. Since the identifier encoding grows
+  quadratically compared to the depth of the tree, it results in
+  $\mathcal{O}(\log I)$. From the same reasoning, the identifiers of monotonic
+  editing are polylogarithmic. In the worst case, where the tree has one element
+  per level, identifiers grows quadratically. When the tree structure factorizes
+  identifiers, it results in $\mathcal{O}(I\log I)$ since each element holds a
+  single concatenation of the path the size of which grows logarithmically.  In
+  the the worst case, the last identifiers contains the full tree, hence,
+  $\mathcal{O}(I^2)$.
   
   An alphabetical order maintains a dense total order among elements. It uses
   both the path and disambiguators of the identifier. While the former aims to
@@ -358,27 +367,32 @@ complexity analysis.
     Upper-bound on time complexity of \LSEQ. Where $I$ is the document size.}
 \end{table}
 
+Table~\ref{table:lseqtime} shows the time complexity of operations of \LSEQ
+divided between the local and remote parts of the optimistic replication. The
+local insertion is in charge of allocating an identifier. Since, the balanced
+tree resulting from random editing reaches a depth of
+$\mathcal{O}(\sqrt{log I})$ and requires as much comparisons to create the new
+identifiers. When they are integrated, it requires as much binary searches to
+locate their correct position. A tree filled by monotonic editing grows
+logarithmically. Hence, the time complexity upper-bound is higher than the
+balanced structure. Finally, the worst case requires to consider the path of
+each element to create the new identifiers. Then, at integration, it requires
+one comparison per level (i.e. per element) to find its location. The local
+delete operation is only in charge of broadcasting the identifier to all
+participants, hence, the constant time complexity.
 
-%% \begin{table*}
-%%   \centering
-%%   \input{input/lseqcomplexitiestable.tex}
-%%   \caption{\label{table:lseqcomplexities}
-%%     Upper-bound on space and time complexities of \LSEQ. Where $I$ is the number
-%%     of insert operations performed.}
-%% \end{table*}
-
-\TODO{To summarizes, the space complexity analysis reveals that the allocation
-function \LSEQ sacrifices on the worst-case space complexity to improve the
-space complexity of the monotonic editing behaviors. Nevertheless, in text
-editing, the worst-case happens with a very low probability compared the other
-cases. Furthermore, it is worth noting that usually, the authors do not write a
-document in a single round, starting from the beginning to go straight up to
-the end (as the monotonic analysis could suggest). On the contrary, the authors
-write sections, structure the documents, perform corrections, rewrite parts of
-the document, reorganize, etc. This behavior (between random and monotonic
-behavior) tends to even up the branches of the underlying tree of \LSEQ. In
-the case of random editing, the space complexity is asymptotically optimal
-$O(log\,n)$ while it is very interesting in a "normal setting" $O((log\,n)^2)$.}
+% \TODO{To summarizes, the space complexity analysis reveals that the allocation
+% function \LSEQ sacrifices on the worst-case space complexity to improve the
+% space complexity of the monotonic editing behaviors. Nevertheless, in text
+% editing, the worst-case happens with a very low probability compared the other
+% cases. Furthermore, it is worth noting that usually, the authors do not write a
+% document in a single round, starting from the beginning to go straight up to
+% the end (as the monotonic analysis could suggest). On the contrary, the authors
+% write sections, structure the documents, perform corrections, rewrite parts of
+% the document, reorganize, etc. This behavior (between random and monotonic
+% behavior) tends to even up the branches of the underlying tree of \LSEQ. In
+% the case of random editing, the space complexity is asymptotically optimal
+% $O(log\,n)$ while it is very interesting in a "normal setting" $O((log\,n)^2)$.}
 
 \begin{figure*}
   \centering
@@ -390,24 +404,35 @@ $O(log\,n)$ while it is very interesting in a "normal setting" $O((log\,n)^2)$.}
 \end{figure*}
 
 
-Figure~\ref{fig:lseqtreeexample} depicts the resulting trees after two
-antagonist scenarios creating the sequence $QWERTY$
-\begin{inparaenum}[(i)] 
-\item the left-to-right editing sequence [($Q,\,0$), ($W,\,1$), \ldots] and
-\item the right-to-left editing sequence [($Y,\,0$), ($T,\,0$), \ldots].
-\end{inparaenum}
-In both cases, the exponential tree of \LSEQ starts with an arity $32$ and
-doubles it at each level. Also, it uses the $frontEditing$ and $endEditing$
-sub-allocation functions at the first and the second level of the tree
-respectively. Since the first level of the tree uses the function $endEditing$,
-the scenario involving the left-to-right editing sequence results in a tree of
-depth 1. On the other hand, contrarily to the allocation function presented in
-Figure\ref{fig:allocpathexample}), the antagonist scenario does not increase
-very much the depth of the tree. Indeed, the identifiers of \LSEQ quickly reach
-a level of the tree where the sub-allocation function is designed to handle the
-right-to-left editing behavior.
+\begin{asparadesc}
+\item [As summary,] Figure~\ref{fig:lseqtreeexample} depicts the functioning of
+  \LSEQ resulting in two trees after scenarios creating the sequence $QWERTY$:
+  \begin{inparaenum}[(i)] 
+  \item the left-to-right editing sequence [($Q,\,0$), ($W,\,1$), \ldots] and
+  \item the right-to-left editing sequence [($Y,\,0$), ($T,\,0$), \ldots].
+  \end{inparaenum}
+  In both cases, the exponential tree of \LSEQ starts with an arity $32$ and
+  doubles it at each level. It uses the $frontEditing$ and $endEditing$
+  sub-allocation functions which are sub-allocation functions designed for
+  right-to-left and left-to-right monotonic editing behaviors. The hash function
+  designates the $frontEditing$ sub-allocation function to the first level of
+  the tree, and the $endEditing$ sub-allocation function to the second
+  level. Since the first level of the tree uses the function $endEditing$, the
+  scenario involving the left-to-right editing sequence results in a tree of
+  depth 1. On the other hand, the antagonist scenario shows \LSEQ identifiers
+  that quickly reach a level of the tree where the sub-allocation function is
+  designed to handle the right-to-left editing behavior.
+\end{asparadesc}
 
 \subsection{Graphical user interface}
+
+To perform their changes on the shared document, users have a visual
+representation of their respective local copy in their web browser.  \CRATE
+provides a look-up function to gets the identifier at the index, and. It gets
+the identifiers at a designated index, and converse. Thus, when users perform
+their insertions, \CRATE gets the identifiers at the targeted position and
+generates the new identifier. When it receives an identifier, it firstly inserts
+it into the tree structure and secondly get its index to notify the view.
 
 \begin{table}
   \centering
@@ -417,6 +442,7 @@ right-to-left editing behavior.
     Where $I$ is the document size.}
 \end{table}
 
+Table~\ref{table:lseqlookup} shows the space complexity of the look-up. 
 
 %%% Local Variables: 
 %%% mode: latex
