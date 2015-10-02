@@ -211,36 +211,60 @@ complexity analysis.
   be independent of the application. Indeed, the editing behavior of users is
   unpredictable, i.e., get the \emph{a priori} knowledge of where and in which
   order the operations will be performed is impossible. Hence, instead of
-  characterizing with complex machine learning the editing behaviors of users,
+  characterizing the editing behaviors of users with complex machine learning,
   \LSEQ uses two sub-allocation functions designed to handle trivial editing
-  sequences such as left-to-right editing and right-to-left editing. It assumes
-  that the editing behavior is either one of these two, or a composition of
-  them. 
+  sequences, knowingly left-to-right editing and right-to-left editing. It
+  assumes that the editing behavior is either one of these two, or a composition
+  of them.
 
   We refer to left-to-right and right-to-left editing as monotonic editing since
   they come from the repeated insertions of characters at an adjacent position of
   the previously inserted one.
-
-  These sub-allocation functions application dependent. They respectively
-  allocate paths close of the leftmost path, and rightmost path in order to
-  preserve space for the future insertions. Hence, the left-to-right allocation
-  function leaves available paths at the right of the tree, while the
-  right-to-left function aims the opposite. For instance, a user writes QWERTY
-  starting from the Q to the Y. Using the left-to-right allocation function
-  leads to identifiers like [$2$], [$4$], [$7$], [$7.2$], [$7.5$],
-  [$7.9$]. Small space is left in-between paths to handle mistakes, e.g., a user
-  misses some characters while typing.  Since accurately predicting the editing
-  behavior of users is \TODO{impossible}, \LSEQ uses these two antagonist
-  strategies to adapt to any editing behaviors assuming that edition is mostly
-  about compositions of sequences of monotonic insertions.
   
+  The allocation functions allocate paths in order to save allocation space for
+  the upcoming operations. In that spirit, the function designed for
+  left-to-right editing allocates paths close of the leftmost available path.
+  Thus, when new characters arrive, presumably at the right of the lastly
+  inserted character, the allocation function still has a large number of
+  available paths. Hence it does not need to increase the depth of the tree.
+
+  For instance, assuming a 10-ary tree, a left-to-right allocation function, and
+  a user writing QWERTY starting from Q to Y. When Character Q arrives,
+  the function allocates a path in [$\mathbb{N}_{<10}$]. To leave available
+  paths for future insertions, the function allocates a path close of the bound
+  [$0$]. In this example, the resulting path is [$2$]. Then, Character W
+  arrives, the functions allocates a path between Q's path [$2$], and the
+  virtual boundary [$10$]. Once again, it chooses a path close of the previous
+  path. It results in the path [$5$]. Incrementally, we obtain paths [$6$],
+  [$7$], [$9$] for E R T, respectively. When Character Y arrives, there is no
+  room for another path of size 1. Consequently, the depth of the tree increases
+  to receive the new path allocated in [$9.\mathbb{N}_{<10}$]. Identically to
+  prior insertions, the path is allocated close of the previous bound which is
+  [$9.0$], resulting in [$9.1$].
+
+  Nevertheless, this allocation strategy is not sufficient to handle any editing
+  behavior. When the assumption of left-to-right editing does not hold,
+  performance can be dramatically impacted.
+
+  For instance, assuming a 10-ary, a left-to-right allocation function, and a
+  user writing QWERTY starting from Y to Q. As for the prior example, the
+  function allocates [$2$] for Y. When T arrives, it allocates a path between
+  [$0$] and [$2$] resulting in the path [$1$]. When R arrives, the tree has no
+  room for a new path at depth 1. As consequence, the path is allocated in
+  [$0.\mathbb{N}_{<10}$]. Since it keeps allocating paths close from the
+  previous bound, the resulting path is [$0.1$]. When E arrives, the tree must
+  grow again etc.
+
+  Each sub-allocation function is application dependent.  \LSEQ uses two
+  antagonist strategies to adapt to any editing behavior. 
+
 \item [A hash function] chooses among the two sub-allocation functions. The
-  choice is made randomly using a hash function following a uniform
-  distribution. Such function does not favor any editing behavior while
-  remaining efficient. This provides the independence of the allocation function
-  from any editing strategy. Furthermore, as shown
-  in~\cite{nedelec2013concurrency}, using antagonist sub-allocation functions
-  forces all peers to make identical choices. To reach that goal, they all use a
+  choice is made randomly following a uniform distribution. As such, it does not
+  favor any editing behavior and provides the independence of the allocation
+  function from any editing behavior.
+
+  Using antagonist sub-allocation functions forces all peers to make identical
+  choices~\cite{nedelec2013concurrency}. To reach that goal, they all use a
   similar hash function initialized with a common seed and shared within the
   document. When a user inserts a new element in the sequence, \LSEQ firstly
   processes the depth of the new path, and secondly defers the allocation to the
@@ -286,6 +310,18 @@ complexity analysis.
   \begin{equation}
     k \,\, elements
   \end{equation}
+
+  \begin{table}
+    \centering
+    \input{input/lseqspacetable.tex}
+    \caption{\label{table:lseqspace}
+      Upper-bound on space complexity of \LSEQ. Where $I$ is the document size.}
+  \end{table}
+  
+  From this counting, we deduce the space complexity of
+  \LSEQ. Table~\ref{table:lseqspace} shows both the space complexity of each
+  identifier and the space complexity of whole tree structure representing the
+  sequence.
   
   An alphabetical order maintains a dense total order among elements. It uses
   both the path and disambiguators of the identifier. While the former aims to
@@ -296,55 +332,40 @@ complexity analysis.
   \item to allow the allocation of new identifiers in-between them.
   \end{inparaenum}
 
-  For instance, let [$3$] be the path of Element Q inserted by User $u_x$, and let
-  [$4$] the path of Element T inserted by User $u_y$. When a user $u_1$ inserts W
+  For instance, let [$3$] be the path of Element Q inserted by Member $m_x$, and let
+  [$4$] the path of Element T inserted by Member $m_y$. When a member $m_1$ inserts W
   between those elements, the depth of the tree must grow to welcome the new
   element. Assuming that depth 1 has a maximum arity of 8, the identifier is
   allocated in the range from [$3.0$] to [$3.15$].  In this example, the resulting
-  path is [$3.6$]. In the meantime, another user $u_2$ inserts R between Q and T
+  path is [$3.6$]. In the meantime, another member $m_2$ inserts R between Q and T
   which happens to result in the path [$3.6$] too. To ensure a total order,
   disambiguators are associated with each path composed of a monotonically
   growing counter and a globally unique site identifier. Here, the identifier of
   Element W is composed of the path [$3.6$] and disambiguator
-  [$\langle u_x,\,1\rangle$, $\langle u_1,\,1\rangle$] and the Element R is composed of
-  the path [$3.6$] and disambiguator [$\langle u_x,\,1\rangle$,
-  $\langle u_2,\,1\rangle$].  The comparison starts to examine the first
+  [$\langle m_x,\,1\rangle$, $\langle m_1,\,1\rangle$] and the Element R is composed of
+  the path [$3.6$] and disambiguator [$\langle m_x,\,1\rangle$,
+  $\langle m_2,\,1\rangle$].  The comparison starts to examine the first
   concatenations which are equal.  Then, the comparison concerns the path of the
   second level of the tree which are equals too. Hence, it examines the
-  disambiguators to determine that W is located before R because $u_x < u_y$ in
+  disambiguators to determine that W is located before R because $m_x < m_y$ in
   this case. The resulting sequence is QWRT.  
-
 \end{asparadesc}
 
-% In text editing, most of the editing behaviors can be empirically summarized
-% as a composition of two basic editing behaviors.
-% \begin{inparaenum}[(i)]
-% \item The random editing behavior where the author inserts new elements at
-%   what appears random positions in the sequence. For instance, this behavior
-%   mostly arises when syntactic corrections are performed, e.g., the author
-%   writes $QWETY$ and realizes that the $R$ is missing. She adds the missing
-%   character in a second time.
-% \item The monotonic editing behavior where the author repeatedly inserts new
-%   elements between the last inserted element and an adjacent element (after or
-%   before exclusively). For instance, when an author writes $QWERTY$, she
-%   generally starts from the first letter $Q$ to the last letter of the word
-%   $Y$. On the opposite, insertions in a logfile are usually performed at the
-%   beginning for practical reasons.
-% \end{inparaenum}
-
-% As a consequence, we focus on the space complexity analysis of \LSEQ to
-% random and monotonic editing behaviors to which we add a worst-case complexity
-% analysis.  The analysis does not include an average case since it requires to
-% know the average distribution of the position of edits performed by a human
-% collaborator which is obviously very complex.
-
-\begin{table*}
+\begin{table}
   \centering
-  \input{input/lseqcomplexitiestable.tex}
-  \caption{\label{table:lseqcomplexities}
-    Upper-bound on space and time complexities of \LSEQ. Where $I$ is the number
-    of insert operations performed.}
-\end{table*}
+  \input{input/lseqtimetable.tex}
+  \caption{\label{table:lseqtime}
+    Upper-bound on time complexity of \LSEQ. Where $I$ is the document size.}
+\end{table}
+
+
+%% \begin{table*}
+%%   \centering
+%%   \input{input/lseqcomplexitiestable.tex}
+%%   \caption{\label{table:lseqcomplexities}
+%%     Upper-bound on space and time complexities of \LSEQ. Where $I$ is the number
+%%     of insert operations performed.}
+%% \end{table*}
 
 \TODO{To summarizes, the space complexity analysis reveals that the allocation
 function \LSEQ sacrifices on the worst-case space complexity to improve the
@@ -385,6 +406,16 @@ Figure\ref{fig:allocpathexample}), the antagonist scenario does not increase
 very much the depth of the tree. Indeed, the identifiers of \LSEQ quickly reach
 a level of the tree where the sub-allocation function is designed to handle the
 right-to-left editing behavior.
+
+\subsection{Graphical user interface}
+
+\begin{table}
+  \centering
+  \input{input/lseqlookuptable.tex}
+  \caption{\label{table:lseqlookup}
+    Upper-bound on time complexity of the look-up on a \LSEQ structure.
+    Where $I$ is the document size.}
+\end{table}
 
 
 %%% Local Variables: 
