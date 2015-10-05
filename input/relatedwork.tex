@@ -77,32 +77,32 @@ informations that impact greatly the whole communication complexity.
 
 \begin{asparadesc}
 
-\item [Operational transformation (OT)] allows to build centralized or
-  decentralized real-time editors. In OT, operations are generated in
-  constant time. Next, an operation has to be transformed according to
-  concurrent operations defined on the same state. Consistency is
-  obtained thanks to an OT integration algorithm such as COT or SOCT2
-  and properties on transformation functions. The Integration time
-  complexity depends of concurrency and can be different according to
-  different trade-off. In COT~\cite{sun2009contextbased}, time
-  complexity of integration is exponential. It can be reduced to
-  linear at the cost of high space complexity. In
-  SOCT2~\cite{Vidot00}, it is quadratic. Whatever the trade-off chosen
-  in the integration algorithm, OT has to transform incoming
-  operations according to concurrent operations and a state vector is
-  the minimal structure that allows to detect
+\item [Operational transformation (OT)] allows to build decentralized
+  real-time editors based on algorithm such as
+  COT~\cite{sun2009contextbased} or SOCT2~\cite{Vidot00}. In OT,
+  operations are generated in constant time. Next, an operation has to
+  be transformed according to concurrent operations defined on the
+  same state. %
+% Consistency is obtained thanks to an OT integration
+%   algorithm such as COT or SOCT2 and properties on transformation
+%   functions. The Integration time complexity depends of concurrency
+%   and can be different according to different trade-off. In
+%   COT~\cite{sun2009contextbased}, time complexity of integration is
+%   exponential. It can be reduced to linear at the cost of high space
+%   complexity. In SOCT2, it is quadratic. Whatever the trade-off chosen
+%   in the integration algorithm, 
+  A state vector is the minimal structure that allows to detect
   concurrency~\cite{charronbost1991concerning}. Hence, OT requires to
   piggy back to operations sent on the network a structure at least
-  linear to the number of participants. On space complexity, OT keeps
-  the document as a non-collaborative editor can do, plus a log of
-  operations. In the worst case i.e. a site is not responding, the
-  size of the this log includes all the operations produced from the
-  beginning of editing session, where each operation is decorated with
-  state vector proportional to number of participants. If average
-  case, a garbage collecting algorithm can drop operations integrated
-  by all participants. So, the slower participant will determine the
-  size of log hosted by all participant. OT is a powerfull approach
-  for small groups, performances degrade when the group is growing.
+  linear to the number of participants.  As pointed out
+  in\cite{oster2006data}, OT poorly scale to the number of
+  participants.  
+%Pascal: Enough for this paper ??
+% On space complexity, OT keeps a regular document and
+  % a log of operations decorated with state vector. An operation in this
+  % log can be safely removed only if operation has been received by all
+  % sites. This can be acheived with minimal state vectors, but it
+  % supposes that all sites send at regular interval their state vector.
 
 \item [Conflict-free replicated data types] (CRDTs) for sequences
   constitute the latter approaches which solve the concurrent cases by
