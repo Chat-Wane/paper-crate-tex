@@ -1,38 +1,21 @@
 \begin{abstract}
-  Distributed real-time editors such as Google Docs, or Etherpad allow
-  users distributed in space and organizations to collaborate easily
-  with just web browsers. However, main stream editors rely on central
-  servers with issues in privacy, single point of failure and
-  scalability.  Decentralized editors can tackle privacy problems but
-  scalability issues remain. 
-% According to the different approaches,
-%   decentralized editors deliver poor performances on CPU, space or
-%   communications in presence of large number of users or large shared
-%   documents. 
-  Existing algorithms cannot garantee a sublinear communication
-  complexity while preservering a bounded linear space complexity.  In
-  this paper, we propose \CRATE; a working decentralized real-time
-  editor that supports large number of users working on large
-  documents. \CRATE achieves a communication complexity in $log(n)$
-  where $n$ is the number of participants multiplied by an identifier
-  in $log(s)^2$  where $s$ is the size of the document.
-  Thanks to WebRTC, \CRATE can be easily deployed on a network of
-  browsers i.e. without servers.
-%4
-  We evaluate \CRATE in large-scale experiments on the Grid'5000
-  testbed uptil 600 participants. As expected, we observe a
-  logarithmic progression of the generated traffic according to the
-  size of the shared document and the number of participants.
+  Distributed real-time editors such as Google Docs, or Etherpad allow users
+  distributed in space and organizations to collaborate easily with only web
+  browsers. Yet, main stream editors rely on central servers with issues in
+  privacy, single point of failure and scalability.  Decentralized editors
+  settle privacy problems but scalability issues remain.  \TODO{Existing
+    algorithms do not guarantee a sublinear communication complexity while
+    preserving a linear space complexity}.  In this paper, we propose \CRATE; a
+  working decentralized real-time editor that supports large number of users
+  working on large documents. In particular, \CRATE achieves a sublinearly
+  upper-bounded communication complexity in $\mathcal{O}((\log d)^2\ln{m})$
+  where $d$ is the document size and $m$ the membership size. Thanks to WebRTC,
+  \CRATE can be easily deployed on a network of browsers \TODO{i.e.} without
+  servers.  We evaluate \CRATE on large-scale experiments in the Grid'5000
+  testbed involving uptill 600 participants. As expected, we observe a
+  logarithmic progression of the generated traffic according to the size of the
+  shared document and the number of participants.
 \end{abstract}
-
-% If currently real-time editors is mainly used by small
-%   groups, supporting large groups allow real-editing to be used in
-%   large events such as massive online courses, conferences, TV-shows \ldots
-
-  % Building a fully decentralized, scalable real-time editor requires
-  % to find a difficult compromise between time, space, and
-  % communication complexities. 
-
 
 %%% Local Variables: 
 %%% mode: latex
