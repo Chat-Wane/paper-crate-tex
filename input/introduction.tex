@@ -1,69 +1,55 @@
 
 \section{Introduction}
 
-%Real-time collaborative editors are used by millions of users and allow them to
-%distribute the work over locations and across organizations.
+Google Docs or Etherpad allow millions of users to start and access real-time
+editing sessions very easily by the mean of URLs in web browsers. Yet, such
+editors require collaboration providers to setup servers and enable
+collaboration. It implies issues in privacy, censorship, and economic
+intelligence. It also implies scalability issues in term of number of
+participants. Despite that current editors limit \emph{de facto} the groups
+size, emerging contexts (e.g. massive online courses, conferences, TV-shows)
+expose the needs of larger collaboration groups.  For instance, writing notes on
+Google Docs is possible uptill fifty users. Next users have their rights limited
+to the reading of the document.
 
+Decentralized real-time editors~\cite{oster2006data, sun1998operational,
+  sun2009contextbased} do not require intermediate servers and by the same solve
+privacy-related issues. However, scalability issues remain.  Addressing
+scalability issues requires finding a good trade-off between communication,
+space and time complexities. Such trade-off mainly consists in a sublinear
+communication complexity compared to the editing session size. While the
+transmission of operations requires at least a multiplicative factor
+logarithmically scaling compared to the network size, maintaining consistency
+requires piggybacking additional metadata the complexity of which must be
+carefully studied.
 
-Google Doc or Etherpad allow millions of users to start a real-time
-editing session by just clicking on a URL in their web
-browsers. However, main real-time editors require collaboration
-providers to setup servers to enable collaboration. This implies
-issues in privacy, censorship, economic intelligence. It also implies
-scalability issues in term of number of participants. If currently
-real-time editors is mainly used by small groups, supporting large
-groups occurs in contexts such as massive online courses,
-conferences, TV-shows where people want to share their notes. Google
-doc supports large groups but currently only fifty first users can
-edit in real-time, next users can only view the shared document
-without editing. We think that real-time editors should allow anybody
-to edit anytime whatever the number of participants.
+Decentralized algorithms that belong to operational
+transformation~\cite{sun2009contextbased} require piggybacking a state vector in
+order to detect concurrent operations. Unfortunately, state vectors grow
+linearly compared to the number of members that ever participated in the
+authoring.
 
-Decentralized real-time editors ~\cite{oster2006data,
-  sun1998operational, sun2009contextbased} do not require intermediate
-servers, solving some privacy issues. However, scalability issues remains.
-%
-% Deployement issues can be tackled with WebRTC. By allowing
-% browser-to-browser data channels, WebRTC
-% provides the opportunity to run decentralized editors in browsers with
-% simple connection establishement. 
+Conflict-Free Replicated Data Types~\cite{shapiro2011comprehensive} (CRDTs) such
+as WOOT~\cite{oster2006data} piggyback a constant-size identifier which is
+optimal. Nonetheless, their local space complexity grows monotonically which
+eventually leads to the need of an unaffordable garbage collecting. Other
+algorithms~\cite{weiss2010logootundo, preguica2009commutative} limit their local
+space consumption. Nevertheless, they piggyback variable-size identifiers that
+can grow linearly compared to the document size. In such case, they eventually
+need to run a costly consensus algorithm to rebalance
+documents~\cite{zawirski2011asynchronous}. Finally, the \LSEQ
+algorithm~\cite{nedelec2013concurrency} aims to avoid such consensus by
+sublinearly upper-bounding the space complexity of its identifiers. \TODO{It
+conjectured that identifiers can be bounded to the $log(s)^2$ where $s$ is the
+size of shared document.}
 
-Addressing the scalabilty issue requires to find a good trade-off
-between communication, space and time complexities. First, to be
-scalable, communication complexity of decentralized editors has to be
-sublinear to the number of participants. In the best case, if we have
-$n$ participants, sending a typed character to others requires to
-contact $log(n)$ participants. But consistency maintenance of
-real-time editors requires to piggy back to each message extra
-informations that impact greatly the whole communication complexity.
-
-Decentralized algorithms of operational
-transformation~\cite{sun2009contextbased} requires to piggy-back at
-least a state vector in order to detect concurrent operations that is
-linear to the number of participants.
-
-Conflict-Free Replicated Data Type
-(CRDT)\cite{shapiro2011comprehensive} such as
-WOOT~\cite{oster2006data} piggy-back a fixed-size identifier which is
-great but require unlimited space. Others algorithms can limit space
-complexity, but piggy-back variable-size identifiers that can be linear to
-the size of
-document\cite{weiss2010logootundo,preguica2009commutative}. If the
-worst case happens, the only solution is to run a costly consensus
-algorithm to rebalance documents~\cite{zawirskiasynchronous}. Finally,
-the LSEQ algorithm~\cite{nedelec2013concurrency} aims to avoid consensus
-by bounding variable-size identifiers to a space complexity sublinear
-to the size of shared document. It conjectured that identifiers can be
-bounded to the $log(s)^2$ where $s$ is the size of shared document.
-
-In this paper, we propose \CRATE, a scalable real-time editor that
-runs on a network of browsers. \CRATE relies on WebRTC and
-browser-to-browser communication to provide an easy access for
-end-users. \CRATE belongs to Conflict-Free Replicated Datatypes (CRDT)
-class of real-time editors. Compared to state of art, we reduced space
-complexity of a shared document from linear to polylogarithmic
-whithout changing time and space complexities of this class of editors.
- The contributions of this paper are three-fold:
+In this paper, we propose \CRATE, a scalable real-time editor that runs on a
+network of browsers. \CRATE relies on WebRTC and browser-to-browser
+communication to provide an easy access for end-users. \CRATE belongs to
+Conflict-Free Replicated Datatypes (CRDT) class of real-time editors. Compared
+to state of art, we reduced space complexity of a shared document from linear to
+polylogarithmic whithout changing time and space complexities of this class of
+editors.  The contributions of this paper are three-fold:
 \begin{itemize}
 \item Compared to previous work~\cite{nedelec2013lseq}, we demonstrate
   the upper bound on space complexity of \LSEQ in case of monotonic
