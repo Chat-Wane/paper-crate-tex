@@ -28,7 +28,7 @@ servers, solving some privacy issues. However, scalability issues remains.
 % provides the opportunity to run decentralized editors in browsers with
 % simple connection establishement. 
 
-Addressing the scalabilty issue require to find a good trade-off
+Addressing the scalabilty issue requires to find a good trade-off
 between communication, space and time complexities. First, to be
 scalable, communication complexity of decentralized editors has to be
 sublinear to the number of participants. In the best case, if we have
@@ -44,9 +44,9 @@ linear to the number of participants.
 
 Conflict-Free Replicated Data Type
 (CRDT)\cite{shapiro2011comprehensive} such as
-WOOT~\cite{oster2006data} piggy-back a bounded identifier which is
+WOOT~\cite{oster2006data} piggy-back a fixed-size identifier which is
 great but require unlimited space. Others algorithms can limit space
-complexity, but piggy-back unbounded identifiers that can be linear to
+complexity, but piggy-back variable-size identifiers that can be linear to
 the size of
 document\cite{weiss2010logootundo,preguica2009commutative}. If the
 worst case happens, the only solution is to run a costly consensus
