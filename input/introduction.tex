@@ -43,6 +43,19 @@ sublinearly upper-bounding the space complexity of its identifiers. \TODO{It
   conjectured that identifiers can be bounded to the $log(s)^2$ where $s$ is the
   size of shared document.}
 
+%% for positioning reason, table from related work is here
+\begin{table*}[t]
+  \centering
+  \input{./input/complexitiestable.tex}
+  \caption{\label{table:complexities}
+    Communication and space complexities of decentralized approaches.
+    Where $\mathcal{W}$ is the set of writers, 
+    $\mathcal{R}$ is the set of replicas (readers and writers),
+    $H$ is the historic of operations (insertions and deletions),
+    and $I$ is the number of insertions.}
+\end{table*}
+
+
 In this paper, we propose \CRATE, a scalable real-time editor that runs on a
 network of browsers. \CRATE relies on WebRTC and browser-to-browser
 communication to provide an easy access for end-users. Compared to

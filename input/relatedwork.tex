@@ -1,13 +1,6 @@
 \section{Related Work}
 \label{sec:relatedwork}
 
-\begin{table*}
-  \centering
-  \input{./input/complexitiestable.tex}
-  \caption{\label{table:complexities}
-    Communication and space complexities of decentralized approaches.}
-\end{table*}
-
 Real-time distributed collaborative editors consider multiple members, each
 hosting a copy of a shared sequence of characters. Each member's update
 immediately apply to its local copy. Then, the operation is broadcast to all
@@ -106,7 +99,7 @@ complexity of these metadata must be sublinear.
   [1.1.1] to R, \ldots As we observe, depending on the editing
   behaviour, the identifiers can grow quickly.  If the worst case
   happens, then a costly distributed consensus is required to
-  rebalance identifiers as in~\cite{zawirskiasynchronous}.
+  rebalance identifiers as in~\cite{zawirski2011asynchronous}.
 
 Finally, the LSEQ algorithm [11] aims to avoid consensus by bounding
 variable- size identifiers to a space complexity sublinear to the size
