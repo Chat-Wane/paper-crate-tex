@@ -24,56 +24,57 @@ requires piggybacking additional metadata the complexity of which must be
 carefully studied.
 
 Decentralized algorithms that belong to operational
-transformation~\cite{sun2009contextbased} require piggybacking a state vector in
-order to detect concurrent operations. Unfortunately, state vectors grow
-linearly compared to the number of members that ever participated in the
+transformation~\cite{sun2009contextbased} approach require piggybacking a state
+vector in order to detect concurrent operations. Unfortunately, state vectors
+grow linearly compared to the number of members that ever participated in the
 authoring.
 
 Conflict-Free Replicated Data Types~\cite{shapiro2011comprehensive} (CRDTs) such
 as WOOT~\cite{oster2006data} piggyback a constant-size identifier which is
 optimal. Nonetheless, their local space complexity grows monotonically which
 eventually leads to the need of an unaffordable garbage collecting. Other
-algorithms~\cite{weiss2010logootundo, preguica2009commutative} limit their local
+algorithms~\cite{preguica2009commutative, weiss2010logootundo} limit their local
 space consumption. Nevertheless, they piggyback variable-size identifiers that
 can grow linearly compared to the document size. In such case, they eventually
 need to run a costly consensus algorithm to rebalance
 documents~\cite{zawirski2011asynchronous}. Finally, the \LSEQ
 algorithm~\cite{nedelec2013concurrency} aims to avoid such consensus by
 sublinearly upper-bounding the space complexity of its identifiers. \TODO{It
-conjectured that identifiers can be bounded to the $log(s)^2$ where $s$ is the
-size of shared document.}
+  conjectured that identifiers can be bounded to the $log(s)^2$ where $s$ is the
+  size of shared document.}
 
 In this paper, we propose \CRATE, a scalable real-time editor that runs on a
 network of browsers. \CRATE relies on WebRTC and browser-to-browser
-communication to provide an easy access for end-users. \CRATE belongs to
-Conflict-Free Replicated Datatypes (CRDT) class of real-time editors. Compared
-to state of art, we reduced space complexity of a shared document from linear to
-polylogarithmic whithout changing time and space complexities of this class of
-editors.  The contributions of this paper are three-fold:
+communication to provide an easy access for end-users. Compared to
+state-of-the-art, it presents a different tradeoff which balances the load
+between space, time, and communication complexities. The contributions of this
+paper are threefold:
 \begin{itemize}
-\item Compared to previous work~\cite{nedelec2013lseq}, we demonstrate
-  the upper bound on space complexity of \LSEQ in case of monotonic
-  editings and we analyze the complete complexity of \CRATE compared
-  to state of art.
-\item We describe \LSEQ for managing the shared document
-  and \SPRAY a gossip algorithm based on WEBRTC. \CRATE's Javascript
-  implementation runs directly inside browsers without any plugins.
-\item We conducted experimental studies to validate the complexities of the
-  \CRATE's implementation inside real web browsers. As expected, from $2$ to $600$
-  participants editing a document reaching more than $1$ million characters, we
-  observed a logarithmic growth of the traffic compared to the number of
-  participants, and a polylogarithmic growth of the traffic compared to the size
-  of the document.
+\item Compared to previous work~\cite{nedelec2013lseq}, we demonstrate the upper
+  bounds on space and time complexities of \LSEQ. In addition to which we
+  provide the communication complexity of \CRATE. We shows the balance in these
+  dimensions and we position it in relation to state-of-the-art.
+\item We describe \CRATE's internal components. In particular, we detail \LSEQ
+  that manages the shared document, and \SPRAY that creates the network of
+  browsers. Our Javascript implementation of \CRATE runs directly in browsers
+  without any plugins.
+\item We conducted experimental studies to validate the complexities of
+  \CRATE. The experiments took place in the Grid'5000 testbed and involved
+  uptill $600$ real web browsers opened to edit a shared document. At a rate of
+  100 insertions per seconds, the document size reached above 1 million
+  characters. As expected, we observed a logarithmic growth of the traffic
+  compared to the number of participants, and a polylogarithmic growth of the
+  traffic compared to the size of the document.
 \end{itemize}
 
-The remainder of this paper is organized as
-follows. Section~\ref{sec:relatedwork} reviews the related work with an emphasis
-on the complexity tradeoff proposed by other
-approaches. Section~\ref{sec:proposal} follows with a description of \CRATE and
-its core components. Section~\ref{sec:experiments} highlights the scalability of
-\CRATE while validating the space complexity analysis of \LSEQ and
-\SPRAY. Finally, Section~\ref{sec:conclusion} concludes the paper and discusses
-about perspectives.
+The remainder of this paper is organized as follows:
+Section~\ref{sec:relatedwork} reviews the related work with an emphasis on the
+complexity tradeoff proposed by other approaches. Section~\ref{sec:proposal}
+follows with a description of \CRATE and its core
+components. Section~\ref{sec:experiments} highlights the scalability of \CRATE
+while validating the complexity analysis of \LSEQ and \SPRAY. Finally,
+Section~\ref{sec:conclusion} concludes the paper and discusses about
+perspectives.
 
 %%% Local Variables: 
 %%% mode: latex
