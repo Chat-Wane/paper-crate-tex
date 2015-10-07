@@ -42,19 +42,33 @@ them.
 \label{subsec:communication}
 
 To collaboratively edit a document, users must establish a form of communication
-between them. It firstly requires to build a network of communication
-channels. It secondly requires to use it to disseminate the changes performed on
-the shared document to all participants.  \CRATE uses
-\SPRAY~\cite{nedelec2015spray} as membership protocol and relies on its
+between them. It firstly requires accessing the editing session. It secondly
+requires building a network of communication channels. It thirdly requires the
+members to use it to spread the changes performed on shared documents.  \CRATE
+uses \SPRAY~\cite{nedelec2015spray} as membership protocol and relies on its
 properties to efficiently disseminate the messages.
 
 \begin{asparadesc}
-\item [\TODO{The initialization phase.}]\TODO{url, sharing, mediators.}
+\item [The first access] to an editing session transits a signaling server. A
+  member wishing to share the document provides a \emph{uniform ressource
+    locator} (URL) that contains
+  \begin{inparaenum}[(i)]
+  \item an address to the \CRATE's files with the web application
+    code\footnote{http://chat-wane.github.io/CRATE/},
+  \item and a reference to the editing session. Note that the latter must be
+    unique and immutable. \TODO{For instance.}
+  \end{inparaenum}
+  With a simple click on the URL, the joiner gets the distributed editors which
+  connects to the signaling server and contacts a sharer among the
+  sharers. After a round-trip of messages, the first WebRTC connection is
+  established, i.e., a connection from browser-to-browser that enables real-time
+  communication. Since the joiner has access to the editing session, it does not
+  need the signaling server any longer, hence, it disconnects from it. The
+  member establishes other WebRTC connections using a membership protocol.
 
 \item [The membership protocol,] called \SPRAY, is a random peer sampling
-  protocol~\cite{jelasity2007gossip} the primary target of which is WebRTC, a
-  recent technology that allows peer-to-peer communication between web browsers.
-  As such, the range of users includes small devices (e.g. smartphones, tablets,
+  protocol~\cite{jelasity2007gossip} the primary target of which is WebRTC.  As
+  such, the range of users includes small devices (e.g. smartphones, tablets,
   etc.) and establishing a connection requires a three-way handshake. These
   constraints invite to maintain a small number of connections.
 
