@@ -3,18 +3,17 @@
   distributed in space and organizations to collaborate easily with only web
   browsers. Yet, main stream editors rely on central servers with issues in
   privacy, single point of failure and scalability.  Decentralized editors
-  settle privacy problems but scalability issues remain.  \TODO{Existing
-    algorithms do not guarantee a sublinear communication complexity while
-    preserving a linear space complexity}.  In this paper, we propose \CRATE; a
-  working decentralized real-time editor that supports large number of users
-  working on large documents. In particular, \CRATE achieves a sublinearly
-  upper-bounded communication complexity in $\mathcal{O}((\log d)^2\ln{m})$
-  where $d$ is the document size and $m$ the membership size. Thanks to WebRTC,
-  \CRATE can be easily deployed on a network of browsers \TODO{i.e.} without
-  servers.  We evaluate \CRATE on large-scale experiments in the Grid'5000
-  testbed involving uptill 600 participants. As expected, we observe a
-  logarithmic progression of the generated traffic according to the size of the
-  shared document and the number of participants.
+  settle privacy problems but scalability issues remain.  None of existing
+  algorithms provide satisfying complexities in both communication and space.
+  In this paper, we propose \CRATE; a working decentralized real-time editor
+  that supports large number of users working on large documents. In particular,
+  \CRATE achieves a sublinearly upper-bounded communication complexity in
+  $\mathcal{O}((\log d)^2\ln{m})$ where $d$ is the document size and $m$ the
+  membership size. Thanks to WebRTC, \CRATE can be easily deployed on a network
+  of browsers \TODO{i.e.} without servers.  We evaluate \CRATE on large-scale
+  experiments in the Grid'5000 testbed involving uptill 600 participants. As
+  expected, we observe a logarithmic progression of the generated traffic
+  according to the size of the shared document and the number of participants.
 \end{abstract}
 
 %%% Local Variables: 
