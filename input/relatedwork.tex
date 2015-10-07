@@ -4,13 +4,16 @@
 Real-time distributed collaborative editors consider multiple members, each
 hosting a copy of a shared sequence of characters. Each member's update
 immediately apply to its local copy. Then, the operation is broadcast to all
-other members where it is re-executed~\cite{saito2005optimistic}. Correctness
-requires that all members eventually converge to an identical state, i.e., when
-the system is idle, all copies become
-similar~\cite{bailis2013eventual}. Correctness also requires to ensure intention
-preservation, i.e., effects observed at generation time must be re-observed at
-re-execution time regardless of concurrent
-operations~\cite{sun1998achieving}. \TODO{Causality?}
+other members where it is
+re-executed~\cite{saito2005optimistic}. \TODO{Correctness} requires that all
+members eventually converge to an identical state, i.e., when the system is
+idle, all copies become similar~\cite{bailis2013eventual}. \TODO{Correctness}
+also requires ensuring intention preservation, i.e., effects observed at
+generation time must be re-observed at re-execution time regardless of
+concurrent operations~\cite{sun1998achieving}. \TODO{Correctness} finally
+requires ensuring causality, i.e., the re-execution order of operations follows
+the \emph{happen before} relationship~\cite{lamport1978time} stated at
+generation.
 
 Several complexities characterize decentralized editors:
 \begin{itemize}
@@ -28,51 +31,41 @@ messages contain metadata necessary to maintain consistency. To scale, the space
 complexity of these metadata must be sublinear.
 
 \begin{asparadesc}
-\item [Operational transformation (OT)] allows to build centralized or
-  decentralized real-time editors. In OT, operations are generated in
-  constant time. Next, an operation has to be transformed according to
-  concurrent operations defined on the same state. Consistency is
-  obtained thanks to an OT integration algorithm such as COT or SOCT2
-  and properties on transformation functions. The Integration time
-  complexity depends of concurrency and can be different according to
-  different trade-off. In COT~\cite{sun2009contextbased}, time
-  complexity of integration is exponential. It can be reduced to
-  linear at the cost of high space complexity. In
-  SOCT2~\cite{vidot2000copies}, it is quadratic. Whatever the trade-off chosen
-  in the integration algorithm, OT has to transform incoming
-  operations according to concurrent operations and a state vector is
-  the minimal structure that allows to detect
-  concurrency~\cite{charronbost1991concerning}. Hence, OT requires to
-  piggy back to operations sent on the network a structure at least
-  linear to the number of participants. On space complexity, OT keeps
-  the document as a non-collaborative editor can do, plus a log of
-  operations. In the worst case i.e. a site is not responding, the
-  size of the this log includes all the operations produced from the
-  beginning of editing session, where each operation is decorated with
-  state vector proportional to number of participants. If average
-  case, a garbage collecting algorithm can drop operations integrated
-  by all participants. So, the slower participant will determine the
-  size of log hosted by all participant. OT is a powerfull approach
-  for small groups, performances degrade when the group is growing.
+\item [Operational transformation] (OT) allows building both centralized and
+  decentralized real-time editors. At generation, the processing time of
+  operations is constant. At integration, OT transforms the received operations
+  against concurrent ones which were generated on the same state. An integration
+  algorithm (e.g. COT~\cite{sun2009contextbased}, SOCT2~\cite{vidot200copies})
+  along with transformation functions (ensuring transformation properties)
+  guarantee a consistent model. The integration time depends of concurrency and
+  differs among the algorithms.  For instance, COT's integration time complexity
+  is exponential. It can reduce it to linear at the expense of space
+  complexity. SOCT2's integration time complexity is quadratic.  Whatever the
+  trade-off, OT's integration algorithms rely on concurrency detection which
+  costs, at least, a state vector~\cite{charronbost1991concerning} the size of
+  which grows linearly compared to the number of members who ever participated
+  in the authoring. Since each message embeds such vector, and excepting humble
+  confined environment (e.g. local area networks), decentralized OT approaches
+  are not practicable. As for space complexity, OT approaches require an
+  historic of operations, each operation being linked to their state
+  vector. Such monotonically growing historic can be cut at the price of
+  consensus which, once again, does not scale.
 
-\item [Conflict-free replicated data types] (CRDTs) for sequences
-  constitute the latter approaches which solve the concurrent cases by
-  providing commutative and idempotent operations. Commutativity of
-  operations ensures the correctness of the system. These approaches
-  provide commutativity by associating a unique and immutable
-  identifier to each element. Defining a total order among the
-  identifiers allows retrieving the sequence. Compared to OT, CRDT
-  approaches will increase the generation time complexity but do not
-  require to detect concurrency at integration time. Hence, CRDTs can
-  achieve logarithmic integration time that does not depend of
-  concurrency. Moreover, as an operation is generated once and
-  re-executed many times, CRDT provides an interesting trade-off. On
-  space complexity, each element of a shared document will be
-  decorated with a CRDT identifier. On the other hand, no log is
+\item [Conflict-free replicated data types] (CRDTs) for sequences constitute the
+  latter approaches which solve the concurrent cases by providing commutative
+  and idempotent operations. Commutativity of operations ensures the correctness
+  of the system. These approaches provide commutativity by associating a unique
+  and immutable identifier to each element. Defining a total order among the
+  identifiers allows retrieving the sequence. Compared to OT, CRDT approaches
+  will increase the generation time complexity but do not require to detect
+  concurrency at integration time. Hence, CRDTs can achieve logarithmic
+  integration time that does not depend of concurrency. Moreover, as an
+  operation is generated once and re-executed many times, CRDT provides an
+  interesting trade-off. On space complexity, each element of a shared document
+  will be decorated with a CRDT identifier. On the other hand, no log is
   required. Finally, on communication complexity, as CRDT do not require to
-  detect concurrency, only the identifier of the element is
-  piggy-backed. The size of this identifier determine the
-  communication complexity.
+  detect concurrency, only the identifier of the element is piggy-backed. The
+  size of this identifier determine the communication complexity.
 
   There exist two class of CRDTs for sequences exposing different
   trade-off.
