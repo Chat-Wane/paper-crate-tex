@@ -3,8 +3,9 @@
 \label{sec:proposal}
 
 \CRATE (stands for CollaboRATive Editor) is a distributed and decentralized
-collaborative editor running directly inside web browsers.
-Figure~\ref{fig:architecture} depicts \CRATE's architecture with four layers:
+collaborative editor running directly inside web browsers. \TODO{Explicit
+  contributions.}  Figure~\ref{fig:architecture} depicts \CRATE's architecture
+with four layers:
 \begin{inparaenum}[(i)]
 \item communication: includes the editing session membership mechanism and the
   information dissemination protocols.
@@ -42,19 +43,37 @@ them.
 \label{subsec:communication}
 
 To collaboratively edit a document, users must establish a form of communication
-between them. It firstly requires to build a network of communication
-channels. It secondly requires to use it to disseminate the changes performed on
-the shared document to all participants.  \CRATE uses
-\SPRAY~\cite{nedelec2015spray} as membership protocol and relies on its
-properties to efficiently disseminate the messages.
+between them. It firstly requires accessing the editing session. It secondly
+requires building a network of communication channels. It thirdly requires the
+members to use it to spread the changes performed on shared documents.  
 
 \begin{asparadesc}
-\item [The membership protocol,] called \SPRAY, is a random peer sampling
-  protocol~\cite{jelasity2007gossip} the primary target of which is WebRTC, a
-  recent technology that allows peer-to-peer communication between web browsers.
-  As such, the range of users includes small devices (e.g. smartphones, tablets,
-  etc.) and establishing a connection requires a three-way handshake. These
-  constraints invite to maintain a small number of connections.
+\item [The first access] to an editing session transits a signaling server. A
+  member wishing to share the document provides a \emph{uniform resource
+    locator} (URL) that contains
+  \begin{inparaenum}[(i)]
+  \item an address to the \CRATE's files with the web application
+    code,
+  \item and a reference to the editing session. Note that the latter must be
+    unique (for the signaling server and during the sharing time) and
+    immutable (to one document corresponds one editing session).
+  \end{inparaenum}
+  For instance, the URL \url{http://chat-wane.github.io/CRATE?snow-crabe}
+  targets the Github file server, and asks to the signaling server about the
+  editing session called \emph{snow-crabe}.  The signaling server chooses at
+  random an available contact among sharers of this editing session. After a
+  round-trip of messages, the first WebRTC connection is established, i.e., a
+  connection from browser-to-browser that enables real-time communication. Since
+  the joiner has access to the editing session through its contact, it does not
+  need the signaling server any longer, hence, it disconnects from it. The
+  member establishes other WebRTC connections using a membership protocol.
+
+\item [The membership protocol,] called \SPRAY~\cite{nedelec2015spray}, is a
+  random peer sampling protocol~\cite{jelasity2007gossip} the primary target of
+  which is WebRTC.  As such, the range of users includes small devices
+  (e.g. smartphones, tablets, etc.) and establishing a connection requires a
+  three-way handshake. These constraints invite to maintain a small number of
+  connections.
 
   Using \SPRAY, each member owns a set of neighbors which dynamically grows and
   shrinks to reflect the network size. Without any global knowledge,
@@ -73,8 +92,8 @@ properties to efficiently disseminate the messages.
   \end{inparaenum}
   
   \SPRAY divides the life-cycle of a member into three phases: the joining, the
-  exchanges, and the leaving. They respectively aim to increase, retain, and
-  decrease the number of connections to follow a logarithmic progression.
+  exchanges, and the leaving. They respectively aim to increase, to retain, and
+  to decrease the number of connections following a logarithmic progression.
 
 \item [The information dissemination protocol]\cite{birman1999bimodal} aims to
   propagate the changes performed by users on their shared document. Any

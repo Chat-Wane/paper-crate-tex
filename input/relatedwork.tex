@@ -1,186 +1,150 @@
 \section{Related Work}
 \label{sec:relatedwork}
 
-\begin{table*}
-  \centering
-  \input{./input/complexitiestable.tex}
-  \caption{\label{table:complexities}Upper-bound ($\mathcal{O}$) on complexities in time, space, and communication of decentralized approaches.}
-\end{table*}
+Real-time distributed collaborative editors consider multiple members, each
+hosting a copy of a shared sequence of characters. Each member's update
+immediately apply to its local copy. Then, the operation is broadcast to all
+other members where it is re-executed~\cite{saito2005optimistic}. Consistency
+requires that all members eventually converge to an identical state, i.e., when
+the system is idle, all copies become
+similar~\cite{bailis2013eventual}. Consistency also requires ensuring intention
+preservation, i.e., effects observed at generation time must be re-observed at
+re-execution time regardless of concurrent
+operations~\cite{sun1998achieving}. Consistency finally requires ensuring
+causality, i.e., the re-execution order of operations follows the \emph{happen
+  before} relationship~\cite{lamport1978time} stated at generation.
 
-%\begin{asparadesc}
-
-% \item[Centralized] collaborative editors constitute an easy way to ensure
-%   documents eventually consistent. Until recently, they suited very well the web
-%   context since browsers were limited to the traditionnal client-server
-%   paradigm. Therefore, there exist a plethora of these centralized editors
-%   (e.g. Google Docs, Etherpad, Apache Wave).  Nevertheless, the topology itself
-%   suffers issues in privacy, censorship, and economic intelligence.  Indeed,
-%   since all communications transit a server, the owner of the latter is able to
-%   intercept and use the information without the users' consent (\TODO{REF}).
-%   Additionally, centralized solution lacks of scalability and ease of
-%   deployment. People who wants to build their own document provider must set a
-%   server and carefully check the latter's capacity to hold the load of users
-%   (\TODO{REF}).  Finally, users must agree to restriction in terms of service.
-%   For instance, Google Docs restricts the writing access of its documents to 50
-%   users simultaneously. Beyond, the users are readers (\TODO{REF}). \TODO{Such
-%     limitations preclude the existence of crowd edited documents which could be
-%     useful in educational cases.}
-% \item[Decentralized] collaborative editors are uncommon comparatively. Yet, the
-%   appearance of peer-to-peer connections from browser-to-browser opens the field
-%   to such editors which become directly accessible in end-user web
-%   browsers. Consequently, they are as practicable as centralized web editors and
-%   solve all the latter's aforementioned issues except the scalability. Indeed,
-%   with such topology, the algorithms and data structures are rethought to handle
-%   the operations arriving disorderly.  To insert a character in a shared
-%   document, one cannot just use the standard well-known operation \emph{insert
-%     element at index} of arrays and expect guaranties on convergence. For
-%   instance, if two users concurrently edit a sequence ERTY: the first user
-%   inserts a Q at index 0, while the second user inserts a W at index 0. They
-%   respectively obtains QERTY and WERTY as resulting sequence. On receipt of each
-%   other's operation they respectively obtain WQERTY and QWERTY. Hence the need
-%   to inspect these concurrent cases to ensure convergent replicas.  Many
-%   approaches have been proposed with the challenging task to find a good
-%   compromise between complexities in time, space, and communication.
-% \end{asparadesc}
-
-Real-time distributed collaborative editors consider $n$ sites
-hosting a copy of a shared sequence of characters. Each site can
-update locally its copy immediately without locking by applying an
-insert or delete operation. Next, operations are broadcast to others
-sites to be re-executed. The broadcast system has to ensure eventual
-delivery of operation. Finally, The whole system is correct if it, at
-least, converges i.e. when system is idle, all copies are
-identicals~\cite{bailis2013eventual}. A correct system has also to
-ensure intentions i.e. effects observed at generation time should be
-re-observed at re-execution time whatever concurrent
-operation~\cite{sun1998achieving}.
-
-A distributed real-time editor is characterized by several
-complexities:
+Several complexities characterize decentralized editors:
 \begin{itemize}
-\item Generation time: complexity to generate locally an operation
-\item Integration time: complexity to re-execute a remote operation
-\item Space complexity: complexity to store local copy of the shared
-  sequence, state descriptors and logs, if any.
-\item Communication complexity: amount of bytes exchanged on the
-  network by participants. 
+\item Generation time: complexity to generate locally an operation.
+\item Integration time: complexity to execute remotely an operation.
+\item Space complexity: complexity to store a local copy of the shared sequence,
+  including state descriptors, logs, etc.
+\item Communication complexity: complexity of messages transiting the network.
 \end{itemize}
-
-Addressing the scalabilty issue require to find a good trade-off
-between communication, space and time complexities. First, to be
-scalable, communication complexity of decentralized editors has to be
-sublinear to the number of participants. In the best case, if we have
-$n$ participants, sending a typed character to others requires to
-contact $log(n)$ participants. But consistency maintenance of
-real-time editors requires to piggy back to each message extra
-informations that impact greatly the whole communication complexity.
+Solving scalability issues requires finding a balanced trade-off between
+communication, space and time complexities.  Among others, the communication
+complexity is the most discriminant. First, it requires at least a
+multiplicative logarithmic factor compared to the editing session size. Second,
+messages contain metadata necessary to maintain consistency. To scale, the space
+complexity of these metadata must be sublinear.
 
 \begin{asparadesc}
+\item [Operational transformation] (OT) allows building both centralized and
+  decentralized real-time editors. At generation, the processing time of
+  operations is constant. At integration, OT transforms the received operations
+  against concurrent ones which were generated on the same state. An integration
+  algorithm (e.g. COT~\cite{sun2009contextbased}, SOCT2~\cite{vidot2000copies})
+  along with transformation functions (ensuring transformation properties)
+  guarantee a consistent model. The integration time depends of concurrency and
+  differs among the algorithms.  For instance, COT's integration time complexity
+  is exponential. It can reduce it to linear at the expense of space
+  complexity. SOCT2's integration time complexity is quadratic.  Whatever the
+  trade-off, OT's integration algorithms rely on concurrency detection which
+  costs, at least, a state vector~\cite{charronbost1991concerning} the size of
+  which grows linearly compared to the number of members who ever participated
+  in the authoring. \TODO{Since each message embeds such vector, and excepting
+    humble confined environment (e.g. local area networks), decentralized OT
+    approaches are not practicable.} As for space complexity, OT approaches
+  require an historic of operations, each operation being linked to their state
+  vector. Such monotonically growing historic can be cut at the price of
+  consensus which, once again, does not scale.
 
-\item [Operational transformation (OT)] allows to build decentralized
-  real-time editors based on algorithm such as
-  COT~\cite{sun2009contextbased} or SOCT2~\cite{Vidot00}. In OT,
-  operations are generated in constant time. Next, an operation has to
-  be transformed according to concurrent operations defined on the
-  same state. %
-% Consistency is obtained thanks to an OT integration
-%   algorithm such as COT or SOCT2 and properties on transformation
-%   functions. The Integration time complexity depends of concurrency
-%   and can be different according to different trade-off. In
-%   COT~\cite{sun2009contextbased}, time complexity of integration is
-%   exponential. It can be reduced to linear at the cost of high space
-%   complexity. In SOCT2, it is quadratic. Whatever the trade-off chosen
-%   in the integration algorithm, 
-  A state vector is the minimal structure that allows to detect
-  concurrency~\cite{charronbost1991concerning}. Hence, OT requires to
-  piggy back to operations sent on the network a structure at least
-  linear to the number of participants.  As pointed out
-  in\cite{oster2006data}, OT poorly scale to the number of
-  participants.  
-%Pascal: Enough for this paper ??
-% On space complexity, OT keeps a regular document and
-  % a log of operations decorated with state vector. An operation in this
-  % log can be safely removed only if operation has been received by all
-  % sites. This can be acheived with minimal state vectors, but it
-  % supposes that all sites send at regular interval their state vector.
+% \item [Operational transformation (OT)] allows to build decentralized
+%   real-time editors based on algorithm such as
+%   COT~\cite{sun2009contextbased} or SOCT2~\cite{Vidot00}. In OT,
+%   operations are generated in constant time. Next, an operation has to
+%   be transformed according to concurrent operations defined on the
+%   same state. %
+% % Consistency is obtained thanks to an OT integration
+% %   algorithm such as COT or SOCT2 and properties on transformation
+% %   functions. The Integration time complexity depends of concurrency
+% %   and can be different according to different trade-off. In
+% %   COT~\cite{sun2009contextbased}, time complexity of integration is
+% %   exponential. It can be reduced to linear at the cost of high space
+% %   complexity. In SOCT2, it is quadratic. Whatever the trade-off chosen
+% %   in the integration algorithm, 
+%   A state vector is the minimal structure that allows to detect
+%   concurrency~\cite{charronbost1991concerning}. Hence, OT requires to
+%   piggy back to operations sent on the network a structure at least
+%   linear to the number of participants.  As pointed out
+%   in\cite{oster2006data}, OT poorly scale to the number of
+%   participants.  
+% %Pascal: Enough for this paper ??
+% % On space complexity, OT keeps a regular document and
+%   % a log of operations decorated with state vector. An operation in this
+%   % log can be safely removed only if operation has been received by all
+%   % sites. This can be acheived with minimal state vectors, but it
+%   % supposes that all sites send at regular interval their state vector.
 
-\item [Conflict-free replicated data types] (CRDTs) for sequences
-  constitute the latter approaches which solve the concurrent cases by
-  providing commutative and idempotent operations. Commutativity of
-  operations ensures the correctness of the system. These approaches
-  provide commutativity by associating a unique and immutable
-  identifier to each element. Defining a total order among the
-  identifiers allows retrieving the sequence. Compared to OT, CRDT
-  approaches will increase the generation time complexity but do not
-  require to detect concurrency at integration time. Hence, CRDT can
-  acheive logarithmic integration time that does not depend of
-  concurrency. Moreover, as an operation is generated once and
-  re-executed many times, CRDT provides an interesting trade-off. On
-  space complexity, each element of a shared document will be
-  decorated with a CRDT identifier. On the other hand, no log is
-  required. Finally, on communication complexity, as CRDT do not require to
-  detect concurrency, only the identifier of the element is
-  piggy-backed. The size of this identifier determine the
-  communication complexity.
+\item [Conflict-free replicated data types] (CRDTs) for sequences constitute the
+  latter approaches which solve concurrent cases by providing commutative and
+  idempotent operations. As such, and compared to OT, the causality tracking
+  cost is drastically reduced since it only requires tracking semantically
+  related operations. For instance, the removal of a particular element must
+  follow its insertion. The commutative property of operations ensures the
+  consistency of the system. CRDTs provide commutativity by associating a unique
+  and immutable identifier to each element. Defining a total order among the
+  identifiers allows retrieving the sequence of characters. 
 
-  There exist two class of CRDTs for sequences exposing different
-  tradeoff.
-\item [Tombstone-based] CRDTs such as WOOT\cite{oster2006data}
-  associate a constant size identifier to each element but whose
-  removals of elements only hide them to the users. Therefore, removed
-  elements keep consumming space and the document will grow
-  infinitely. Removing detroyed elements requires to run a costly
-  consensus algorithm (\emph{does everyone see the removal and agree
-    on definitely throw out the element}) which is prohibitevely
-  costly and does not scale in number of users, especially in network
-  subject to churn (where members join and leave the network
+  CRDTs propose interesting trade-offs since they can balance complexities
+  depending on the type of structure that represents the document.  In
+  particular, increasing the generation time of operations to decrease the
+  integration time is profitable since an operation generated once is
+  re-executed many times. Nevertheless, the identifiers consume space which, in
+  turns, impacts the communication complexity.
+
+\item [Tombstone-based] CRDTs such as WOOT~\cite{oster2006data} associate a
+  constant size identifier to each element but whose removals of elements only
+  hide them to the users. Therefore, removed elements keep consuming space,
+  hence the infinitely growing document. For instance, Wikipedia pages subject
+  to vandalism could consume a lot of memory while appearing empty. Removing
+  destroyed elements requires running a costly consensus algorithm (\emph{does
+    everyone see the removal and agree on definitely throw out the element})
+  which is prohibitevely costly and does not scale in number of members,
+  especially in network subject to churn (where they join and leave the network
   frequently and freely).
 
-\item [Variable-size identifiers] CRDTs whose removals truely destroy
-  the targeted elements but whose identifiers are allocated with
-  different size at generation. In these approaches, the allocation
-  function is crucial to maintain identifiers under acceptable
-  boundaries. Unfortunately, they depend of the insert position of
-  elements. For instance, writing the sequence QWERTY left-to-right
-  allocates the identifiers [1] to Q, [2] to W, [3] to E, \ldots, [6]
-  to Y. But with an identical strategy, writing the same sequence
-  right-to-left allocates the identifiers [1] to Y, [1.1] to T,
-  [1.1.1] to R, \ldots As we observe, depending on the editing
-  behaviour, the identifiers can grow quickly.  If the worst case
-  happens, then a costly distributed consensus is required to
-  rebalance identifiers as in~\cite{zawirskiasynchronous}.
+\item [Variable-size identifiers] CRDTs truly destroy elements targeted by
+  removals. However, they allocate identifiers the size of which is determined
+  at generation. The allocation function becomes crucial to maintain identifiers
+  under acceptable boundaries. Unfortunately, they depend of the insert position
+  of elements. For instance, writing the sequence QWERTY left-to-right allocates
+  the identifiers [1] to Q, [2] to W, [3] to E, \ldots, [6] to Y. But with an
+  identical strategy, writing the same sequence right-to-left allocates the
+  identifiers [1] to Y, [1.1] to T, [1.1.1] to R, \ldots We observe a quick
+  growth of identifiers depending on the editing behavior.  In the worst case, a
+  costly distributed consensus is required to balance the underlying
+  structure~\cite{zawirski2011asynchronous}.
 
-Finally, the LSEQ algorithm [11] aims to avoid consensus by bounding
-variable- size identifiers to a space complexity sublinear to the size
-of shared document. It conjectured that identifiers can be bounded to
-the $log(s)^2$ where s is the size of shared document. In this paper,
-we demonstrate in which conditions  this upper-bound can be proved.
+  Algorithm \LSEQ~\cite{nedelec2013lseq} aims to avoid such consensus by
+  sublinearly upper-bounding the space complexity of variable-size
+  identifiers. It conjectured an upper-bound in $\mathcal{O}(log(I)^2)$ where
+  $I$ is the document size. In this paper, we demonstrate in \TODO{which
+    conditions this upper-bound can be proved.}
 
+\item [As summary,] Table~\ref{table:complexities} shows the upper-bound
+  ($\mathcal{O}$) of complexities in space, time, and communication of
+  decentralized approaches. In this table, we can see that both operationnal
+  transformations approaches, namely SOCT2/TTF and COT-DO, do not scale in
+  communication since they send messages that grows linearly compared to the
+  number of writers. Conversely, the representatives of tombstone-based CRDTs
+  (WOOT, WOOT, WOOTH, RGA, SW, PPS, DiCE) communication complexity only depends
+  of the dissemination protocol (in logarithm of the number of replicas),
+  however their space and time complexities include the removals. In other
+  terms, these approaches are monotonically growing structure, hence, they do
+  not scale in number of operations performed on the document. The variable-size
+  identifiers CRDTs comprise Treedoc, Logoot, and \LSEQ. Their complexities
+  depend of insert positions (or editing behaviour) of the elements. Treedoc, as
+  a hybrid solution, uses tombstones and suffers of the aforementionned
+  issue. Like Logoot, it mainly targets monotonic editing at the end of the
+  sequence. Unfortunately, when the editing behaviour does not comply with this
+  assumption, the space complexity grows quadratically. \LSEQ provides a
+  sublinear upper-bound on its space complexity. Thus, it scales in document
+  size, and communications. Yet, it requires a local causality tracking
+  mechanism increasing linearly compared to the number of
+  writers. \TODO{cf. proposal?}.
 \end{asparadesc}
-
-Table~\ref{table:complexities} shows the upper-bound ($\mathcal{O}$)
-of complexities in space, time, and communication of decentralized
-approaches. In this table, we can see that both operationnal
-transformations approaches, namely SOCT2/TTF and COT-DO, do not scale
-in communication since they send messages that grows linearly compared
-to the number of writers. Conversely, the representatives of
-tombstone-based CRDTs (WOOT, WOOT, WOOTH, RGA, SW, PPS, Neil)
-communication complexity only depends of the dissemination protocol
-(in logarithm of the number of replicas), however their space and time
-complexities include the removals. In other terms, these approaches
-are monotonically growing structure, hence, they do not scale in
-number of operations performed on the document. The variable-size
-identifiers CRDTs comprise Treedoc, Logoot, and \LSEQ. Their
-complexities depend of insert positions (or editing behaviour) of the
-elements. Treedoc, as a hybrid solution, uses tombstones and suffers
-of the aforementionned issue. Like Logoot, it mainly targets monotonic
-editing at the end of the sequence. Unfortunately, when the editing
-behaviour does not comply with this assumption, the space complexity
-grows quadratically. \LSEQ provides a sublinear upper-bound on its
-space complexity. Thus, it scales in document size, and
-communications. Yet, it requires a local causality tracking mechanism
-increasing linearly compared to the number of
-writers. \TODO{cf. proposal?}.
 
 %%% Local Variables: 
 %%% mode: latex
