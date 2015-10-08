@@ -3,11 +3,11 @@
 \begin{tabular}{@{}lcc@{}}
   \toprule
   \textsc{Algorithms} & \textsc{Communication} & \textsc{Space} \\ \midrule 
-  \textbf{Operational transformation~\cite{suleiman1997serialization, sun2009contextbased}} & $\mathcal{O}(\pmb{|\mathcal{W}|}\ln|\mathcal{R}|)$ & $\Omega (\pmb{H\,|\mathcal{W}|})$ \\ \midrule
-  \textbf{Tombstones CRDTs~\cite{ahmed2011evaluating, conway2014language, oster2006data, roh2011replicated, weiss2007wooki, wu2010partial, yu2012stringwise}} & $\Omega (\ln|\mathcal{R}|)$ & $\Omega (\pmb{H})$ \\ \midrule
-  \textbf{Variable-size array-based CRDTs~\cite{weiss2009logoot}} & $\mathcal{O}(\pmb{I}\ln |\mathcal{R}|)$ & $\mathcal{O}(\pmb{I^2+|\mathcal{W}|})$ \\ \midrule
-  \textbf{Variable-size tree-based CRDTs~\cite{preguica2009commutative}} & $\mathcal{O}(\pmb{I\log I} \ln |\mathcal{R}|)$ or $\mathcal{O}(\log I\ln|\mathcal{R}|)$ & $\mathcal{O}(I\log I + \pmb{|\mathcal{W}|})$ or $\mathcal{O}(I + \pmb{|\mathcal{W}|})$ \\ \midrule
-  \textbf{This paper~\cite{nedelec2013lseq}} & $\mathcal{O}((\log I)^2\ln|\mathcal{R}|)$ & $\mathcal{O}(I\log I + \pmb{|\mathcal{W}|})$ \\ \bottomrule
+  \textbf{Operational transformation~\cite{suleiman1997serialization, sun2009contextbased}} & $\mathcal{O}(\pmb{W}\ln R)$ & $\mathcal{O}(\pmb{H.W})$ \\ \midrule
+  \textbf{Tombstones CRDTs~\cite{ahmed2011evaluating, conway2014language, oster2006data, roh2011replicated, weiss2007wooki, wu2010partial, yu2012stringwise}} & $\Omega (\ln R)$ & $\Omega (H)$ \\ \midrule
+  \textbf{Variable-size array-based CRDTs~\cite{weiss2009logoot}} & $\mathcal{O}(\pmb{I}\ln R|)$ & $\mathcal{O}(\pmb{I^2+W})$ \\ \midrule
+  \textbf{Variable-size tree-based CRDTs~\cite{preguica2009commutative}} & $\mathcal{O}(\pmb{I\log I} \ln R)$ or $\mathcal{O}(\log I\ln R|)$ & $\mathcal{O}(I\log I + \pmb{W})$ or $\mathcal{O}(I + \pmb{W})$ \\ \midrule
+  \textbf{This paper~\cite{nedelec2013lseq}} & $\mathcal{O}((\log I)^2\ln R)$ & $\mathcal{O}(I\log I + \pmb{W})$ \\ \bottomrule
 \end{tabular}
 
 %%% Local Variables:
