@@ -1,18 +1,21 @@
 \section{Related Work}
 \label{sec:relatedwork}
 
-Real-time distributed collaborative editors consider multiple members, each
-hosting a copy of a shared sequence of characters. Each member's update
-immediately apply to its local copy. Then, the operation is broadcast to all
-other members where it is re-executed~\cite{saito2005optimistic}. Consistency
-requires that all members eventually converge to an identical state, i.e., when
-the system is idle, all copies become
-similar~\cite{bailis2013eventual}. Consistency also requires ensuring intention
-preservation, i.e., effects observed at generation time must be re-observed at
-re-execution time regardless of concurrent
-operations~\cite{sun1998achieving}. Consistency finally requires ensuring
-causality, i.e., the re-execution order of operations follows the \emph{happen
-  before} relationship~\cite{lamport1978time} stated at generation.
+Real-time distributed collaborative editors consider multiple
+participants, each hosting a copy of a shared sequence of
+characters. A participant update at any time its local copy by
+inserting or deleting a character. Then, the operation is eventually
+delivered to all other members. Finally, delivered operations are
+re-executed~\cite{saito2005optimistic}. Consistency requires that all
+members eventually converge to an identical state, i.e., when the
+system is idle, all copies become
+similar~\cite{bailis2013eventual}. Consistency also requires ensuring
+intention preservation, i.e., effects observed at generation time must
+be re-observed at re-execution time regardless of concurrent
+operations~\cite{sun1998achieving}. Consistency finally requires
+ensuring causality, i.e., the re-execution order of operations follows
+the \emph{happen before} relationship~\cite{lamport1978time} stated at
+generation.
 
 Several complexities characterize decentralized editors:
 \begin{itemize}
