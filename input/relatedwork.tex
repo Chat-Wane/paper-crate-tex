@@ -28,9 +28,9 @@ Several complexities characterize decentralized editors:
 Solving scalability issues requires finding a balanced trade-off between
 communication, space and time complexities.  Among others, the communication
 complexity is the most discriminant. First, it requires at least a
-multiplicative logarithmic factor compared to the editing session size. Second,
-messages contain metadata necessary to maintain consistency. To scale, the space
-complexity of these metadata must be sublinear.
+multiplicative logarithmic factor compared to the editing session size
+$R$. Second, messages contain metadata necessary to maintain consistency. To
+scale, the space complexity of these metadata must be sublinear.
 
 \begin{asparadesc}
 \item [Operational transformation] (OT) allows building both centralized and
@@ -45,40 +45,14 @@ complexity of these metadata must be sublinear.
   complexity. SOCT2's integration time complexity is quadratic.  Whatever the
   trade-off, OT's integration algorithms rely on concurrency detection which
   costs, at least, a state vector~\cite{charronbost1991concerning} the size of
-  which grows linearly compared to the number of members who ever participated
-  in the authoring. \TODO{Since each message embeds such vector, and excepting
-    humble confined environment (e.g. local area networks), decentralized OT
-    approaches are not practicable.} As for space complexity, OT approaches
-  require an historic of operations, each operation being linked to their state
-  vector. Such monotonically growing historic can be cut at the price of
-  consensus which, once again, does not scale.
-
-% \item [Operational transformation (OT)] allows to build decentralized
-%   real-time editors based on algorithm such as
-%   COT~\cite{sun2009contextbased} or SOCT2~\cite{Vidot00}. In OT,
-%   operations are generated in constant time. Next, an operation has to
-%   be transformed according to concurrent operations defined on the
-%   same state. %
-% % Consistency is obtained thanks to an OT integration
-% %   algorithm such as COT or SOCT2 and properties on transformation
-% %   functions. The Integration time complexity depends of concurrency
-% %   and can be different according to different trade-off. In
-% %   COT~\cite{sun2009contextbased}, time complexity of integration is
-% %   exponential. It can be reduced to linear at the cost of high space
-% %   complexity. In SOCT2, it is quadratic. Whatever the trade-off chosen
-% %   in the integration algorithm, 
-%   A state vector is the minimal structure that allows to detect
-%   concurrency~\cite{charronbost1991concerning}. Hence, OT requires to
-%   piggy back to operations sent on the network a structure at least
-%   linear to the number of participants.  As pointed out
-%   in\cite{oster2006data}, OT poorly scale to the number of
-%   participants.  
-% %Pascal: Enough for this paper ??
-% % On space complexity, OT keeps a regular document and
-%   % a log of operations decorated with state vector. An operation in this
-%   % log can be safely removed only if operation has been received by all
-%   % sites. This can be acheived with minimal state vectors, but it
-%   % supposes that all sites send at regular interval their state vector.
+  which grows linearly compared to the number of members $W$ who ever
+  participated in the authoring. Since each message embeds such vector, and
+  excepting humble confined environment (e.g. local area networks),
+  decentralized OT approaches are not practicable. As for space complexity, OT
+  approaches require an historic of operations $H$, each operation being linked
+  to their state vector, hence $\mathcal{O}(W.H)$. Such monotonically
+  growing historic can be cut at the price of consensus which, once again, does
+  not scale.
 
 \item [Conflict-free replicated data types] (CRDTs) for sequences constitute the
   latter approaches which solve concurrent cases by providing commutative and
@@ -97,16 +71,20 @@ complexity of these metadata must be sublinear.
   re-executed many times. Nevertheless, the identifiers consume space which, in
   turns, impacts the communication complexity.
 
+% WOOT, WOOT, WOOTH, RGA, SW, PPS, DiCE
 \item [Tombstone-based] CRDTs such as WOOT~\cite{oster2006data} associate a
-  constant size identifier to each element but whose removals of elements only
-  hide them to the users. Therefore, removed elements keep consuming space,
-  hence the infinitely growing document. For instance, Wikipedia pages subject
-  to vandalism could consume a lot of memory while appearing empty. Removing
-  destroyed elements requires running a costly consensus algorithm (\emph{does
-    everyone see the removal and agree on definitely throw out the element})
-  which is prohibitevely costly and does not scale in number of members,
-  especially in network subject to churn (where they join and leave the network
-  frequently and freely).
+  constant size identifier $\mathcal{O}(1)$ to each element but whose removals
+  of elements only hide them to the users. Therefore, removed elements keep
+  consuming space leading to a monotonically growing document, hence
+  $\mathcal{O}(H)$. For instance, Wikipedia pages subject to vandalism could
+  consume a lot of memory while appearing empty. Destroying removed elements
+  requires running a costly consensus algorithm (\emph{does everyone see the
+    removal and agree on definitely throw out the element}) which is
+  prohibitively costly and does not scale in number of members, especially in
+  network subject to churn (where they join and leave the network frequently and
+  freely). Since the structure contains the full history of the document, such
+  approach do not require further information to track causally related
+  operations.
 
 \item [Variable-size identifiers] CRDTs truly destroy elements targeted by
   removals. However, they allocate identifiers the size of which is determined
@@ -116,37 +94,28 @@ complexity of these metadata must be sublinear.
   the identifiers [1] to Q, [2] to W, [3] to E, \ldots, [6] to Y. But with an
   identical strategy, writing the same sequence right-to-left allocates the
   identifiers [1] to Y, [1.1] to T, [1.1.1] to R, \ldots We observe a quick
-  growth of identifiers depending on the editing behavior.  In the worst case, a
-  costly distributed consensus is required to balance the underlying
-  structure~\cite{zawirski2011asynchronous}.
+  growth of identifiers depending on the editing behavior. In both cases, the
+  growth is linear compared to the number of insertions in the sequence, i.e.,
+  $\mathcal{O}(I)$. If the structure stores each identifier in a flat array, it
+  grants fast access at the price of high space complexity
+  ($\mathcal{O}(I^2)$). If it factorizes common parts of identifiers as a tree
+  structure, it achieves better space complexity. Yet, in the worst case, a
+  costly distributed consensus is still required to balance the
+  structure~\cite{zawirski2011asynchronous}. Since removals truly erase
+  information from the structure, these approaches require a local state vector
+  compacting their history, hence an additional $\mathcal{O}(W)$ on
+  space complexity. It worth noting that, contrarily to OT, the vector is kept
+  local.
 
   Algorithm \LSEQ~\cite{nedelec2013lseq} aims to avoid such consensus by
   sublinearly upper-bounding the space complexity of variable-size
-  identifiers. It conjectured an upper-bound in $\mathcal{O}(log(I)^2)$ where
-  $I$ is the document size. In this paper, we demonstrate in \TODO{which
-    conditions this upper-bound can be proved.}
+  identifiers. It conjectured a polylogarithmic progression of the identifiers
+  size $\mathcal{O}(log(I)^2)$. In this paper, we demonstrate this upper-bound
+  and we state the conditions under which it applies.
 
-\item [As summary,] Table~\ref{table:complexities} shows the upper-bound
-  ($\mathcal{O}$) of complexities in space, time, and communication of
-  decentralized approaches. In this table, we can see that both operationnal
-  transformations approaches, namely SOCT2/TTF and COT-DO, do not scale in
-  communication since they send messages that grows linearly compared to the
-  number of writers. Conversely, the representatives of tombstone-based CRDTs
-  (WOOT, WOOT, WOOTH, RGA, SW, PPS, DiCE) communication complexity only depends
-  of the dissemination protocol (in logarithm of the number of replicas),
-  however their space and time complexities include the removals. In other
-  terms, these approaches are monotonically growing structure, hence, they do
-  not scale in number of operations performed on the document. The variable-size
-  identifiers CRDTs comprise Treedoc, Logoot, and \LSEQ. Their complexities
-  depend of insert positions (or editing behaviour) of the elements. Treedoc, as
-  a hybrid solution, uses tombstones and suffers of the aforementionned
-  issue. Like Logoot, it mainly targets monotonic editing at the end of the
-  sequence. Unfortunately, when the editing behaviour does not comply with this
-  assumption, the space complexity grows quadratically. \LSEQ provides a
-  sublinear upper-bound on its space complexity. Thus, it scales in document
-  size, and communications. Yet, it requires a local causality tracking
-  mechanism increasing linearly compared to the number of
-  writers. \TODO{cf. proposal?}.
+%%\item [Table~\ref{table:complexities} summarizes] the boundaries of complexities
+%%  in communication and space of decentralized approaches. It highlights the
+%%  bottleneck implied by each class of approaches.
 \end{asparadesc}
 
 %%% Local Variables: 
