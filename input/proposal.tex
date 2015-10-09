@@ -2,10 +2,9 @@
 \section{CRATE}
 \label{sec:proposal}
 
-\CRATE (stands for CollaboRATive Editor) is a distributed and decentralized
-collaborative editor running directly inside web browsers. \TODO{Explicit
-  contributions.}  Figure~\ref{fig:architecture} depicts \CRATE's architecture
-with four layers:
+\CRATE (standing for CollaboRATive Editor) is a distributed and decentralized
+real-time editor running in web browsers.  Figure~\ref{fig:architecture} depicts
+\CRATE's architecture with four layers:
 \begin{inparaenum}[(i)]
 \item communication: includes the editing session membership mechanism and the
   information dissemination protocols.
@@ -30,13 +29,22 @@ simply because the peer worked on offline mode for a while. Therefore, it
 regularly asks to its neighborhood the missing operations using the differences
 of version vectors.
 
-The rest of this section reviews each layer and details the component inside
+\TODO{Our contributions comprise:
+\begin{itemize}
+\item a fully detailed architecture of a decentralized real-time editor,
+\item an original usage of \SPRAY applied to the scalable dissemination of
+  messages in the real-time editing context,
+\item an analysis of space, time, and communication complexities of the
+  replicated sequence structure \LSEQ.
+\end{itemize}}
+
+The rest of this section reviews each layer and details the components inside
 them.
 
 \begin{figure}
   \centering
   \input{./input/architecture.tex}
-  \caption{\label{fig:architecture}The four layers of \CRATE's architecture}
+  \caption{\label{fig:architecture}The four layers of \CRATE's architecture.}
 \end{figure}
 
 \subsection{Communication}
@@ -58,15 +66,15 @@ members to use it to spread the changes performed on shared documents.
     unique (for the signaling server and during the sharing time) and
     immutable (to one document corresponds one editing session).
   \end{inparaenum}
-  For instance, the URL \url{http://chat-wane.github.io/CRATE?snow-crabe}
-  targets the Github file server, and asks to the signaling server about the
-  editing session called \emph{snow-crabe}.  The signaling server chooses at
-  random an available contact among sharers of this editing session. After a
-  round-trip of messages, the first WebRTC connection is established, i.e., a
-  connection from browser-to-browser that enables real-time communication. Since
-  the joiner has access to the editing session through its contact, it does not
-  need the signaling server any longer, hence, it disconnects from it. The
-  member establishes other WebRTC connections using a membership protocol.
+  For instance, the URL \url{http://chat-wane.github.io/CRATE?snow-crab} targets
+  the Github file server, and asks to the signaling server about the editing
+  session called \emph{snow-crab}.  The signaling server chooses at random an
+  available contact among sharers of this editing session. After a round-trip of
+  messages, the first WebRTC connection is established, i.e., a connection from
+  browser-to-browser that enables real-time communication. Since the joiner has
+  access to the editing session through its contact, it does not need the
+  signaling server any longer, hence, it disconnects from it. The member
+  establishes other WebRTC connections using a membership protocol.
 
 \item [The membership protocol,] called \SPRAY~\cite{nedelec2015spray}, is a
   random peer sampling protocol~\cite{jelasity2007gossip} the primary target of
@@ -226,14 +234,41 @@ called disambiguator. We note the former as a list [$p_1.p_2\ldots p_k$] where
 $p_k$ belongs to Integers. The union of paths produces a tree. For instance, the
 factorization of paths [$13.37$] and [$13.42$] produces a tree where the element
 $13$ has two children: $37$ and $42$. The challenge consists in keeping the
-identifiers size growth under a sub-linear upper-bound on space complexity. The
-rest of this section reviews \LSEQ's internal components and provides its
+identifiers size growth under a sublinear upper-bound on space complexity.
+
+An alphabetical order maintains a dense total order among elements. It uses both
+path and disambiguators composing the identifier. While the former aims to give
+a fast and easy way to create and order elements relatively from each other. The
+objective of the latter is twofold:
+\begin{inparaenum}[(i)]
+\item ordering concurrent operations that happen to have an identical path and
+\item allowing the allocation of new identifiers in-between them.
+\end{inparaenum}
+For instance, let us consider the sequence of characters QT with the respective
+paths [$3$] and [$4$], and their respective authors $m_x$ and $m_y$. When Member
+$m_1$ inserts W between those elements, the boundaries [$3$] and [$4$] do not
+allow any additional path of size 1. Assuming a maximum arity of 10, the new
+path is allocated in the range from [$3.0$] to [$3.9$]. In this example, the
+resulting path is [$3.6$]. In the meantime, another member $m_2$ inserts R
+between Q and T which happens to result in the path [$3.6$] too. To ensure a
+total order, disambiguators are associated with each path composed of a
+monotonically growing counter and a globally unique site identifier.  Here, the
+identifier of Element W is composed of the path [$3.6$] and disambiguator
+[$\langle m_x,\,1\rangle$, $\langle m_1,\,1\rangle$] and the Element R is
+composed of the path [$3.6$] and disambiguator [$\langle m_x,\,1\rangle$,
+$\langle m_2,\,1\rangle$].  The comparison starts to examine the first
+concatenations which are equal.  Then, the comparison concerns the path of the
+second level of the tree which are equals too. Hence, it examines the
+disambiguators. Since $m_x < m_y$, it determines that W is located before R. The
+resulting sequence is QWRT.
+
+The rest of this section reviews \LSEQ's internal components and provides its
 complexity analysis.
 
 \begin{asparadesc}
-\item [Two sub-allocation functions] with antagonist objectives allow \LSEQ to
-  be independent of the application. Indeed, the editing behavior of users is
-  unpredictable, i.e., get the \emph{a priori} knowledge of where and in which
+\item [To be application independent], \LSEQ uses two sub-allocation strategies
+  designed for antagonist purposes. Indeed, the editing behavior of users is
+  unpredictable, i.e., getting the \emph{a priori} knowledge of where and in which
   order the operations will be performed is impossible. Hence, instead of
   characterizing the editing behaviors of users with complex machine learning,
   \LSEQ uses two sub-allocation functions designed to handle trivial editing
@@ -279,13 +314,10 @@ complexity analysis.
   previous bound, the resulting path is [$0.1$]. When E arrives, the tree must
   grow again etc.
 
-  Each sub-allocation function is application dependent.  \LSEQ uses two
-  antagonist strategies to adapt to any editing behavior. 
-
-\item [A hash function] chooses among the two sub-allocation functions. The
-  choice is made randomly following a uniform distribution. As such, it does not
-  favor any editing behavior and provides the independence of the allocation
-  function from any editing behavior.
+  A hash function chooses among the two sub-allocation functions. The choice is
+  made randomly following a uniform distribution. As such, it does not favor any
+  editing behavior and provides the independence of the allocation function from
+  any editing behavior.
 
   Using antagonist sub-allocation functions forces all peers to make identical
   choices~\cite{nedelec2013concurrency}. To reach that goal, they all use a
@@ -294,12 +326,13 @@ complexity analysis.
   processes the depth of the new path, and secondly defers the allocation to the
   function designated by the hash of the depth.
 
-\item [An exponential tree]~\cite{andersson1996faster, andersson2007dynamic}
-  represents the shared document. Such tree has the particularity that each
-  element has twice as much children as its parent.  Hence, paths are sequence
-  of numbers where each concatenation belongs to a subset of Integer the size of
-  which doubles compared to the prior concatenation. For instance, if a path of
-  size 1 is chosen among [$\mathbb{N}_{<32}$], a path of size 2 is chosen among
+\item [Scalability] is achieved thanks to an exponential
+  tree~\cite{andersson1996faster, andersson2007dynamic} representing the shared
+  document. Such tree has the particularity that each element has twice as much
+  children as its parent.  Hence, paths are sequence of numbers where each
+  concatenation belongs to a subset of Integer the size of which doubles
+  compared to the prior concatenation. For instance, if a path of size 1 is
+  chosen among [$\mathbb{N}_{<32}$], a path of size 2 is chosen among
   [$\mathbb{N}_{<32}.\mathbb{N}_{<64}$] etc.
 
   An exponential tree with a root of maximum arity $r$ has paths of size $k$
@@ -342,8 +375,8 @@ complexity analysis.
       Upper-bound on space complexity of \LSEQ. Where $I$ is the document size.}
   \end{table}
   
-  From this counting, we deduce the space complexity of
-  \LSEQ. Table~\ref{table:lseqspace} shows both the space complexity of each
+\item [The complexity analysis of \LSEQ] stems from this
+  counting. Table~\ref{table:lseqspace} shows both the space complexity of each
   identifier and the space complexity of whole tree structure representing the
   sequence. When the tree is balanced, its depth is upper-bounded by
   $\mathcal{O}(\sqrt{\log I})$. Since the identifier encoding grows
@@ -355,80 +388,51 @@ complexity analysis.
   single concatenation of the path the size of which grows logarithmically.  In
   the the worst case, the last identifiers contains the full tree, hence,
   $\mathcal{O}(I^2)$.
+
+  \begin{table}
+    \centering
+    \input{input/lseqtimetable.tex}
+    \caption{\label{table:lseqtime}
+      Upper-bound on time complexity of \LSEQ. Where $I$ is the document size.}
+  \end{table}
   
-  An alphabetical order maintains a dense total order among elements. It uses
-  both the path and disambiguators of the identifier. While the former aims to
-  give a fast and easy way to create and order elements relatively from each
-  other. The objective of the latter is twofold:
-  \begin{inparaenum}[(i)]
-  \item to order concurrent operations that happen to have an identical path and
-  \item to allow the allocation of new identifiers in-between them.
-  \end{inparaenum}
+  Table~\ref{table:lseqtime} shows the time complexity of operations of \LSEQ
+  divided between the local and remote parts of the optimistic replication. The
+  local insertion is in charge of allocating an identifier. Since, the balanced
+  tree resulting from random editing reaches a depth of
+  $\mathcal{O}(\sqrt{log I})$ and requires as much comparisons to create the new
+  identifiers. When they are integrated, it requires as much binary searches to
+  locate their correct position. A tree filled by monotonic editing grows
+  logarithmically. Hence, the time complexity upper-bound is higher than the
+  balanced structure. Finally, the worst case requires to consider the path of
+  each element to create the new identifiers. Then, at integration, it requires
+  one comparison per level (i.e. per element) to find its location. The local
+  delete operation is only in charge of broadcasting the identifier to all
+  participants, hence, the constant time complexity.
 
-  For instance, let [$3$] be the path of Element Q inserted by Member $m_x$, and let
-  [$4$] the path of Element T inserted by Member $m_y$. When a member $m_1$ inserts W
-  between those elements, the depth of the tree must grow to welcome the new
-  element. Assuming that depth 1 has a maximum arity of 8, the identifier is
-  allocated in the range from [$3.0$] to [$3.15$].  In this example, the resulting
-  path is [$3.6$]. In the meantime, another member $m_2$ inserts R between Q and T
-  which happens to result in the path [$3.6$] too. To ensure a total order,
-  disambiguators are associated with each path composed of a monotonically
-  growing counter and a globally unique site identifier. Here, the identifier of
-  Element W is composed of the path [$3.6$] and disambiguator
-  [$\langle m_x,\,1\rangle$, $\langle m_1,\,1\rangle$] and the Element R is composed of
-  the path [$3.6$] and disambiguator [$\langle m_x,\,1\rangle$,
-  $\langle m_2,\,1\rangle$].  The comparison starts to examine the first
-  concatenations which are equal.  Then, the comparison concerns the path of the
-  second level of the tree which are equals too. Hence, it examines the
-  disambiguators to determine that W is located before R because $m_x < m_y$ in
-  this case. The resulting sequence is QWRT.  
-\end{asparadesc}
+  % \TODO{To summarizes, the space complexity analysis reveals that the
+  % allocation function \LSEQ sacrifices on the worst-case space complexity to
+  % improve the space complexity of the monotonic editing
+  % behaviors. Nevertheless, in text editing, the worst-case happens with a very
+  % low probability compared the other cases. Furthermore, it is worth noting
+  % that usually, the authors do not write a document in a single round,
+  % starting from the beginning to go straight up to the end (as the monotonic
+  % analysis could suggest). On the contrary, the authors write sections,
+  % structure the documents, perform corrections, rewrite parts of the document,
+  % reorganize, etc. This behavior (between random and monotonic behavior) tends
+  % to even up the branches of the underlying tree of \LSEQ. In the case of
+  % random editing, the space complexity is asymptotically optimal $O(log\,n)$
+  % while it is very interesting in a "normal setting" $O((log\,n)^2)$.}
 
-\begin{table}
-  \centering
-  \input{input/lseqtimetable.tex}
-  \caption{\label{table:lseqtime}
-    Upper-bound on time complexity of \LSEQ. Where $I$ is the document size.}
-\end{table}
-
-Table~\ref{table:lseqtime} shows the time complexity of operations of \LSEQ
-divided between the local and remote parts of the optimistic replication. The
-local insertion is in charge of allocating an identifier. Since, the balanced
-tree resulting from random editing reaches a depth of
-$\mathcal{O}(\sqrt{log I})$ and requires as much comparisons to create the new
-identifiers. When they are integrated, it requires as much binary searches to
-locate their correct position. A tree filled by monotonic editing grows
-logarithmically. Hence, the time complexity upper-bound is higher than the
-balanced structure. Finally, the worst case requires to consider the path of
-each element to create the new identifiers. Then, at integration, it requires
-one comparison per level (i.e. per element) to find its location. The local
-delete operation is only in charge of broadcasting the identifier to all
-participants, hence, the constant time complexity.
-
-% \TODO{To summarizes, the space complexity analysis reveals that the allocation
-% function \LSEQ sacrifices on the worst-case space complexity to improve the
-% space complexity of the monotonic editing behaviors. Nevertheless, in text
-% editing, the worst-case happens with a very low probability compared the other
-% cases. Furthermore, it is worth noting that usually, the authors do not write a
-% document in a single round, starting from the beginning to go straight up to
-% the end (as the monotonic analysis could suggest). On the contrary, the authors
-% write sections, structure the documents, perform corrections, rewrite parts of
-% the document, reorganize, etc. This behavior (between random and monotonic
-% behavior) tends to even up the branches of the underlying tree of \LSEQ. In
-% the case of random editing, the space complexity is asymptotically optimal
-% $O(log\,n)$ while it is very interesting in a "normal setting" $O((log\,n)^2)$.}
-
-\begin{figure*}
-  \centering
-  \subfloat {\input{input/lseqtreeexampleA.tex}}
-  \hspace{10pt}
-  \subfloat {\input{input/lseqtreeexampleB.tex}}
-  \caption{\label{fig:lseqtreeexample}\LSEQ tree handling two monotonic
-    editing behaviors.}
-\end{figure*}
-
-
-\begin{asparadesc}
+  \begin{figure*}
+    \centering
+    \subfloat {\input{input/lseqtreeexampleA.tex}}
+    \hspace{10pt}
+    \subfloat {\input{input/lseqtreeexampleB.tex}}
+    \caption{\label{fig:lseqtreeexample}\LSEQ tree handling two monotonic
+      editing behaviors.}
+  \end{figure*}
+  
 \item [As summary,] Figure~\ref{fig:lseqtreeexample} depicts the functioning of
   \LSEQ resulting in two trees after scenarios creating the sequence $QWERTY$:
   \begin{inparaenum}[(i)] 
@@ -451,12 +455,13 @@ participants, hence, the constant time complexity.
 \subsection{Graphical user interface}
 
 To perform their changes on the shared document, users have a visual
-representation of their respective local copy in their web browser.  \CRATE
-provides a look-up function to gets the identifier at the index, and. It gets
-the identifiers at a designated index, and converse. Thus, when users perform
-their insertions, \CRATE gets the identifiers at the targeted position and
-generates the new identifier. When it receives an identifier, it firstly inserts
-it into the tree structure and secondly get its index to notify the view.
+representation of their respective local copy in their web browser.  Since CRDTs
+for sequences provide functions relying on identifiers rather than indexes,
+\CRATE provides a look-up function which gets the identifiers at a designated
+index, and converse.  Thus, when users perform their insertions, \CRATE gets the
+identifiers at the targeted position and generates the new identifier. When it
+receives an identifier, it firstly inserts it into the tree structure and
+secondly get its index to notify the view.
 
 \begin{table}
   \centering
@@ -478,6 +483,7 @@ structure starts to be balanced, and the look-up becomes more efficient
 relatively to the document size. Upon reception, since users only have a partial
 view of the whole document, the look-up of the received operation may fall into
 a range of element not loaded by the view.
+
 
 %%% Local Variables: 
 %%% mode: latex
