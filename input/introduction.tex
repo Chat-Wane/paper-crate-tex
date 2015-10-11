@@ -2,43 +2,54 @@
 \section{Introduction}
 
 Google Docs made real-time editing in browsers easy for millions of
-users. However, Google mediates real-time editing sessions with central servers
-raising issues on privacy, censorship, economic intelligence. It also raises
-scalability issues in term of number of participants.  Despite that small groups
-currently constitute the main range of users, larger groups (e.g. from massive
-online courses, conferences, TV-shows) require support to share their notes too.
-For instance, writing documents on Google Docs is possible uptill fifty
-users. Next users have their rights limited to document reading.
+users. However, Google mediates real-time editing sessions with
+central servers raising issues on privacy, censorship, economic
+intelligence. It also raises scalability issues in term of number of
+participants.  Despite that small groups currently constitute the main
+range of users, events such as massive online lectures, TV shows,
+conferences gather larger groups.  Google Docs support large groups
+but only the fifty the first users can edit, next users have their rights
+limited to document reading. We think that a real-time edit shoud
+allow anyone to edit anytime, anywhere whatever the number of
+participants. Real-time editing session can be highly dynamic; the number of
+participants can significantly change and event if just few people are
+editing at a tme, the set of editors can change anytime. In this paper
+we focus on building a real-time editor that better support privacy
+and can adapt gently from small groups to large groups.
 
-Decentralized real-time editors~\cite{oster2006data, sun1998operational,
-  sun2009contextbased} do not require intermediate servers and by the same solve
-privacy issues. However, scalability issues remain.  Addressing these issues
-requires finding a good trade-off between communication, space and time
-complexities. Among others, it consists in a sublinear communication complexity
-compared to the editing session size. While the transmission of operations
-requires at least a multiplicative factor logarithmically scaling compared to
-the network size, maintaining consistency requires piggybacking additional
-metadata the complexity of which must be carefully studied.
+Decentralized real-time editors~\cite{oster2006data,
+  sun1998operational, sun2009contextbased} do not require intermediate
+servers and by the same solve privacy issues. However, scalability
+issues remain.  Addressing scalability requires finding a good
+trade-off between communication, space and time
+complexities. Achieving a sublinear communication complexity compared
+to the editing session size is crucial for supporting large groups. In
+the best case, if we have $n$ participants, sending a typed character to
+others requires to contact $log(n)$ participants. But consistency
+maintenance of real-time editors requires to piggyback to each
+message extra informations that impact greatly the whole communication
+complexity.
 
 Decentralized algorithms of operational
-transformation~\cite{sun2009contextbased} require piggybacking a state vector in
-order to detect concurrent operations. Unfortunately, state vectors grow
-linearly compared to the number of participants that ever participated in the
-authoring.
+transformation~\cite{sun2009contextbased} require piggybacking a state
+vector in order to detect concurrent operations. Unfortunately, state
+vectors grow linearly compared to the number of participants that ever
+participated in the authoring.
 
-Conflict-Free Replicated Data Types~\cite{shapiro2011comprehensive} (CRDTs) such
-as WOOT~\cite{oster2006data} piggyback a constant-size identifier which is
-optimal. Nonetheless, their local space complexity grows monotonically which
-eventually leads to the need of costly garbage collecting. Other
-algorithms~\cite{preguica2009commutative, weiss2010logootundo} limit their local
-space consumption. Nevertheless, they piggyback variable-size identifiers that
-can grow linearly compared to the document size. In such case, they eventually
-need to run a costly consensus algorithm to balance
+Conflict-Free Replicated Data Types~\cite{shapiro2011comprehensive}
+(CRDTs) such as WOOT~\cite{oster2006data} piggyback a constant-size
+identifier which is optimal. Nonetheless, their local space complexity
+grows monotonically which eventually leads to the need of costly
+garbage collecting. Other algorithms~\cite{preguica2009commutative,
+  weiss2010logootundo} limit their local space
+consumption. Nevertheless, they piggyback variable-size identifiers
+that can grow linearly compared to the document size. In such case,
+they eventually need to run a costly consensus algorithm to balance
 documents~\cite{zawirski2011asynchronous}. Finally, Algorithm
-\LSEQ~\cite{nedelec2013concurrency} aims to avoid such consensus by sublinearly
-upper-bounding the space complexity of its identifiers. It conjectured a
-polylogarithmic growth of the identifiers size $\mathcal{O}(\log(d)^2)$ where
-$d$ is the document size.
+\LSEQ~\cite{nedelec2013concurrency} aims to avoid such consensus by
+sublinearly upper-bounding the space complexity of its identifiers. It
+conjectured a polylogarithmic growth of the identifiers size
+$\mathcal{O}(\log(d)^2)$ where $d$ is the document size.
 
 %% for positioning reason, table from related work is here
 \begin{table*}[t]
@@ -65,8 +76,8 @@ paper are threefold:
   trade-off for building decentralized real-time editors.
 \item Compared to previous work~\cite{nedelec2015spray}, we deployed the
   adaptive membership protocol \SPRAY in web browsers thanks to
-  WebRTC. \TODO{Our observations on performance confirm the simulation results
-    on setups involving real-time editing in browsers.}
+  WebRTC. We observed that \SPRAY is able to support high dynamicity
+  of real-time editing sessions thanks to its adaptivity.
 \item We conducted experimental studies to validate the complexities of
   \CRATE. The experiments took place in the Grid'5000 testbed and involved
   uptill $600$ real web browsers opened to edit a shared document. At a rate of
