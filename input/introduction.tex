@@ -2,38 +2,35 @@
 \section{Introduction}
 
 Google Docs made real-time editing in browsers easy for millions of
-users. However, Google mediates real-time editing sessions with
-central servers raising issues on privacy, censorship, economic
-intelligence. It also raises scalability issues in term of number of
-participants.  Despite that small groups currently constitute the main
-range of users, events such as massive online lectures, TV shows,
-conferences gather larger groups.  Google Docs support large groups
-but only the fifty the first users can edit, next users have their rights
-limited to document reading. We think that a real-time edit shoud
-allow anyone to edit anytime, anywhere whatever the number of
-participants. Real-time editing session can be highly dynamic; the number of
-participants can significantly change and event if just few people are
-editing at a tme, the set of editors can change anytime. In this paper
-we focus on building a real-time editor that better support privacy
-and can adapt gently from small groups to large groups.
+users. However, Google mediates real-time editing sessions with central servers
+raising issues on privacy, censorship, economic intelligence. It also raises
+scalability issues in term of number of participants.  Despite that small groups
+currently constitute the main range of users, events such as massive online
+lectures, TV shows, conferences gather larger groups.  Google Docs supports
+large groups but only the first fifty users can edit, next users have their
+rights limited to document reading. \TODO{We think that real-time editors should
+  allow editing at anytime and anywhere, whatever the number of participants.}
+Real-time editing sessions can be highly dynamic; even if only few authors are
+editing a document simultaneously, the editing session includes a much larger
+group of potential writers. In this paper we focus on building a real-time
+editor that supports privacy and that adapts \TODO{gently} from small groups to
+large groups.
 
-Decentralized real-time editors~\cite{oster2006data,
-  sun1998operational, sun2009contextbased} do not require intermediate
-servers and by the same solve privacy issues. However, scalability
-issues remain.  Addressing scalability requires finding a good
-trade-off between communication, space and time
-complexities. Achieving a sublinear communication complexity compared
-to the editing session size is crucial for supporting large groups. In
-the best case, if we have $n$ participants, sending a typed character to
-others requires to contact $log(n)$ participants. But consistency
-maintenance of real-time editors requires to piggyback to each
-message extra informations that impact greatly the whole communication
-complexity.
+Decentralized real-time editors~\cite{oster2006data, sun1998operational,
+  sun2009contextbased} do not require intermediate servers and by the same solve
+privacy issues. However, scalability issues remain.  Addressing scalability
+requires finding a good trade-off between communication, space and time
+complexities. Achieving a sublinear communication complexity compared to the
+editing session size is crucial for supporting large groups.  \TODO{In the best
+  case, if we have $n$ participants, sending a typed character to others
+  requires to contact $log(n)$ participants.} But consistency maintenance of
+documents requires each message to piggyback additional information which
+greatly impacts the communication complexity.
 
 Decentralized algorithms of operational
 transformation~\cite{sun2009contextbased} require piggybacking a state
 vector in order to detect concurrent operations. Unfortunately, state
-vectors grow linearly compared to the number of participants that ever
+vectors grow linearly compared to the number of members that ever
 participated in the authoring.
 
 Conflict-Free Replicated Data Types~\cite{shapiro2011comprehensive}
@@ -49,7 +46,7 @@ documents~\cite{zawirski2011asynchronous}. Finally, Algorithm
 \LSEQ~\cite{nedelec2013concurrency} aims to avoid such consensus by
 sublinearly upper-bounding the space complexity of its identifiers. It
 conjectured a polylogarithmic growth of the identifiers size
-$\mathcal{O}(\log(d)^2)$ where $d$ is the document size.
+$\mathcal{O}((\log d)^2)$ where $d$ is the document size.
 
 %% for positioning reason, table from related work is here
 \begin{table*}[t]
@@ -74,10 +71,10 @@ paper are threefold:
 \item Compared to previous work~\cite{nedelec2013lseq}, we demonstrate the upper
   bounds on space and time complexities of \LSEQ. It constitutes an original
   trade-off for building decentralized real-time editors.
-\item Compared to previous work~\cite{nedelec2015spray}, we deployed the
-  adaptive membership protocol \SPRAY in web browsers thanks to
-  WebRTC. We observed that \SPRAY is able to support high dynamicity
-  of real-time editing sessions thanks to its adaptivity.
+\item \TODO{Compared to previous work~\cite{nedelec2015spray}}, we deploy the
+  adaptive membership protocol \SPRAY in web browsers thanks to WebRTC. We
+  observe that \SPRAY's adaptivity allows handling high dynamicity of real-time
+  editing sessions.
 \item We conducted experimental studies to validate the complexities of
   \CRATE. The experiments took place in the Grid'5000 testbed and involved
   uptill $600$ real web browsers opened to edit a shared document. At a rate of
