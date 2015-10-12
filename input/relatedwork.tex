@@ -3,7 +3,7 @@
 
 Real-time distributed collaborative editors consider multiple
 participants, each hosting a copy of a shared sequence of
-characters. A participant update at any time its local copy by
+characters. A participant updates at any time its local copy by
 inserting or deleting a character. Then, the operation is eventually
 delivered to all other members. Finally, delivered operations are
 re-executed~\cite{saito2005optimistic}. Consistency requires that all
@@ -12,10 +12,10 @@ system is idle, all copies become
 similar~\cite{bailis2013eventual}. Consistency also requires ensuring
 intention preservation, i.e., effects observed at generation time must
 be re-observed at re-execution time regardless of concurrent
-operations~\cite{sun1998achieving}. Consistency finally requires
+operations~\cite{sun1998achieving}. \TODO{Consistency finally requires
 ensuring causality, i.e., the re-execution order of operations follows
 the \emph{happen before} relationship~\cite{lamport1978time} stated at
-generation.
+generation.}
 
 Several complexities characterize decentralized editors:
 \begin{itemize}
@@ -27,32 +27,36 @@ Several complexities characterize decentralized editors:
 \end{itemize}
 Solving scalability issues requires finding a balanced trade-off between
 communication, space and time complexities.  Among others, the communication
-complexity is the most discriminant. First, it requires at least a
-multiplicative logarithmic factor compared to the editing session size
-$R$. Second, messages contain metadata necessary to maintain consistency. To
-scale, the space complexity of these metadata must be sublinear.
+complexity is the most discriminant. It requires $\mathcal{O}(m.\ln{R})$ where
+($\ln{R}$) is a minimal multiplicative factor induced by the broadcasting
+mechanism which depends of the session size $R$ including both readers and
+writers; where $m$ is the message embedding metadata necessary to maintain
+consistency. To scale, the space complexity of these metadata must be sublinear.
 
 \begin{asparadesc}
 \item [Operational transformation] (OT) allows building both centralized and
   decentralized real-time editors. At generation, the processing time of
   operations is constant. At integration, OT transforms the received operations
   against concurrent ones which were generated on the same state. An integration
-  algorithm (e.g. COT~\cite{sun2009contextbased}, SOCT2~\cite{vidot2000copies})
-  along with transformation functions (ensuring transformation properties)
-  guarantee a consistent model. The integration time depends of concurrency and
-  differs among the algorithms.  For instance, COT's integration time complexity
-  is exponential. It can reduce it to linear at the expense of space
-  complexity. SOCT2's integration time complexity is quadratic.  Whatever the
-  trade-off, OT's integration algorithms rely on concurrency detection which
-  costs, at least, a state vector~\cite{charronbost1991concerning} the size of
-  which grows linearly compared to the number of members $W$ who ever
-  participated in the authoring. Since each message embeds such vector, and
-  excepting humble confined environment (e.g. local area networks),
-  decentralized OT approaches are not practicable. As for space complexity, OT
+  algorithm such as COT~\cite{sun2009contextbased} or
+  SOCT2~\cite{vidot2000copies} along with transformation functions (ensuring
+  transformation properties) guarantee a consistent model. The integration time
+  depends of concurrency and differs among the algorithms.  For instance, COT's
+  integration time complexity is exponential. It can reduce it to linear at the
+  expense of space complexity. SOCT2's integration time complexity is quadratic.
+  Whatever the trade-off, OT's integration algorithms rely on concurrency
+  detection which costs, at least, a state
+  vector~\cite{charronbost1991concerning} the size of which grows linearly
+  compared to the number of members $W$ who ever participated in the
+  authoring. Since each message embeds such vector, decentralized OT approaches
+  are not praticable in large groups subject to churn where people join and
+  leave the network frequently and freely.  As for space complexity, OT
   approaches require an historic of operations $H$, each operation being linked
-  to their state vector, hence $\mathcal{O}(W.H)$. Such monotonically
-  growing historic can be cut at the price of consensus which, once again, does
-  not scale.
+  to their state vector, hence $\mathcal{O}(W.H)$. Such monotonically growing
+  historic can be cut at the price of consensus which, once again, does not
+  scale. Thus, OT approaches are the best in humble confined environment like
+  local area networks. However, their performance degrades when the network size
+  grows and \TODO{becomes less predictable}.
 
 \item [Conflict-free replicated data types] (CRDTs) for sequences constitute the
   latter approaches which solve concurrent cases by providing commutative and
@@ -76,13 +80,11 @@ scale, the space complexity of these metadata must be sublinear.
   constant size identifier $\mathcal{O}(1)$ to each element but whose removals
   of elements only hide them to the users. Therefore, removed elements keep
   consuming space leading to a monotonically growing document, hence
-  $\mathcal{O}(H)$. For instance, Wikipedia pages subject to vandalism could
-  consume a lot of memory while appearing empty. Destroying removed elements
-  requires running a costly consensus algorithm (\emph{does everyone see the
-    removal and agree on definitely throw out the element}) which is
-  prohibitively costly and does not scale in number of members, especially in
-  network subject to churn (where they join and leave the network frequently and
-  freely). Since the structure contains the full history of the document, such
+  $\mathcal{O}(H)$.  Destroying removed elements requires running a costly
+  consensus algorithm to determine if everyone received the removal and agree on
+  definitely throw out the element. Such algorithm is prohibitively costly and
+  does not scale in number of members, especially in network subject to
+  churn. Since the structure contains the full history of the document, such
   approach do not require further information to track causally related
   operations.
 
@@ -97,8 +99,8 @@ scale, the space complexity of these metadata must be sublinear.
   growth of identifiers depending on the editing behavior. In both cases, the
   growth is linear compared to the number of insertions in the sequence, i.e.,
   $\mathcal{O}(I)$. If the structure stores each identifier in a flat array, it
-  grants fast access at the price of high space complexity
-  ($\mathcal{O}(I^2)$). If it factorizes common parts of identifiers as a tree
+  grants fast access at the price of quadratic space complexity
+  $\mathcal{O}(I^2)$. If it factorizes common parts of identifiers as a tree
   structure, it achieves better space complexity. Yet, in the worst case, a
   costly distributed consensus is still required to balance the
   structure~\cite{zawirski2011asynchronous}. Since removals truly erase
@@ -110,12 +112,10 @@ scale, the space complexity of these metadata must be sublinear.
   Algorithm \LSEQ~\cite{nedelec2013lseq} aims to avoid such consensus by
   sublinearly upper-bounding the space complexity of variable-size
   identifiers. It conjectured a polylogarithmic progression of the identifiers
-  size $\mathcal{O}(log(I)^2)$. In this paper, we demonstrate this upper-bound
-  and we state the conditions under which it applies.
+  size $\mathcal{O}((\log I)^2)$. \TODO{Section~\ref{subsec:sequence} describes its
+  functioning.} In this paper, we demonstrate this upper-bound and we state the
+  conditions under which it applies.
 
-%%\item [Table~\ref{table:complexities} summarizes] the boundaries of complexities
-%%  in communication and space of decentralized approaches. It highlights the
-%%  bottleneck implied by each class of approaches.
 \end{asparadesc}
 
 %%% Local Variables: 
