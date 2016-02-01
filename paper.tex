@@ -1,5 +1,5 @@
 
-\documentclass{sig-alternate}
+\documentclass[times]{cpeauth}
 %%\documentclass{article} %% hevea
 %%\usepackage[utf8]{inputenc} %% hevea
 
@@ -58,30 +58,37 @@
 
 \title{CRATE: Decentralized Real-Time Editing in Browsers}
 
-\numberofauthors{1}
-\author{
-     \alignauthor Brice N\'edelec, Pascal Molli, Achour Mostefaoui\\
-     \affaddr{LINA, 2 rue de la Houssini\`ere}\\
-     \affaddr{BP92208, 44322 Nantes Cedex 03}\\
-     \email{first.last@univ-nantes.fr}
+\author{Brice N{\'e}delec\corrauth, Pascal Molli\corrauth, Achour Mostefaoui\corrauth}
+
+\address{
+  LINA, 2 rue de la Houssini{\`e}re,
+  BP92208, 44322 Nantes Cedex 03,
+  first.last@univ-nantes.fr
 }
+
+\corraddr{
+  LINA, 2 rue de la Houssini{\`e}re,\\
+  BP92208, 44322 Nantes Cedex 03,\\
+  \url{first.last@univ-nantes.fr}
+}
+
+
+\input{input/abstract.tex}
 
 \maketitle
 
-\input{input/abstract.tex}
-\input{input/keywordsandcategory.tex}
-
-\input{input/introduction.tex}
-\input{input/relatedwork.tex}
-\input{input/proposal.tex}
-\input{input/experiments.tex}
-
-\input{input/conclusion.tex}
-\input{input/acknowledgements.tex}
+%%\input{input/keywordsandcategory.tex}
+%%\input{input/introduction.tex}
+%%\input{input/relatedwork.tex}
+%%\input{input/proposal.tex}
+%%\input{input/experiments.tex}
+%%
+%%\input{input/conclusion.tex}
+%%\input{input/acknowledgements.tex}
 
 
 \bibliographystyle{abbrv}
-\raggedright
+%\raggedright
 \bibliography{bibliographie}
 
 % \appendix

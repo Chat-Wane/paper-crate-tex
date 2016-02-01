@@ -24,19 +24,15 @@ Conversely, when \CRATE receives a broadcast message, it checks if the operation
 is causally ready to be delivered. Once the condition is verified, it applies
 the operation to the shared sequence which notifies the graphical user interface
 of the changes.  The right part of the figure corresponds to the catch up
-strategy where a peer may have missed operations due to dropped messages, or
-simply because the peer worked on offline mode for a while. Therefore, it
+strategy where a member may have missed operations due to dropped messages, or
+simply because the user worked on offline mode for a while. Therefore, it
 regularly asks to its neighborhood the missing operations using the differences
 of version vectors.
 
-\TODO{Our contributions comprise:
-\begin{itemize}
-\item a fully detailed architecture of a decentralized real-time editor,
-\item an original usage of \SPRAY applied to the scalable dissemination of
-  messages in the real-time editing context,
-\item an analysis of space, time, and communication complexities of the
-  replicated sequence structure \LSEQ.
-\end{itemize}}
+\TODO{In this paper we show how the adaptivity of the membership protocol \SPRAY
+impacts the traffic of the real-time editor \CRATE. We demonstrate the upper
+bounds of space and time complexities of \LSEQ and the conditions under which it
+applies. We validate experimentally the aforementioned analysis.}
 
 The rest of this section reviews each layer and details the components inside
 them.
@@ -114,7 +110,7 @@ members to use it to spread the changes performed on shared documents.
   their neigbhors only once by using a version vector with exceptions
   (cf. Section~\ref{subsec:causality}).
 
-  Compared to state-of-art~\cite{ganesh2003peer, jelasity2007gossip,
+  Compared to state-of-the-art~\cite{ganesh2003peer, jelasity2007gossip,
     voulgaris2005cyclon}, \SPRAY provides a neigbhorhood reflecting the network
   size instead of a constant size neighborhood set at start (commonly oversized
   to handle large networks). As such, information dissemination protocol on top
@@ -123,10 +119,10 @@ members to use it to spread the changes performed on shared documents.
   The information dissemination protocol impacts the communication complexity at
   each member:
   \begin{equation}
-    \mathcal{O}(m.\ln |\mathcal{R}|)
+    \mathcal{O}(m.\ln R)
   \end{equation}
   where $m$ is the message size determined by the layers below, and
-  $|\mathcal{R}|$ is the number of replicas in the network including both
+  $R$ is the number of replicas in the network including both
   writers and readers of the shared sequence.
 \end{asparadesc}
 
@@ -179,14 +175,14 @@ exceptions~\cite{malkhi2007concise, mukund2014optimized}.
 
   The local upper-bound on space complexity is:
   \begin{equation}
-    \mathcal{O}(|\mathcal{W}|)
+    \mathcal{O}(W)
   \end{equation}
-  where $|\mathcal{W}|$ is the number of writers, i.e., users who modified the
+  where $W$ is the number of writers, i.e., users who modified the
   document at least once.  Such structure only requires to piggyback the
   identifiers of operation. Hence, the upper-bound on communication complexity
   is:
   \begin{equation}
-    \mathcal{O}(o.\ln |\mathcal{R}|)
+    \mathcal{O}(o.\ln R|)
   \end{equation}
   where $o$ is the operation size determined by the shared sequence structure
   (cf. Section~\ref{subsec:sequence}), and the rest is determined by the
@@ -210,11 +206,11 @@ exceptions~\cite{malkhi2007concise, mukund2014optimized}.
   communication cost is prohibitively high which encourages to perform this
   reconciliation protocol with great care:
   \begin{equation}
-    \mathcal{O}(|\mathcal{W}|+|\mathcal{W}|+x.o)
+    \mathcal{O}(W+W+x.o)
   \end{equation}
-  where the first $|\mathcal{W}|$ designates the vector contained in the
-  initiating message, and $|\mathcal{W}|+x.o$ the response to this message where
-  $x.o$ are the missing operations.
+  where the first $W|$ designates the vector contained in the initiating
+  message, and $W+x.o$ the response to this message where $x.o$ are the missing
+  operations.
 \end{asparadesc}
 
 \subsection{Shared sequence}
