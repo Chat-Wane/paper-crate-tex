@@ -232,16 +232,16 @@ Contract/grant sponsor: #1}}}
         {\raggedright\emph\@address}
       \par}%
 \end{center}    
-    \vskip 31pt%
-    {\noindent\usebox\absbox\par}
-    {\lineskip 1.5em%
-      %
-      {\noindent\footnotesize Received \dots}\par}
-    {\vspace{11pt}%
-      %
-      {\noindent\@keywords}\par}
-      \vspace{12pt}
-        \par%
+    % \vskip 31pt%
+    % {\noindent\usebox\absbox\par}
+    % {\lineskip 1.5em%
+    %   %
+    %   {\noindent\footnotesize Received \dots}\par}
+    % {\vspace{11pt}%
+    %   %
+    %   {\noindent\@keywords}\par}
+    %   \vspace{12pt}
+    %     \par%
   }
  
 \def\startpage{\pageref{FirstPage}}
