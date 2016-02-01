@@ -1,19 +1,52 @@
 \begin{abstract}
-  Distributed real-time editors such as Google Docs~\cite{nichols1995high}, or
-  Etherpad allow users distributed in space and organizations to collaborate
-  easily with only web browsers. Yet, main stream editors rely on central
-  servers with issues in privacy, single point of failure and scalability.
-  Decentralized editors settle privacy problems but scalability issues remain.
-  None of existing algorithms provide satisfying complexities in both
-  communication and space.  In this paper, we propose \CRATE; a working
-  decentralized real-time editor that supports large number of users working on
-  large documents. In particular, \CRATE achieves a sublinearly upper-bounded
-  communication complexity in $\mathcal{O}((\log d)^2\ln{m})$ where $d$ is the
-  document size and $m$ the membership size. Thanks to WebRTC, \CRATE can be
-  easily deployed on a network of browsers.  We evaluate \CRATE on large-scale
-  experiments in the Grid'5000 testbed involving uptill 600 participants. As
-  expected, we observe a logarithmic progression of the generated traffic
-  according to the size of the shared document and the number of participants.
+  % Distributed real-time editors such as Google Docs~\cite{nichols1995high}, or
+  % Etherpad allow users distributed in space and organizations to collaborate
+  % easily with only web browsers. Yet, main stream editors rely on central
+  % servers with issues in privacy, single point of failure and scalability.
+  % Decentralized editors settle privacy problems but scalability issues remain.
+  % None of existing algorithms provide satisfying complexities in both
+  % communication and space.  In this paper, we propose \CRATE; a working
+  % decentralized real-time editor that supports large number of users working on
+  % large documents. In particular, \CRATE achieves a sublinearly upper-bounded
+  % communication complexity in $\mathcal{O}((\log d)^2\ln{m})$ where $d$ is the
+  % document size and $m$ the membership size. Thanks to WebRTC, \CRATE can be
+  % easily deployed on a network of browsers.  We evaluate \CRATE on large-scale
+  % experiments in the Grid'5000 testbed involving uptill 600 participants. As
+  % expected, we observe a logarithmic progression of the generated traffic
+  % according to the size of the shared document and the number of participants.
+
+  Distributed collaborative editors such as Google Docs, or Etherpad allow users
+  to write documents together. To provide availability and responsiveness of
+  documents, real-time editors use the optimistic replication. As such, each
+  user creates a local copy of the document and directly performs her
+  modification on it. Changes are broadcast to all replica owners where they are
+  integrated. Strong eventual consistency states that replicas integrating an
+  identical set of operations converge to an equivalent state, i.e., users read
+  a same document.
+
+  Yet, mainstream editors rely on central servers which bring issues in privacy,
+  scalability, and single point of failure. Decentralized editors settle privacy
+  problems but scalability issues remain. 
+
+  Operational transformation (OT) approaches provide very efficient local
+  execution of operations. Nevertheless, once the operations arrive to remote
+  replicas, OT may transform each operation to retrieve consistent arguments
+  taking into account the changes integrated since operation execution. The
+  transformation cost heavily depends on concurrency. In addition, concurrency
+  detection structures grow at least linearly compared to the number of
+  writers. Hence, OT behave great in stable environments with small groups of
+  users but should not be used in large scale system subject to unpredictable
+  latency.
+
+  To avoid concurrency costs, data types recently emerged providing commutative
+  operations. Such data structures exist for counters, sets, graphs etc. In this
+  paper, we focus on data structures for sequences -- the closest structure from
+  documents.
+  
+  Unique and immutable identifiers enable commutativity of operations. Two
+  families exist concerning the allocation of identifiers:
+
+
 \end{abstract}
 
 %%% Local Variables: 
