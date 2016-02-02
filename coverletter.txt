@@ -1,16 +1,40 @@
-Please find enclosed a paper entitled "A Polylog Sequence Encoding for
-Collaborative Editing" we submit to the IEEE International Journal on
-Transactions on Parallel and Distributed Systems. Note that there are three
-parts in this paper among which the first two already appeared in the
-conference ACM DocEng'2013 and the associated international Workshop
-DChanges'2013. The paper that appeared in DocEng'2013 obtained the best student
-paper award.
 
-The first part presents the core of the contribution: a scalable replicated
-data structure for collaborative editing. The second part presents the
-concurrency effect over the overall performance of the proposed data
-structure. Finally the new part proposes a proof of the sub-linear
-(polylogarithmic) space complexity of the proposed data structure with respect
-to the number of existing elements in this structure. In comparison, the other
-solutions are linear. Also, instead of simulations, the experiments were
-emulations running on the Grid'5000 testbed.
+Dear Editors,
+
+Please find enclosed a paper entitled "A Polylog Sequence Encoding for
+Collaborative Editing" . This paper is a major extended version of the
+paper:
+
+[1] Nédelec, B., Molli, P., Mostefaoui, A., & Desmontils, E. (2013,
+September). LSEQ: an adaptive structure for sequences in distributed
+collaborative editing. In Proceedings of the 2013 ACM symposium on
+Document engineering (pp. 37-46). ACM.
+https://hal.archives-ouvertes.fr/docs/00/92/16/33/PDF/fp025-nedelec.pdf
+
+[2] Nédelec, B., Molli, P., Mostefaoui, A., & Desmontils, E. (2013,
+September). Concurrency effects over variable-size identifiers in
+distributed collaborative editing. In Workshop "Document Changes: Modeling,
+Detection, Storage and Visualization" (Vol. 1008, pp. 0-7).
+https://hal.archives-ouvertes.fr/hal-00921655/document
+
+[1] obtained the best student paper award in
+DocEng'2013.
+
+Compared to previous works[1,2]:
+
+* we prove the upper bounds on space and time complexities of
+  LSEQ. This result opens the way for building decentralized and
+  scalable real-time editors.
+
+* We describe all the outlines to develop a distributed collaborative
+  editor for massive editing of large documents.
+
+* We built a real-time scalable and decentralized editor running in web browsers
+  available at {https://github.com/Chat-Wane/CRATE. In the Grid'5000
+  testbed, we launched an editing session involving up till 600
+  connected browsers.
+
+Best regards,
+
+--
+Brice, Pascal and Achour.
