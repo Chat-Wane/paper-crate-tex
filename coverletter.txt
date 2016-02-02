@@ -1,0 +1,16 @@
+Please find enclosed a paper entitled "A Polylog Sequence Encoding for
+Collaborative Editing" we submit to the IEEE International Journal on
+Transactions on Parallel and Distributed Systems. Note that there are three
+parts in this paper among which the first two already appeared in the
+conference ACM DocEng'2013 and the associated international Workshop
+DChanges'2013. The paper that appeared in DocEng'2013 obtained the best student
+paper award.
+
+The first part presents the core of the contribution: a scalable replicated
+data structure for collaborative editing. The second part presents the
+concurrency effect over the overall performance of the proposed data
+structure. Finally the new part proposes a proof of the sub-linear
+(polylogarithmic) space complexity of the proposed data structure with respect
+to the number of existing elements in this structure. In comparison, the other
+solutions are linear. Also, instead of simulations, the experiments were
+emulations running on the Grid'5000 testbed.
