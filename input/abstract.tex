@@ -64,7 +64,18 @@ approach. Two classes of CRDTs designed for sequences exist:
   balancing mechanism by sublinearly upper-bounding the space complexity of its
   identifiers. It is conjectured to have a polylogarithmic growth of the
   identifiers size $\mathcal{O}((\log d)^2)$ where $d$ is the document
-  size. %Experiments empirically confirmed the conjecture.
+  size.
+  
+  Figure~\ref{fig:complexity} shows the results of experiments where variable
+  size identifier approaches~\cite{nedelec2013lseq, preguica2009commutative,
+    weiss2009logoot} were asked to generate identifiers at the end of the
+  document (top figure), and at random position in the document (bottom
+  figure). The documents reach half a million characters. We observe that while
+  random editing leads to logarithmic growth of identifiers in any of the
+  approaches, an editing behavior as trivial as left-to-right editing
+  constitutes an issue. Treedoc and Logoot expose linear growth. \LSEQ provides
+  sublinearly upper-bounded identifiers. As such, \LSEQ outperforms
+  state-of-the-art approaches and scales in terms of document size.
 \end{itemize}
 
 The contributions of this paper are threefold:
