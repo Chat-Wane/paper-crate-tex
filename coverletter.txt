@@ -2,7 +2,7 @@
 Dear Editors,
 
 Please find enclosed a paper entitled "A Polylog Sequence Encoding for
-Collaborative Editing" . This paper is a major extended version of the
+Collaborative Editing" . This paper is a major extension of the
 paper:
 
 [1] Nédelec, B., Molli, P., Mostefaoui, A., & Desmontils, E. (2013,
@@ -22,17 +22,20 @@ DocEng'2013.
 
 Compared to previous works[1,2]:
 
-* we prove the upper bounds on space and time complexities of
-  LSEQ. This result opens the way for building decentralized and
+* We prove the upper bounds on space and time complexities of
+  LSeq. This result opens the way for building decentralized and
   scalable real-time editors.
 
-* We describe all the outlines to develop a distributed collaborative
-  editor for massive editing of large documents.
+* We ran extensive experiments characterizing LSeq's behavior. In
+  particular, it outperforms state-of-the-art CRDTs for sequences.
 
-* We built a real-time scalable and decentralized editor running in web browsers
-  available at {https://github.com/Chat-Wane/CRATE. In the Grid'5000
-  testbed, we launched an editing session involving up till 600
-  connected browsers.
+* We describe all the outlines to develop a distributed collaborative
+  editor for massive editing of large documents.  Following these
+  guidelines, we built a real-time scalable and decentralized editor
+  running in web browsers available at https://github.com/Chat-Wane/CRATE.
+  In the Grid'5000 testbed, we launched editing sessions involving up
+  till 600 connected browsers. It validates the scalability of editors built
+  on top of LSeq.
 
 Best regards,
 
