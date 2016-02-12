@@ -41,11 +41,12 @@ $3.1$. Again, the space will be extended resulting in a new identifier $3.0$
 suffixed by any non null integer. Let $X$ be the suffix, the order is preserved
 since $(3 < 3.0.X < 3.1)$.
 
- Such growing identifiers are called variable-size
-identifiers. The main objective is to keep the growth of the size of the
-identifiers under acceptable boundaries.
+Such growing identifiers are called variable-size identifiers. The main
+objective is to keep the growth of the size of the identifiers under acceptable
+boundaries.
 
 \subsection{Variable-size Identifiers}
+\label{subsec:variable}
 
 Variable-size identifiers can be represented as a concatenation of basic
 elements (e.g. integers). The resulting sequence can be represented by a tree
@@ -95,6 +96,7 @@ that we assumed a 10-ary tree). The total order $(\mathcal{P},\,<_\mathcal{P})$
 allows retrieving the sequence $QWERTY$.
 
 \subsection{Disambiguation of concurrent cases}
+\label{subsec:disambiguation}
 
 Two collaborators concurrently performing an operation on their respective
 replica may get different results after the integration of both
@@ -143,7 +145,7 @@ associated complexity represents the local part of the $insert$ operation where
 the algorithm has to generate a path (cf. Line~\ref{line:allocpath}) and a
 disambiguator (cf. Line~\ref{line:allocdes}).
 
-\begin{algorithm}
+\begin{algorithm}[h]
   \input{input/crdtabstractalgo.tex}
   \caption{\label{algo:crdtabstract}General outlines of a sequence with
     variable-size identifiers.}
