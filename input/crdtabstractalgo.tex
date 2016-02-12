@@ -11,7 +11,8 @@
 \algblockdefx[local]{local}{endLocal}
   [0] {\textbf{LOCAL UPDATE:}}
 
-\algblockdefx[received]{received}{endReceived}
+\algsetblockdefx[received]{received}{endReceived}
+  {65535}{}
   [0] {\textbf{RECEIVED UPDATE:}}
 
 \algblockdefx[onInsert]{onLocal}{endOnLocal}
@@ -19,7 +20,8 @@
    q\in\mathcal{I}$):}
   [0] {\textbf{on} delete ($i \in \mathcal{I}$):} 
 
-\algblockdefx[onRemote]{onRemote}{endOnRemote}
+\algsetblockdefx[onRemote]{onRemote}{endOnRemote}
+  {65535}{}
   [0] {\textbf{on} insert ($i\in\mathcal{I}$):\hfill\comment{once per 
   distinct triple in $\mathcal{I}$}}
   [0] {\textbf{on} delete ($i\in\mathcal{I}$):\hfill\comment{after the 
@@ -38,24 +40,23 @@
 \begin{algorithmic}[1]
   \Statex
   \initially
-    \State $\mathcal{T} \leftarrow \varnothing$; \hfill \comment{structure of
+    \State $T \leftarrow \varnothing$; \hfill \comment{structure of
      the CRDT for sequences}
   \endInitially
   
   \local
     \onLocal
-    \State \textbf{let} $path \leftarrow allocPath(p.P,\,q.P)$; \label{line:allocpath}
-    \State \textbf{let} $dis \leftarrow allocDis(p,\, path,\, q)$; \label{line:allocdes}
-    \State $broadcast('insert',\, \langle path,\, \alpha,\, dis \rangle)$;
+    \State \textbf{let} $path \leftarrow \textsc{allocPath}(p,\,q)$; \label{line:allocpath}
+    \State \textbf{let} $dis \leftarrow \textsc{allocDis}(p,\, path,\, q)$; \label{line:allocdes}
+    \State $\textsc{broadcast}($'insert'$,\, \langle path,\, \alpha,\, dis \rangle)$;
     \endOnLocal
-    \INDSTATE $broadcast('delete',\,i)$;
+    \INDSTATE $\textsc{broadcast}($'delete'$,\,i)$;
   \endLocal
   
   \received
     \onRemote
-    \State $\mathcal{T} \leftarrow \mathcal{T} \cup i$;
+    \State $T \leftarrow T \cup i$;
     \endOnRemote
-    \INDSTATE $\mathcal{T} \leftarrow \mathcal{T}\, \backslash\, i$; 
-  \endReceived
+    \INDSTATE $T \leftarrow T\, \backslash\, i$; 
   
 \end{algorithmic}
