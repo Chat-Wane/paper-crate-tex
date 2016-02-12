@@ -1,95 +1,21 @@
-\begin{tikzpicture}[scale=1]
-
-  %% node to node
-  \small
-  \draw[dashed, thick] (0pt,0pt) -- node[anchor=south east]{0} (-70pt,-40pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=east]{1} (-50pt,-40pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=east]{2} (-30pt,-40pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=east]{3} (-10pt,-40pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=west]{4} ( 10pt,-40pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=west]{5} ( 30pt,-40pt);
-  \draw[thick] (0pt,0pt) -- node[anchor=west]{6} ( 50pt,-40pt);
-  \draw[dashed, thick] (0pt,0pt) -- node[anchor=south west]{9} ( 70pt,-40pt);
-
-  %% node to element
-  \draw[->] (-50pt,-40pt) -- (-50pt,-50pt);
-  \draw[->] (-30pt,-40pt) -- (-30pt,-50pt);
-  \draw[->] (-10pt,-40pt) -- (-10pt,-50pt);
-  \draw[->] ( 10pt,-40pt) -- ( 10pt,-50pt);
-  \draw[->] ( 30pt,-40pt) -- ( 30pt,-50pt);
-  \draw[->] ( 50pt,-40pt) -- ( 50pt,-50pt);
-
-  %% element to desambiguator
-  \draw[->,densely dashdotted] ( -50pt,-58pt) -- ( -50pt,-68.5pt);
-  \draw[->,densely dashdotted] ( -30pt,-58pt) -- ( -30pt,-68.5pt);
-  \draw[->,densely dashdotted] ( -10pt,-58pt) -- ( -10pt,-68.5pt);
-  \draw[->,densely dashdotted] (  10pt,-58pt) -- (  10pt,-68.5pt);
-  \draw[->,densely dashdotted] (  30pt,-58pt) -- (  30pt,-68.5pt);
-  \draw[->,densely dashdotted] (  50pt,-58pt) -- (  50pt,-68.5pt);
-
-  \draw[fill=black] (  0pt,  0pt) circle (1pt);
-  \draw[fill=black] (-70pt,-40pt) circle (1pt);
-  \draw[fill=white] (-50pt,-40pt) circle (1pt);
-  \draw[fill=white] (-30pt,-40pt) circle (1pt);
-  \draw[fill=white] (-10pt,-40pt) circle (1pt);
-  \draw[fill=white] ( 10pt,-40pt) circle (1pt);
-  \draw[fill=white] ( 30pt,-40pt) circle (1pt);
-  \draw[fill=white] ( 50pt,-40pt) circle (1pt);
-  \draw[fill=black] ( 70pt,-40pt) circle (1pt);
-
-  %% elements
-  \draw[fill=white](-50pt,-54pt)
-  node{\textbf{Q}}+(-4pt,-4pt)rectangle+(4pt,4pt) ;
-  \draw[fill=white](50pt,-54pt)
-  node{\textbf{Y}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-  \draw[fill=white]( 10pt,-54pt)
-  node{\textbf{R}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-  \draw[fill=white] ( -30pt,-54pt)
-  node{\textbf{W}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-  \draw[fill=white] ( -10pt,-54pt)
-  node{\textbf{E}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-  \draw[fill=white]( 30pt,-54pt)
-  node{\textbf{T}} +(-4pt,-4pt) rectangle +(4pt,4pt) ;
-
-  %% desambiguator
-  \draw[fill=gray!20] (-50pt,-71pt) +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] (-30pt,-71pt) +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] (-10pt,-71pt) +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] ( 10pt,-71pt) +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] ( 30pt,-71pt) +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-  \draw[fill=gray!20] ( 50pt,-71pt) +(-2.5pt,-2.5pt) rectangle +(2.5pt,2.5pt);
-
-  %% insertion order
-  \draw[->,dashed] (-50pt, -90pt) -- node[anchor=north]{insertion order}
-  (50pt, -90pt);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  \draw[dashed] (80pt,0pt) -- (80pt,-132pt);
-  
-  \draw (-70pt, -132pt)node[anchor=west]{\textbf{Nearly optimal}};
-
-
-\begin{scope}[shift={(135pt,0pt)}]
+\begin{tikzpicture}[scale=1.2]
 
 \newcommand\Y{-19}
 \newcommand\ADDY{-8}
 
-  \draw (45pt, -132pt) node[anchor=east]{\textbf{Worst}};  
-
   %% node to node
   \small
-  \draw[thick] (0pt,0pt) -- node[anchor=south east]{0} (-40pt,\Y pt);
+  \draw[thick] (0pt,0pt) -- node[anchor=south east]{\textbf{0}} (-40pt,\Y pt);
   \draw[thick] (0pt,0pt) -- node[anchor=east]{1} (30pt, \Y pt); %% Y
   \draw[thick] (-40pt, \Y pt) -- node[anchor=north]{1} (15pt, 2 * \Y pt); %% T
-  \draw[thick] (-40pt, \Y pt) -- node[anchor=east]{0} (-40pt, 2 * \Y pt); %% 0
+  \draw[thick] (-40pt, \Y pt) -- node[anchor=east]{\textbf{0}} (-40pt, 2 * \Y pt); %% 0
   \draw[thick] (-40pt, 2*\Y pt) -- node[anchor=north]{1} (0pt, 3 * \Y pt); %% R
-  \draw[thick] (-40pt, 2*\Y pt)-- node[anchor=east]{0}(-40pt, 3 * \Y pt); %% 0
+  \draw[thick] (-40pt, 2*\Y pt)-- node[anchor=east]{\textbf{0}}(-40pt, 3 * \Y pt); %% 0
   \draw[thick] (-40pt, 3*\Y pt) -- node[anchor=north]{1}(-15pt,4 * \Y pt); %% E
-  \draw[thick] (-40pt, 3*\Y pt) -- node[anchor=east]{0}(-40pt,4 * \Y pt); %% 0
+  \draw[thick] (-40pt, 3*\Y pt) -- node[anchor=east]{\textbf{0}}(-40pt,4 * \Y pt); %% 0
   \draw[thick] (-40pt, 4*\Y pt) -- node[anchor=north]{1}(-25pt,5 * \Y pt); %% W
-  \draw[thick] (-40pt, 4*\Y pt) -- node[anchor=east]{0}(-40pt,5 * \Y pt); %% 0
-  \draw[thick] (-40pt, 5*\Y pt) -- node[anchor=east]{1}(-35pt,6 * \Y pt); %% Q
+  \draw[thick] (-40pt, 4*\Y pt) -- node[anchor=east]{\textbf{0}}(-40pt,5 * \Y pt); %% 0
+  \draw[thick] (-40pt, 5*\Y pt) -- node[anchor=east]{\textbf{1}}(-35pt,6 * \Y pt); %% Q
 
   \draw[dashed, thick] (0pt,0pt) -- node[anchor=south west]{9} (40pt,\Y pt);
 
@@ -163,8 +89,5 @@
   %% insertion order
   \draw[->,dashed] (30pt, 3 * \Y pt) -- node[anchor=west,align=left]
   {\ \ insertion\\ order} (-25pt, 7.5 * \Y pt);
-
-
-\end{scope}
 
 \end{tikzpicture}

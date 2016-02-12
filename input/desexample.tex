@@ -1,6 +1,6 @@
-\begin{tikzpicture}[scale=1.3]
+\begin{tikzpicture}[scale=1.2]
 
-\newcommand\Y{-40};
+\newcommand\Y{-30};
 \newcommand\ADDY{-10};
 
   %% node to node
@@ -67,11 +67,7 @@
   \draw[fill=white]( 50pt,-4 + \ADDY + \Y pt)
   node{\textbf{Y}} +(-4pt,-4pt) rectangle +(4pt,4pt) ; %% Y
 
-
-  \draw[->,densely dashdotted](-45pt,-102pt) -- (-35.5pt,-102pt);
-  \draw (0pt,-102pt) node[anchor=east]{function $\delta$};
-  \draw[fill=gray!20](3.5pt,-102pt) node[anchor=west]{\ disambiguator}
-  +(-2.5pt,-2.5pt)  rectangle +(2pt,2pt);
-
+  %% spacing
+  \draw(0, -8+\ADDY+ 3*\Y pt);
 
 \end{tikzpicture}

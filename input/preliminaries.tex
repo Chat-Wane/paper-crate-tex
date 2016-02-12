@@ -1,0 +1,237 @@
+
+\section{Preliminaries}
+\label{sec:preliminaries}
+
+
+Sequence data structures considered in this paper (for collaborative
+editing) belong to the optimistic class of replication. Each replica owner (a
+collaborator) directly performs operations on its local copy and informs the
+other owners by broadcasting these operations. The consistency criteria ensured
+by such optimistic replication is called strong eventual
+consistency~\cite{shapiro2011comprehensive} upon the assumption of the eventual
+delivery of operations, i.e., they guarantee that all replicas will eventually
+converge to an identical state when the system becomes quiescent. This
+consistency criterion is weaker than sequential consistency and linearisability
+and is not comparable with causal consistency, yet strong enough for
+collaborative edition~\cite{shapiro2011comprehensive}.
+
+Sequence replicated data structures (\emph{sequence} for short) are the closest
+structures that can implement a shared document. A sequence provides two
+\emph{commutative operations}: insert and delete. Indeed, these operations can
+be integrated in any order as soon as the deletion of an element is integrated
+after its insertion.
+
+The sequence is composed of elements and a unique and immutable identifier is
+associated with each of these elements. The sequence can be seen as a set of
+pairs $\langle element, identifier \rangle$. A total order is assumed on
+identifiers and this order relation allows seeing the set of pairs as a
+sequence. The projection of a sequence on the elements builds the document.
+
+When a collaborator performs an insert operation, it first allocates the
+identifier of the element to insert. For instance, let us consider a sequence
+$QWTY$ with the unique, immutable, and totally ordered integer identifiers $1$,
+$2$, $4$, $8$ respectively. A collaborator inserts the element $E$ between $W$
+and $T$. The natural identifier that comes to mind is $3$. The resulting
+sequence is $QWETY$. However, $R$ cannot be inserted between $E$ and $T$ since
+$3$ and $4$ are contiguous. The space of identifiers must be enlarged to handle
+the new insertion. If we consider identifiers as decimal numbers, $3.1$ can be
+associated with the character $R$. If a new character has to be inserted
+between $E$ and $R$, a new identifier will be allocated between $3$ and
+$3.1$. Again, the space will be extended resulting in a new identifier $3.0$
+suffixed by any non null integer. Let $X$ be the suffix, the order is preserved
+since $(3 < 3.0.X < 3.1)$.
+
+ Such growing identifiers are called variable-size
+identifiers. The main objective is to keep the growth of the size of the
+identifiers under acceptable boundaries.
+
+\subsection{Variable-size Identifiers}
+
+Variable-size identifiers can be represented as a concatenation of basic
+elements (e.g. integers). The resulting sequence can be represented by a tree
+structure where the elements of the sequence are stored at the nodes and where
+the edges of the tree are labelled such that a path from the root to a node
+represents the identifier of the element stored at this node. For instance, the
+character $R$ in the previous example is accessible following the path composed
+of the edges labelled $3$ then $1$. More formally, a sequence is a tree
+$\mathcal{T}$ where each node contains a value i.e. an element of the sequence
+(over an alphabet $\mathcal{A}$). The tree $\mathcal{T}$ is a set of pairs
+$\langle\mathcal{P}\subset\{\mathbb{N}\}^*,\, \mathcal{A} \rangle$, i.e., each
+element has a path. Additionally, a total order
+($\mathcal{P}$,$<_{\mathcal{P}}$) provides an ordering among the paths which
+allows to retrieve the order of the elements in the sequence.
+
+\noindent \textbf{Notation} A path composed of $p$ edges labelled
+$\ell_1,\ldots,\ell_p$ will be noted $[\ell_1.\ldots.\ell_p]$.
+
+\begin{figure*}
+  \centering
+  \subfloat[The tree is the unions of identifiers.]
+  [The tree representing the sequence is built by the union of identifiers and
+  mainly uses paths to order its characters.]
+  {\input{input/treemodelexample.tex}}
+  \hspace{20pt}
+  \subfloat[Disambiguators operate when same paths have been allocated.]
+  [The tree uses disambiguators to maintain an equivalent state, even in presence of
+  concurrent operations resulting in same paths.]
+  {\input{input/desexample.tex}}
+  \caption{\label{fig:treeexample} Examples of 10-ary trees containing the
+    sequence of characters 'QWERTY'.}
+\end{figure*}
+
+
+Figure~\ref{fig:treemodelexample} shows the underlying 10-ary tree
+$\mathcal{T}$ representing a sequences. Like in the previous scenario, the
+initial sequence is $QWTY$ with the respective paths $[1]$, $[2]$, $[4]$ and
+$[8]$. The insertion of the character $E$ between the pairs
+$\langle [2],\, W\rangle$ and $\langle [4],\, T\rangle$ results in the
+following pair: $\langle [3],\, E \rangle$. Then the insertion of the character
+$R$ needs to start a new level since there is no room at the first level of the
+tree for a new path between $E$ and $T$. The resulting path may be $[3.1]$ if
+label one is chosen for the element $R$ at the second level. This would
+increase the depth of the tree in case there is an insertion between the
+elements $E$ and $R$. The new path would be $[3.0.X]$ where $0<X<10$ (recall
+that we assumed a 10-ary tree). The total order $(\mathcal{P},\,<_\mathcal{P})$
+allows retrieving the sequence $QWERTY$.
+
+\subsection{Disambiguation of concurrent cases}
+
+Two collaborators concurrently performing an operation on their respective
+replica may get different results after the integration of both
+operations. Indeed, $(\mathcal{P},\,<_\mathcal{P})$ is a total order when a
+single collaborator edits. However, it becomes a partial order when the editing
+involves several collaborators. Consequently, it is necessary to totally order
+the elements inserted by different collaborators. To this end, the
+disambiguation function $\delta$ associates a disambiguator to each pair of
+$\mathcal{T}$. $\delta: \mathcal{P}\times\mathcal{A} \rightarrow \mathcal{D}$
+such that ($\mathcal{D}$, $<_{\mathcal{D}}$) is a total order. The function
+$\delta$ is an accessor to additional values that are totally ordered even in
+presence of concurrency. Finally, the pairs in $\mathcal{T}$ can be totally
+ordered with a composition of the local total order ($\mathcal{P}$,
+$<_{\mathcal{P}}$) and the total order between collaborators ($\mathcal{D}$,
+$<_{\mathcal{D}}$). The composition leads to a total order ($\mathcal{T}$,
+$<_{\mathcal{T}}$).
+
+Figure~\ref{fig:desexample} depicts a tree containing 6 elements with only 5
+distinct paths (two values are associated with the path $[3]$). Similarly to
+the previous example, the initial sequence was $QWTY$, however, in this
+example, the two elements $E$ and $R$ are inserted between the pairs
+$\langle [2],\, W\rangle$ and $\langle [4],\,T\rangle$ by two different
+collaborators concurrently. For both elements, the resulting path is
+$[3]$. After the two elements are inserted, the sequence becomes either
+$QWERTY$ or $QWRETY$. Nevertheless, let
+$\delta(\langle [3],\, R \rangle) = \delta_R$ and
+$\delta(\langle [3],\, T\rangle) = \delta_T$. If we assume
+$\delta_R <_\mathcal{D} \delta_T$, the total order
+$(\mathcal{T}, <_\mathcal{T})$ gives the sequence $QWERTY$. It is worth noting
+that disambiguators are usually computed using a monotonically increasing
+variable and a unique collaborator identifier just like Lamport
+timestamps~\cite{lamport1978time}. Therefore, a collaborator cannot directly
+influence the final position of the character in the sequence using
+disambiguators. The sequence of the example could have ended in $QWRETY$ and it
+would have needed a correction.
+
+\subsection{Choosing the rightful path}
+\label{subsec:choosing}
+
+The most critical part of sequences with variable-size identifiers consists in
+creating the paths. Algorithm~\ref{algo:crdtabstract} shows the general
+outlines of these sequences. It divides the operations (insert and delete) into
+to different parts, the local and the remote phases of the optimistic
+replication paradigm. As we can see, most of the core of the algorithm and the
+associated complexity represents the local part of the $insert$ operation where
+the algorithm has to generate a path (cf. Line~\ref{line:allocpath}) and a
+disambiguator (cf. Line~\ref{line:allocdes}).
+
+\begin{algorithm}
+  \input{input/crdtabstractalgo.tex}
+  \caption{\label{algo:crdtabstract}General outlines of a sequence with
+    variable-size identifiers.}
+\end{algorithm}
+
+Let $\mathcal{I}$ be the set of unique triples
+$\mathcal{I}: \mathcal{P}\times\mathcal{A}\times\mathcal{D}$. The set of the
+elements of a sequence is a subset of $\mathcal{I}$. For any element $i$ of a
+sequence ($i \in \mathcal{I}$), let $i.P$, $i.A$, $i.D$ be the respective
+accessors to the path, the element, and the disambiguator of element $i$. The
+function $allocPath$ chooses a path in the tree between two other paths $p.P$
+and $q.P$ where $p<_{\mathcal{T}}q$. This means that element $i$ has to be
+inserted between two elements $p$ and $q$ such that $p$ precedes $q$ in the
+sequence. However, since it is always create new levels in the tree and thus
+new sub-trees, the number of possible paths is infinite, and so is the number
+of $allocPath$ functions. Nevertheless, the function $allocPath$ should choose
+among the all the possible paths the one having the smallest length in order to
+have smaller identifiers keeping good performance. This observation reduces
+considerably the number of possible $allocPath$ functions. Still, the
+allocation of paths without an \emph{a priori} knowledge of the final sequence
+is a non-trivial problem.
+
+\begin{figure*}
+  \centering
+  \subfloat[Optimal case.]
+  [Optimal case.]
+  {\input{input/allocpathexampleA.tex}}
+  \hspace{50pt}
+  \subfloat[Worst case.]
+  [Worst case.]
+  {\input{input/allocpathexampleB.tex}}
+  \caption{\label{fig:allocpathexample} Two trees filled with the resulting
+    identifiers of two different permutations resulting in an identical
+    sequence $QWERTY$. They use the same function $allocPath$ which allocates
+    the leftmost branch in the tree. All paths of the nearly optimal case have
+    a length of 1 while the tree of the worst case grows up to a depth of 6.}
+\end{figure*}
+
+Figure~\ref{fig:allocpathexample} illustrates the difficulties of designing a
+function to allocate the paths. It represents the underlying trees of two
+sequences using the allocation function: they allocate the leftmost branch
+available at the lowest depth possible. In both cases the final sequence is
+$QWERTY$, however, the letters are not inserted in the same order. In the first
+case, $Q$ is inserted first at position 0 (initially the sequence is empty),
+followed by $W$ at position 1 (after $Q$) then $E$ is inserted at position 3
+(after $W$), etc. We call the sequence of insert operations $[(Q,\,0)$,
+$(W,\,1)$, $(E,\,2)$, $\ldots]$ the \emph{editing sequence}. In the second
+case, the letter $Y$ is inserted first at position 0 as the sequence is
+initially empty. Then $T$ is inserted. However as the final intended word is
+$QWERTY$, $T$ has to be inserted at a position before $Y$ that represents the
+current state of the sequence. $T$ is thus inserted at position 0 shifting $Y$
+to position $1$, etc. The editing sequence that corresponds to this case
+is thus $[(Y,\,0)$, $(T,\,0)$, $(R,\,0)$, $\ldots]$.
+
+
+\begin{itemize}[leftmargin=*]
+\item Case 1: Since the function $allocPath$ allocates the leftmost branches,
+  the following editing sequence $[(Q,\,0)$, $(W,\,1)$, $(E,\,2)$, $\ldots]$
+  leads to the paths $\langle [1],\, Q\rangle$, $\langle [2],\, W\rangle$,
+  $\langle [3],\, E\rangle$, etc. In this case, the depth of the tree never
+  grows. In this regard, this function $allocPath$ is very efficient in terms
+  of the size of the allocated identifiers.
+
+\item Case 2: The editing sequence $[(Y,\,0)$, $(T,\,0)$, $(R,\,0)$, $\ldots]$
+  leads to an increase of the depth of the tree at each element
+  insertion. Indeed, as an element gets the smallest value at its level
+  (cf. the allocation function), there is no way to insert a new element before
+  at the same level hence the new level. The resulting sequence is
+  $\langle [1],\, Y\rangle$, $\langle [0.1],\, T\rangle$,
+  $\langle [0.0.1],\, R \rangle$, etc. Consequently, the size of the paths
+  grows very fast.
+\end{itemize}
+
+This example shows how the insertion order impacts the length of the allocated
+paths. Unfortunately, the insertion order cannot be predicted, nor the size of
+the final sequence. Prior work on sequences often made the assumption of a
+left-to-right editing due to observations made on
+corpus~\cite{preguica2009commutative, weiss2009logoot}. However, there exist
+human edited documents that do not correspond to this kind of
+editing~\cite{nedelec2013lseq}. Indeed, the editing depends on the type of the
+document and to the activity for example when correcting a document the editing
+in mainly random as the insertions/deletions may correspond to
+errors. Consequently, we are looking for an allocation function which provides
+identifiers with a sub-linear spatial complexity compared to the number of
+insertions whatever is the editing sequence.
+
+ 
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../paper"
+%%% End:
