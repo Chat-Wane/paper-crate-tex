@@ -1,8 +1,4 @@
-
 \documentclass[times]{cpeauth}
-%%\documentclass{article} %% hevea
-%%\usepackage[utf8]{inputenc} %% hevea
-
 
 \usepackage{hyperref}
 
@@ -28,7 +24,6 @@
 %% figures
 \usepackage{tikz}
 \usetikzlibrary{decorations.pathreplacing,plotmarks,shapes}
-%% transform eps in pdf crossplateform
 \usepackage{epstopdf}
 \usepackage{epsfig}
 
@@ -46,15 +41,13 @@
 \setcounter{example}{0}
 \newcommand{\EXAMPLE}[0]{\stepcounter{example}\the\value{example}}
 
-%%paralist
-%\renewcommand*\descriptionlabel[1]{%
-%\scshape #1}
-%\renewcommand\paradescriptionlabel[1]{%
-%\scshape #1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% (TODO) enable before submission
+%\def\baselinestretch{2} 
 
 \begin{document}
 
@@ -71,17 +64,18 @@
 \corraddr{LINA, 2 rue de la Houssini{\`e}re, BP92208, 44322 Nantes Cedex 03,
   FRANCE, \url{first.last@univ-nantes.fr}}
 
+\input{input/abstract.tex}
+
 \maketitle
 
-\input{input/abstract.tex}
-%%\input{input/keywordsandcategory.tex}
-%%\input{input/introduction.tex}
-%%\input{input/relatedwork.tex}
-%%\input{input/proposal.tex}
-%%\input{input/experiments.tex}
-%%
-%%\input{input/conclusion.tex}
-%%\input{input/acknowledgements.tex}
+%\input{input/keywordsandcategory.tex}
+\input{input/introduction.tex}
+\input{input/relatedwork.tex}
+\input{input/proposal.tex}
+\input{input/experiments.tex}
+
+\input{input/conclusion.tex}
+%\input{input/acknowledgements.tex}
 
 
 \bibliographystyle{abbrv}
