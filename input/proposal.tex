@@ -14,13 +14,14 @@ section starts by describing the allocation strategy. Then, it provides the
 proof of its complexity.
 
 \subsection{Allocation of paths}
+\label{subsec:lseqallocation}
 
 The function \textsc{allocPath} chooses the path associated with each element in
 order to encode its relative position with regard to its adjacent elements in
 the sequence. For the sake of performance, it aims to keep the underlying tree
 with a small depth. It comprises 3 components. Each of these components fails to
 provide an efficient allocation function. Nevertheless, their composition allows
-to get the best of each by cancelling their respective deficiency.
+to get the best of each by canceling their respective deficiency.
 
 The first component is an \emph{exponential
   tree}~\cite{andersson1996faster,andersson2007dynamic}. Such tree allows each
@@ -31,26 +32,29 @@ sequence of number chosen among a subset of $\mathbb{N}$, the size of which is
 doubled at each concatenation. For instance, let the path
 [$\ell_1.\ell_2\ldots\ell_e$] with $\ell_1\in\mathbb{N}_{<2}$, then
 $\ell_2\in \mathbb{N}_{<4}$, and $\ell_{e}\in\mathbb{N}_{<2^e}$. Compared to
-constant arity trees, paths require an additionnal bit per concatenation, for
+constant arity trees, paths require an additional bit per concatenation, for
 the subset are growing over depths. The binary size of a path is
 $\sum\limits_{1<i<e}\log_2{2^i}=\sum\limits_{1<i<e}i= {e^2-e\over{2}}$.  Such
 growth forbids the existence of trivial editing behaviors leading to the
 worst-case allocation (e.g. Fig.~\ref{fig:allocpathexample}). In that end, \LSEQ
-uses a second component: \emph{two sub-allocation functions}. Since one
-allocation function is not enough to characterize efficiently any editing
-behavior, it uses two functions with antagonist designs in order to settle each
-other's weaknesses. A sub-allocation function targets left-to-right editing
-behaviors such as the one used in Figure~\ref{fig:allocpathexample}. The other
-one targets the right-to-left editing and takes the lead when the former one did
-not manage to provide small-sized paths. In such cases, \LSEQ must be efficient
-enough to compensate the loss due to its unsuitable choice of sub-allocation
-function. The third \LSEQ's component aims to make this choice. It is a
-\emph{hash function} that assigns to each depth of the exponential tree a
-sub-allocation function.  A hidden seed within the replicated document
-initializes it. Hence, all participants make identical choices. Furthermore,
-choices between the sub-allocation functions must follow a uniform distribution,
-for we have no knowledge about the future editing behaviors, and we do not want
-to favor any.
+uses a second component: \emph{two sub-allocation functions}.
+
+Since one allocation function is not enough to characterize efficiently any
+editing behavior, it uses two functions with antagonist designs in order to
+settle each other's weaknesses. A sub-allocation function targets left-to-right
+editing behaviors such as the one used in Figure~\ref{fig:allocpathexample}. The
+other one targets the right-to-left editing and takes the lead when the former
+one did not manage to provide small-sized paths. In such cases, \LSEQ must be
+efficient enough to compensate the loss due to its unsuitable choice of
+sub-allocation function. The third \LSEQ's component aims to make this
+choice.
+
+The third component is a \emph{hash function} that assigns to each depth of the
+exponential tree a sub-allocation function.  A hidden seed within the replicated
+document initializes it. Hence, all participants make identical
+choices. Furthermore, choices between the sub-allocation functions must follow a
+uniform distribution, for we have no knowledge about the future editing
+behaviors, and we do not want to favor any.
 
 % Combining the three components provides identifiers with a sub-linear average
 % size compared to the number of insertions performed which makes it well-suited
@@ -68,58 +72,59 @@ to favor any.
 \caption{\label{algo:allocpath}Allocation of paths}
 \end{algorithm}
 
-Algorithm~\ref{algo:allocpath} presents the three components of the
-function $allocPath$. First, it gets the depth of the new path using the
-function $getDepthInterval$ which also returns the interval between the
-arguments (i.e., the number of available paths at the processed depth). Then,
-by calling the hash function $h$, it transfers the call to one of the two a
-sub-allocation functions $endEditing$ and $frontEditing$. These allocation
+Algorithm~\ref{algo:allocpath} shows the instructions of the three components of
+\LSEQ. First, \textsc{allocPath} processes the distance between the two paths in
+argument at each level of the exponential tree until it finds enough space for
+one insertion.  Then, the hash function $h$ transfers the call to a
+sub-allocation function depending on the found depth. These sub-allocation
 functions work similarly:
-\begin{inparaenum}[(\#1)]
+\begin{inparaenum}[(i)]
 \item Get the depth and the interval of the new path to allocate.
-\item Limit the range within the level for the allocation of the new path.
-\item However, while $endEditing$ uses the previous element in the sequence and
-  concatenates the value of a new edge in the tree to build the new path,
-  $frontEditing$ does the opposite.
+\item Limit the range within the level for the allocation of the new path. A
+  small number of paths are left available inbetween elements to provide more
+  flexibility in regards to spellchecking.
+\item However, while \textsc{left-to-right} uses the previous path and adds a
+  random value within the processed range, \textsc{right-to-left} uses the next
+  path and subtracts a random value within the processed range. In turns,
+  \textsc{left-to-right} allocates a branch closer to the previous path while
+  \textsc{right-to-left} does the opposite, respectively leaving more space for
+  future insertions in queue and in front of the newly inserted element.
 \end{inparaenum}
-Thus, by \#2 the allocation function is efficient in monotonic editing and by
-\#3 the allocation is efficient in left-to-right or right-to-left editing. The
-unexplicit function $subPath$ returns a truncated path from the root to the
-depth passed as argument.
+%% The unexplicit function $subPath$ returns a truncated path from the root to the
+%% depth passed as argument.
 
-\TODO{ put the figure again.}
+\begin{figure}
+  \centering
+  \subfloat[Left-to-right case with \LSEQ.]
+  [Left-to-right editing behavior with \LSEQ.]
+  {\input{input/lseqtreeexampleA.tex}}
+  \subfloat[Right-to-left case with \LSEQ.]
+  [Right-to-left editing behavior with \LSEQ.]
+  {\input{input/lseqtreeexampleB.tex}}
+  \caption{\label{fig:lseqtreeexample} Example of \LSEQ's exponential trees with
+    two antagonist editing behaviors to create the sequence of characters
+    $QWERTY$. Contrarily to the example given in
+    Figure~\ref{fig:allocpathexample}, the depth of trees does not grow linearly.}
+\end{figure}
 
-% \begin{figure*}
-%   \centering
-%   \input{input/lseqtreeexample.tex}
-%   \caption{\label{fig:lseqtreeexample} Example of \LSEQ's exponential trees
-%     with two antagonist editing behaviours to create the sequence of characters
-%     $QWERTY$. Thanks to its hash function, \LSEQ transfers the allocation of
-%     paths to the sub-allocation functions designed for front-editing and
-%     end-editing at first and second level respectively for this
-%     example. Furthermore, the arity is doubled at each level of the
-%     tree. Contrarily to the example given in Figure~\ref{fig:allocpathexample},
-%     the trees do not grow linearly.}
-% \end{figure*}
 
-\begin{asparadesc}
-\item[Example:] Similarly to the example of Figure~\ref{fig:allocpathexample})
-  the example given in Figure~\ref{fig:lseqtreeexample} depicts the resulting
-  trees after two antagonist scenarios creating the sequence
-  $QWERTY$ \begin{inparaenum}[(i)] \item the left-to-right editing sequence
-    [($Q,\,0$), ($W,\,1$), \ldots] and \item the right-to-left editing sequence
-    [($Y,\,0$), ($T,\,0$), \ldots]. \end{inparaenum} In both cases, the
-  exponential tree of \LSEQ starts with an arity $32$ and doubles it at each
-  level. Also, it uses the $frontEditing$ and $endEditing$ sub-allocation
-  functions at the first and the second level of the tree respectively. Since
-  the first level of the tree uses the function $endEditing$, the scenario
-  involving the left-to-right editing sequence results in a tree of depth 1. On
-  the other hand, contrarily to the allocation function presented in
-  Figure\ref{fig:allocpathexample}), the antagonist scenario does not increase
-  very much the depth of the tree. Indeed, the identifiers of \LSEQ quickly
-  reach a level of the tree where the sub-allocation function is designed to
-  handle the right-to-left editing behaviour.
-\end{asparadesc}
+Similarly to the example of Figure~\ref{fig:allocpathexample} the example given
+in Figure~\ref{fig:lseqtreeexample} depicts the resulting trees after two
+antagonist scenarios creating the sequence
+$QWERTY$ \begin{inparaenum}[(i)] \item the left-to-right editing sequence
+  [($Q,\,0$), ($W,\,1$), \ldots] and \item the right-to-left editing sequence
+  [($Y,\,0$), ($T,\,0$), \ldots]. \end{inparaenum} In both cases, the
+exponential tree of \LSEQ starts with a maximum arity $32$ and doubles it at
+each level. Also, it uses the left-to-right and right-to-left sub-allocation
+functions at the first and the second level of the tree respectively. Since the
+first level of the tree uses the function designed for left-to-right editing,
+the scenario involving the left-to-right editing sequence results in a tree of
+depth 1. On the other hand, contrarily to the allocation function presented in
+Figure~\ref{fig:allocpathexample}, the antagonist scenario only leads to a tree
+of depth 2. Indeed, the identifiers of \LSEQ quickly reach a level of the tree
+where the sub-allocation function is designed to handle the right-to-left
+editing behavior. If such editing behavior continues, the new allocated paths
+will compensate the loss of the first level. 
 
 % \begin{asparadesc}
 % \item [The function allocDis] creates the di\-sam\-bi\-gua\-tors which have two
@@ -192,110 +197,135 @@ depth passed as argument.
 % $\exists j=i+1$ with
 % $p.P(j) < q.P(j) \vee (p.P(j) = q.P(j) \wedge p.D(j) < q.D(j))$.
 
-\subsection{Space complexity}
-\label{sec:spacecomplexity}
+\subsection{Complexity analysis}
+\label{subsec:complexity}
 
-In text editing, most of the editing behaviours can be empirically summarised
-as a composition of two basic editing behaviours.
+In text editing, most of the editing behaviors can be empirically summarized
+as a composition of two basic editing behaviors.
 \begin{inparaenum}[(i)]
-\item The random editing behaviour where the author inserts new elements at
-  what appears random positions in the sequence. For instance, this behaviour
-  mostly arises when syntactic corrections are performed, e.g., the author
-  writes $QWETY$ and realises that the $R$ is missing. She adds the missing
-  character in a second time.
-\item The monotonic editing behaviour where the author repeatedly inserts new
+\item The random editing behavior where the author inserts new elements at what
+  appears random positions in the sequence. For instance, this behavior mostly
+  arises when syntactic corrections are performed, e.g. the author writes
+  $QWETY$ and realizes that the $R$ is missing. She adds the missing character
+  in a second time.
+\item The monotonic editing behavior where the author repeatedly inserts new
   elements between the last inserted element and an adjacent element (after or
   before exclusively). For instance, when an author writes $QWERTY$, she
   generally starts from the first letter $Q$ to the last letter of the word
   $Y$. On the opposite, insertions in a logfile are usually performed at the
-  beginning for practical reasons.
+  beginning for practical reasons. This behavior characterizes both
+  left-to-right and right-to-left editing.
 \end{inparaenum}
 
-As a consequence, we focus on the space complexity analysis of \LSEQ to
-random and monotonic editing behaviours to which we add a worst-case complexity
-analysis.  The analysis does not include an average case since it requires to
-know the average distribution of the position of edits performed by a human
-collaborator which is obviously very complex.
+As a consequence, we focus on the space complexity analysis of \LSEQ to random
+and monotonic editing behaviors to which we add a worst-case complexity
+analysis. It is worth noting that monotonic editing behavior represents an
+unfavorable case since it tends to unbalance the underlying tree storing the
+replicated sequence. As soon as the participants start to edit at different
+positions -- which is closer from a real-life use case -- the tree becomes more
+balanced and \TODO{performance are more efficient proportionnally}. Also, the
+analysis does not include an average case since it requires to know the average
+distribution of the position of edits performed by a human collaborator which is
+obviously very complex. \TODO{Moar about difficulty of humans?}
 
-Also, since the space complexity of disambiguators provided by $allocDis$ is
-upper bounded by the paths allocated by $allocPath$, the space complexity
-analysis of the path is reduced to the space complexity of the identifiers of
-\LSEQ.
+%% Also, since the space complexity of disambiguators provided by $allocDis$ is
+%% upper bounded by the paths allocated by $allocPath$, the space complexity
+%% analysis of the path is reduced to the space complexity of the identifiers of
+%% \LSEQ.
 
-\begin{asparadesc}
-\item [Random editing behaviour] is equivalent to a uniform distribution of the
-  positions of the insert operations within the range of the sequence. As a
-  consequence, the underlying tree of the allocation function is
-  balanced. Depending on the depth $k$, the tree can hold a number $n$ of
-  elements: \begin{equation} n = \sum\limits_{i=0}^{k}
-    {2^{(i^2-i)/2}} \end{equation} Therefore, after $n$ insert operations
-  performed on the sequence, the number of concatenations composing a path is
-  upper-bounded by:
-  \begin{equation} O(\sqrt{\log\,n}) \end{equation} Furthermore, a path is a
-  sequence of numbers $[a_1.a_2\ldots$ $a_k]$. Each number $a_j$ requires one
-  more bit than its preceding number $a_{j-1}$. Let $b$ be the number of bits
-  to encode $a_0$. Thus, a path is encoded by:
-  \begin{equation} \sum\limits_{i=1}^{k}b+i = kb + k(k+1)/2 = O(k^2) \,
-    bits \end{equation} By a simple replacement of $k$ in the latter expression
-  by the former, the resulting space complexity of identifiers is the optimal
-  bound:
-  \begin{equation} O(log\,n) \, bits \end{equation}
-  
-\item[Monotonic editing behaviour] is similar to repeatedly:
-  \begin{inparaenum}[(i)]
-  \item fill one branch of the tree and
-  \item increase the depth of the tree.
-  \end{inparaenum} Consequently, with a classical K-ary tree, the number of
-  concatenations of the paths grows linearly. However, using an
-  exponential tree, the number of available nodes in a branch still grows
-  exponentially. Depending on the depth $k$, the tree can hold $n$ elements:
-  \begin{equation} n = 2^{k+1}-1 \end{equation} Therefore, the number of
-  concatenations of the path is:
-  \begin{equation} O(log\,n) \end{equation} After the replacement of the
-  variable $k$, we obtain the following space complexity of the monotonic
-  editing behaviour:
-  \begin{equation} O((log\,n)^2) \, bits \end{equation}
+\subsubsection{Space complexity}
 
-\item [The worst-case] corresponds to one element per level in the
-  tree. Therefore, the growth of the paths is linear for both K-ary tree and
-  exponential tree. Thus, when $n$ insert operations are performed on the
-  sequence, the number of concatenations composing a path is:
-  \begin{equation} O(n) \end{equation} However, while the space complexity
-  remains linear in the case of the N-ary tree, the exponential tree implies
-  the following space complexity on its identifiers:
-  \begin{equation} O(n^2) \, bits \end{equation}
-\end{asparadesc}
+We distinguish the space complexity of each identifier from the space complexity
+of the tree. The former being important since it directly impacts the
+communication complexity, for that each identifier is broadcast to all
+participants; The latter being important since it represents the replicated
+document stored locally by each participant.
+
+As stated in Section~\ref{subsec:lseqallocation}, paths require 1 additionnal
+bit per concatenation. In turns, paths require $\mathcal{O}(e^2)$ bits to
+encode, where $e$ is the depth of the element in the tree. Fortunately, the
+depth is upper-bounded depending on the editing behavior that filled the
+exponential tree.
+
+The random editing behavior fills the tree at random. As consequence, the tree
+becomes balanced. Being exponential, the tree stores
+$\sum\limits_{0<i<k}{2^{(i^2-i/2)}}$ elements, where $k$ is the depth of the
+tree. Thus, the depth of paths is upper-bounded by $\mathcal{O}(\sqrt{\log I})$
+concatenations, where $I$ is the number of insertions. Since paths require
+$\mathcal{O}(e^2)$ bits to encode, paths have an optimal logarithmic space
+complexity $\mathcal{O}(\log I)$. This result applies to all variable-size
+identifier allocators (\REF). However, since \LSEQ uses a tree structure
+factorizing common parts of identifiers, the overall space complexity is not the
+sum of identifiers but only $\mathcal{O}(I\log I)$.
+
+The monotonic editing behavior fills only one branch of the tree. Yet, since the
+maximum arity grows over depths, the tree tends to slow down its growth over
+insertions. The tree stores up till $2^{e+1}-1$ elements, where $e$ is the depth
+of the tree. Hence, the number of concatenation composing a path is
+$\mathcal{O}(\log I)$, where $I$ is the number of insertions. Once again, since
+the binary representation of paths increases quadratically, the space complexity
+of paths taken individually is upper-bounded by $\mathcal{O}((\log I)^2)$.
+Overall, the space complexity of the tree remains upper-bounded by
+$\mathcal{O}(I\log I)$.
+
+In the worst-case, each insertion increases the depth of the tree. Thus, after
+$I$ insertions, the tree comprises $e$ elements, where $e$ is the depth of the
+tree. The space complexity of paths grows quadratically $\mathcal{I^2}$ and each
+new allocated path contains the full tree. Thus, the overall space complexity of
+the tree is $\mathcal{O}(I^2)$ too.
 
 \begin{table}
   \centering
-  \begin{tabular}{@{}lccc@{}}
-    \toprule
-    & Random & Monotonic & Worst \\ \cmidrule{2-4}
-    Id.size & $O(\sqrt{log\,n})$ & $O(log\,n)$ & $O(n)$ \\ \midrule
-    Id.bit-length & \multicolumn{3}{c}{ $\sum\limits_{i=1}^{k}b+i =
-      kb + k(k+1)/2 = O(k^2)$} \\ \midrule
-    Space complexity & $O(log\,n)$ & $O((log\,n)^2)$ &
-    $O(n^2)$ \\ \bottomrule
-  \end{tabular}
-  \caption{Spatial complexity of \LSEQ. Where $n$ is the number
-    of insert operations performed. $k$ is the size of an identifier, i.e.,
-    the number of concatenations. And $b$ the starting bit-length of numbers
-    composing the identifiers.}
+  \input{input/lseqspacetable.tex}
+  \caption{\label{table:lseqspace}
+    Upper bounds on space complexity of \LSEQ. Where $I$ is the number 
+    of insertions performed on the replicated sequence.}
 \end{table}
 
-To summarise, the space complexity analysis reveals that the allocation function
-\LSEQ sacrifices on the worst-case space complexity to improve the space
-complexity of the monotonic editing behaviours. Nevertheless, in text editing,
-the worst-case happens with a very low probability compared the other
-cases. Furthermore, it is worth noting that usually, the authors do not write a
-document in a single round, starting from the beginning to go straight up to the
-end (as the monotonic analysis could suggest). On the contrary, the authors
-write sections, structure the documents, perform corrections, rewrite parts of
-the document, reorganise, etc. This behaviour (between random and monotonic
-behaviour) tends to even up the branches of the underlying tree of \LSEQ. In the
-case of random editing, the space complexity is asymptotically optimal
-$O(log\,n)$ while it is very interesting in a ``normal setting''
-$O((log\,n)^2)$.
+\TODO{Small conclusion referencing the table.}
+
+\subsubsection{Time complexities}
+
+Time complexity provides insights about the performance evolution of each
+operation divided between their local execution and their remote integration.
+Similarly to the space complexity analysis, it \TODO{differentiates} between the
+editing behaviors that filled the tree structure: random, monotonic, and worst
+case. For the recall, the real-life behavior is supposedly situated between the
+random and monotonic ones.
+
+\begin{table}
+  \centering
+  \input{input/lseqtimetable.tex}
+  \caption{\label{table:lseqtime}
+    Upper bounds on time complexity of \LSEQ. Where $I$ is the number of 
+    insertions performed on the replicated sequence.}
+\end{table}
+
+
+\TODO{The lookup.}
+
+\begin{table}
+  \centering
+  \input{input/lseqlookuptable.tex}
+  \caption{\label{table:lseqlookup}
+    Upper bounds on time complexity of the look-up on a \LSEQ structure.
+    Where $I$ is the number of insertions performed on the replicated sequence.}
+\end{table}
+
+\subsubsection{\TODO{Summary}}
+
+The space complexity analysis reveals that the allocation function \LSEQ
+sacrifices on the worst-case space complexity to improve the space complexity of
+the monotonic editing behaviours. Nevertheless, in text editing, the worst-case
+happens with a very low probability compared the other cases. Furthermore, it is
+worth noting that usually, the authors do not write a document in a single
+round, starting from the beginning to go straight up to the end (as the
+monotonic analysis could suggest). On the contrary, the authors write sections,
+structure the documents, perform corrections, rewrite parts of the document,
+reorganize, etc. This behavior (between random and monotonic behavior) tends to
+even up the branches of the underlying tree of \LSEQ. In the case of random
+editing, the space complexity is asymptotically optimal $O(log\,n)$ while it is
+very interesting in a ``normal setting'' $O((log\,n)^2)$.
 
 %%% Local Variables: 
 %%% mode: latex

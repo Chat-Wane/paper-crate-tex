@@ -364,12 +364,12 @@ complexity analysis.
     k \,\, elements
   \end{equation}
 
-  \begin{table}
-    \centering
-    \input{input/lseqspacetable.tex}
-    \caption{\label{table:lseqspace}
-      Upper-bound on space complexity of \LSEQ. Where $I$ is the document size.}
-  \end{table}
+  % \begin{table}
+  %   \centering
+  %   \input{input/lseqspacetable.tex}
+  %   \caption{\label{table:lseqspace}
+  %     Upper-bound on space complexity of \LSEQ. Where $I$ is the document size.}
+  % \end{table}
   
 \item [The complexity analysis of \LSEQ] stems from this
   counting. Table~\ref{table:lseqspace} shows both the space complexity of each
@@ -385,12 +385,12 @@ complexity analysis.
   the the worst case, the last identifiers contains the full tree, hence,
   $\mathcal{O}(I^2)$.
 
-  \begin{table}
-    \centering
-    \input{input/lseqtimetable.tex}
-    \caption{\label{table:lseqtime}
-      Upper-bound on time complexity of \LSEQ. Where $I$ is the document size.}
-  \end{table}
+  % \begin{table}
+  %   \centering
+  %   \input{input/lseqtimetable.tex}
+  %   \caption{\label{table:lseqtime}
+  %     Upper-bound on time complexity of \LSEQ. Where $I$ is the document size.}
+  % \end{table}
   
   Table~\ref{table:lseqtime} shows the time complexity of operations of \LSEQ
   divided between the local and remote parts of the optimistic replication. The
@@ -459,13 +459,13 @@ identifiers at the targeted position and generates the new identifier. When it
 receives an identifier, it firstly inserts it into the tree structure and
 secondly get its index to notify the view.
 
-\begin{table}
-  \centering
-  \input{input/lseqlookuptable.tex}
-  \caption{\label{table:lseqlookup}
-    Upper-bound on time complexity of the look-up on a \LSEQ structure.
-    Where $I$ is the document size.}
-\end{table}
+% \begin{table}
+%   \centering
+%   \input{input/lseqlookuptable.tex}
+%   \caption{\label{table:lseqlookup}
+%     Upper-bound on time complexity of the look-up on a \LSEQ structure.
+%     Where $I$ is the document size.}
+% \end{table}
 
 Each element in the tree keeps track of its number of children. Such information
 allows quick withdrawing of ranges of elements. Table~\ref{table:lseqlookup}
