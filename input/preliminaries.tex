@@ -60,24 +60,25 @@ $\mathcal{T}$ where each node contains a value i.e. an element of the sequence
 $\langle\mathcal{P}\subset\{\mathbb{N}\}^*,\, \mathcal{A} \rangle$, i.e., each
 element has a path. Additionally, a total order
 ($\mathcal{P}$,$<_{\mathcal{P}}$) provides an ordering among the paths which
-allows to retrieve the order of the elements in the sequence.
-
-\noindent \textbf{Notation} A path composed of $p$ edges labelled
-$\ell_1,\ldots,\ell_p$ will be noted $[\ell_1.\ldots.\ell_p]$.
+allows to retrieve the order of the elements in the sequence. Notation: a path
+composed of $e$ edges labelled $\ell_1,\ell_2,\ldots,\ell_e$ will be noted
+$[\ell_1.\ell_2\ldots\ell_e]$.
 
 \begin{figure*}
   \centering
   \subfloat[The tree is the unions of identifiers.]
-  [The tree representing the sequence is built by the union of identifiers and
-  mainly uses paths to order its characters.]
+  [\label{fig:treemodelexample}The tree representing the sequence is
+  built by the union of identifiers and mainly uses paths to order its
+  characters.]
   {\input{input/treemodelexample.tex}}
   \hspace{20pt}
   \subfloat[Disambiguators operate when same paths have been allocated.]
-  [The tree uses disambiguators to maintain an equivalent state, even in presence of
-  concurrent operations resulting in same paths.]
+  [\label{fig:desexample}The tree uses disambiguators to maintain an
+  equivalent state, even in presence of concurrent operations resulting
+  in same paths.]
   {\input{input/desexample.tex}}
-  \caption{\label{fig:treeexample} Examples of 10-ary trees containing the
-    sequence of characters 'QWERTY'.}
+  \caption{Examples of 10-ary trees containing the sequence of characters
+    'QWERTY'.}
 \end{figure*}
 
 
@@ -137,12 +138,12 @@ would have needed a correction.
 \label{subsec:choosing}
 
 The most critical part of sequences with variable-size identifiers consists in
-creating the paths. Algorithm~\ref{algo:crdtabstract} shows the general
-outlines of these sequences. It divides the operations (insert and delete) into
-to different parts, the local and the remote phases of the optimistic
-replication paradigm. As we can see, most of the core of the algorithm and the
-associated complexity represents the local part of the $insert$ operation where
-the algorithm has to generate a path (cf. Line~\ref{line:allocpath}) and a
+creating the paths. Algorithm~\ref{algo:crdtabstract} shows the general outlines
+of these sequences. It divides the operations (insert and delete) into to
+different parts, the local and the remote phases of the optimistic replication
+paradigm. As we can see, most of the core of the algorithm and the associated
+complexity represents the local part of the \textsc{insert} operation where the
+algorithm has to generate a path (cf. Line~\ref{line:allocpath}) and a
 disambiguator (cf. Line~\ref{line:allocdes}).
 
 \begin{algorithm}[h]
@@ -201,7 +202,7 @@ to position $1$, etc. The editing sequence that corresponds to this case
 is thus $[(Y,\,0)$, $(T,\,0)$, $(R,\,0)$, $\ldots]$.
 
 
-\begin{itemize}[leftmargin=*]
+\begin{itemize}
 \item Case 1: Since the function $allocPath$ allocates the leftmost branches,
   the following editing sequence $[(Q,\,0)$, $(W,\,1)$, $(E,\,2)$, $\ldots]$
   leads to the paths $\langle [1],\, Q\rangle$, $\langle [2],\, W\rangle$,
