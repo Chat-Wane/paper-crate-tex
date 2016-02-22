@@ -36,27 +36,25 @@ the subset are growing over depths. The binary size of a path is
 $\sum\limits_{1<i<e}\log_2{2^i}=\sum\limits_{1<i<e}i= {e^2-e\over{2}}$.  Such
 growth forbids the existence of trivial editing behaviors leading to the
 worst-case allocation (e.g. Fig.~\ref{fig:allocpathexample}). In that end, \LSEQ
-uses a second component: \emph{two sub-allocation functions}. 
+uses a second component: \emph{two sub-allocation functions}. Since one
+allocation function is not enough to characterize efficiently any editing
+behavior, it uses two functions with antagonist designs in order to settle each
+other's weaknesses. A sub-allocation function targets left-to-right editing
+behaviors such as the one used in Figure~\ref{fig:allocpathexample}. The other
+one targets the right-to-left editing and takes the lead when the former one did
+not manage to provide small-sized paths. In such cases, \LSEQ must be efficient
+enough to compensate the loss due to its unsuitable choice of sub-allocation
+function. The third \LSEQ's component aims to make this choice. It is a
+\emph{hash function} that assigns to each depth of the exponential tree a
+sub-allocation function.  A hidden seed within the replicated document
+initializes it. Hence, all participants make identical choices. Furthermore,
+choices between the sub-allocation functions must follow a uniform distribution,
+for we have no knowledge about the future editing behaviors, and we do not want
+to favor any.
 
-The second component is... \TODO{meow} The function $allocPath$ uses two
-sub-allocation functions both designed for monotonic editing, i.e., inserting
-repeatedly at an adjacent position of the previously inserted element. These are
-application dependent; one is well-suited to end-editing (left-to-right) while
-the other is well-suited for front-editing (right-to-left).
-
-The function $allocPath$ uses a third component to choose the sub-allocation
-function employed at each depth of the exponential tree. The choice is made
-randomly using a hash function following a uniform distribution. Such function
-does not favour any editing behaviour while remaining efficient. This provides
-the independence of the allocation function from any editing
-strategy/policy. Furthermore, as shown in~\cite{nedelec2013concurrency}, using
-antagonist sub-allocation functions forces all peers to make identical
-choices. To reach that goal, they all use a similar hash function initialised
-with a same seed and shared within the document.
-
-Combining the three components provides identifiers with a sub-linear average
-size compared to the number of insertions performed which makes it well-suited
-for text editing, and consequently, for distributed collaborative editing.
+% Combining the three components provides identifiers with a sub-linear average
+% size compared to the number of insertions performed which makes it well-suited
+% for text editing, and consequently, for distributed collaborative editing.
 
 % The total order $<_{\mathcal{P}}$ is similar to the lexicographic order. We
 % define it as $\forall p_j,\,p_k\in\mathcal{P}$ with $|p_j|=j$, $|p_k|=k$. There
