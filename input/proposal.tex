@@ -275,42 +275,118 @@ new allocated path contains the full tree. Thus, the overall space complexity of
 the tree is $\mathcal{O}(I^2)$ too.
 
 \begin{table}
-  \centering
-  \input{input/lseqspacetable.tex}
   \caption{\label{table:lseqspace}
     Upper bounds on space complexity of \LSEQ. Where $I$ is the number 
     of insertions performed on the replicated sequence.}
+  \centering
+  \input{input/lseqspacetable.tex}
 \end{table}
 
-\TODO{Small conclusion referencing the table.}
+Table~\ref{table:lseqspace} summarizes the space complexity of \LSEQ. In
+particular, the expected growth of identifiers is bounded between an optimal
+logarithm and a polylogarithm, hence, a sub-linear upper bound compared to the
+number of insertions. To provide such improvement, \LSEQ sacrifices on its worst
+case complexity that becomes quadratic. However, this worst case is made
+difficult to produce, for the two sub-allocations functions with antagonist
+designs settle each other's deficiency.
 
 \subsubsection{Time complexities}
 
 Time complexity provides insights about the performance evolution of each
-operation divided between their local execution and their remote integration.
-Similarly to the space complexity analysis, it \TODO{differentiates} between the
-editing behaviors that filled the tree structure: random, monotonic, and worst
-case. For the recall, the real-life behavior is supposedly situated between the
-random and monotonic ones. \TODO{To continue.}
+operation over insertions. They are divided between their local execution and
+their remote integration.  Similarly to the space complexity, the analysis
+focuses on three editing behaviors that filled the tree structure: random,
+monotonic, and worst case.
+
+The local insert operation simply consists in building a new path according to
+two adjacent paths. Therefore, it depends of the depths of the latter which grow
+depending on the editing behavior. Since the random, the monotonic, and the
+worst case editing behaviors respectively lead to a depth growth upper-bounded
+by $\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and $\mathcal{O}(I)$, the
+time complexity of the local part of the insert operation follows:
+$\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and $\mathcal{O}(I)$.
+
+The local delete operation simply broadcasts the identifier of the element to
+remove to all participants. Hence, whatever the editing behavior, the time
+complexity is constant $\mathcal{O}(1)$.
+
+Both the remote insert and delete operations perform the same instructions to
+integrate the received result. Consequently, they have an identical time
+complexity. Random, montonic, and worst case editing behaviors respectively lead
+to $\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and $\mathcal{O}(I)$
+levels in the exponential tree structure. Since children of each node are
+ordered by path, we perform binary searches recursively until the right leaf is
+found -- the delete operation removes the nodes it explores iff the latter does
+not have at least another element inside its children. The complexity of one
+binary search depends of the level $l$ at which it is performed:
+$\mathcal{O}(\log 2^l)$. The repeated binary searches lead to an upper bound of
+$\mathcal{O}(\sum\limits_{0<i<e}(\log 2^i))$, where $e$ is the depth of the
+tree. Replacing the depth $e$, upper bounds on time complexity are
+$\mathcal{O}(\log I + \sqrt{log I})$, $\mathcal{O}((\log I)^2+\log I)$, and
+$\mathcal{O}(I)$ for random, monotonic, and worst case editing behaviors
+respectively. In the worst case, the algorithms perform one comparison per
+element, i.e. per level, in the tree until they reach the deepest leaf.
+
 
 \begin{table}
-  \centering
-  \input{input/lseqtimetable.tex}
   \caption{\label{table:lseqtime}
     Upper bounds on time complexity of \LSEQ. Where $I$ is the number of 
     insertions performed on the replicated sequence.}
+  \centering
+  \input{input/lseqtimetable.tex}
 \end{table}
 
+To interface the user's view of the document with the underlying replicated
+sequence, an additionnal lookup operation is necessary. Its goal is to retrieve
+the identifier of the element at the specified index in the sequence, and
+converse. Since the structure is a tree, this access is not direct.
 
-\TODO{The lookup.}
+To consistently manage the translation between sequence structure and the tree
+structure, the latter stores with each node the number of elements included in
+its subtrees. Each insertion and removal updates these counters as they explore
+a path. Then, processing an index comes down to count the number of elements in
+the siblings of explored nodes starting from the beginning or the end of the
+sequence. Unfortunately, it can be costly depending on the editing behavior that
+filled the tree.
+
+The random editing behavior leads to an exponential tree of depth bounded by
+$\mathcal{O}(\sqrt{\log I})$. In such case, a very small portion of the whole
+tree will be explored. The upper bound happens when the explored nodes are
+exactly in the middle of its siblings, for it forces to check at least half of
+these sibling per depth. Since each node stores twice as much children as its
+parents. The number of siblings to check doubles at each depth. Overall, the sum
+of these siblings is equal to the number of node at the deepest level, which is
+$\mathcal{O}(2^{\sqrt{\log I}})$ elements. 
+
+From an identical reasoning, the lookup operation after monotonic editing --
+which also constitutes the worst case for this operation -- is upper-bounded by
+$\mathcal{O}(I)$. Indeed, only one branch is filled and explored. The counters
+become useless since all nodes but one have only one child. The exploration
+directly ends up in the deepest level containing $\mathcal{O}(2^{\log_2 I})$
+elements where half of them must be checked leading to
+$\mathcal{O}(I)$.
 
 \begin{table}
-  \centering
-  \input{input/lseqlookuptable.tex}
   \caption{\label{table:lseqlookup}
     Upper bounds on time complexity of the look-up on a \LSEQ structure.
     Where $I$ is the number of insertions performed on the replicated sequence.}
+  \centering
+  \input{input/lseqlookuptable.tex}
 \end{table}
+
+Table~\ref{table:lseqtime} and Table~\ref{table:lseqlookup} summarize the time
+complexity of operations. The exponential tree structure leads to efficient
+update operations. Its drawback lies in the lookup operation making the link
+between the view and the replica. In particular, monotonic editing leads to the
+worst case scenario where the access grows linearly. Fortunately,
+\begin{inparaenum}[(i)]
+\item the view should not be updated if the index of the change falls outside
+  the user's visibility window. Thus, the lookup can stop earlier if it explores
+  the tree outside the scope;
+\item keeping fast accesses to the newest path and its adjacent paths removes
+  the cost of the lookup, for the repeated insertions -- if monotonic -- alone
+  can maintain these fast accesses up-to-date.
+\end{inparaenum}
 
 \subsubsection{\TODO{Summary}}
 
