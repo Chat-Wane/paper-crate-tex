@@ -2,39 +2,52 @@
 \section{Decentralized real-time editor}
 \label{sec:editor}
 
-\TODO{Moar context, related work, and issues (e.g. demo paper).}
+Distributed collaborative editors such as Google Docs, Etherpad, or SubEthaEdit,
+allow collaborators to work distributed in time, space, and organization
+(\REF). These tools improve both the implication of users and the quality of
+documents. However, trending editors such as Google Docs rely on central servers
+which bring issues in privacy, scalability, and robustness. Decentralized
+editors settle issues in privacy and robustness but scalability issues remain.
 
-\CRATE (standing for CollaboRATive Editor) is a distributed and decentralized
-real-time editor running in web browsers.  Figure~\ref{fig:architecture} depicts
-\CRATE's architecture with four layers:
+Decentralized editors' architecture comprises 4 layers
+(cf. Figure~\ref{fig:architecture}) and each of them can constitute a barrier to
+scalability:
 \begin{inparaenum}[(i)]
-\item communication: includes the editing session membership mechanism and the
-  information dissemination protocols.
-\item causality: includes the causality tracking structure that guarantees a
-  delivery order of operations reflecting a form of causality.
-\item sequence structure: includes the structure that guarantees a global
-  total order among elements of the sequence.
-\item graphical user interface: includes the editor as a graphical entity that
-  users can interact with inside web browsers.
+\item the communication layer includes the editing session membership mechanism
+  and the information dissemination protocols;
+\item the causality layer includes the causality tracking structure that
+  guarantees a delivery order of operations reflecting a form of causality,
+  e.g., it ensures that the removal of an element always follows its insertion;
+\item the sequence structure layer includes a convergent replicated structure
+  representing the document;
+\item the graphical user interface includes the editor as a graphical entity
+  that users can interact with. %% inside web browsers.
 \end{inparaenum}
-The left part of the figure depicts the common process chain: when the user
-performs an operation on the document, the operation is applied to the shared
-sequence which creates an \LSEQ identifier. Then it decorates the result of the
-operation with causality tracking metadata. Finally, \CRATE broadcasts it using
-the neighborhood provided by the \SPRAY random peer sampling protocol.
-Conversely, when \CRATE receives a broadcast message, it checks if the operation
-is causally ready to be delivered. Once the condition is verified, it applies
-the operation to the shared sequence which notifies the graphical user interface
-of the changes.  The right part of the figure corresponds to the catch up
-strategy where a member may have missed operations due to dropped messages, or
-simply because the user worked on offline mode for a while. Therefore, it
-regularly asks to its neighborhood the missing operations using the differences
-of version vectors.
 
-\TODO{In this paper we show how the adaptivity of the membership protocol \SPRAY
-impacts the traffic of the real-time editor \CRATE. We demonstrate the upper
-bounds of space and time complexities of \LSEQ and the conditions under which it
-applies. We validate experimentally the aforementioned analysis.}
+The left part of the figure depicts the common process chain: when the user
+performs an operation on the document, the operation is applied to the
+distributed sequence. Then it decorates the operation with causality tracking
+metadata. Finally, the editor broadcasts it using the neighborhood provided by
+the membership protocol.  Conversely, when the editor receives a broadcast
+message, it checks if the operation is causally ready to be delivered. Once the
+condition is verified, it applies the operation to the distributed sequence
+which notifies the graphical user interface of the changes.  The right part of
+the figure corresponds to the catch up strategy where a member may have missed
+operations due to dropped messages, or simply because the user worked on offline
+mode for a while. Therefore, it regularly asks to its neighborhood for the
+missing operations.
+
+\TODO{\CRATE is a real-time decentralized editor running directly within
+browsers. None of its internal components prevent its scalability. The rest of
+this section describes them. Among others, we show that the communication
+complexity scales well in terms of number of participants and document size.
+}
+% The rest of this section describes each layer with more details. In particular,
+% it describes the series of components that build \TODO{In this paper we show how
+%   the adaptivity of the membership protocol \SPRAY impacts the traffic of the
+%   real-time editor \CRATE. We demonstrate the upper bounds of space and time
+%   complexities of \LSEQ and the conditions under which it applies. We validate
+%   experimentally the aforementioned analysis.}
 
 The rest of this section reviews each layer and details the components inside
 them.

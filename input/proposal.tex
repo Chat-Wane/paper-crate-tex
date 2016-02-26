@@ -32,10 +32,11 @@ sequence of number chosen among a subset of $\mathbb{N}$, the size of which is
 doubled at each concatenation. For instance, let the path
 [$\ell_1.\ell_2\ldots\ell_e$] with $\ell_1\in\mathbb{N}_{<2}$, then
 $\ell_2\in \mathbb{N}_{<4}$, and $\ell_{e}\in\mathbb{N}_{<2^e}$. Compared to
-constant arity trees, paths require an additional bit per concatenation, for
-the subset are growing over depths. The binary size of a path is
-$\sum\limits_{1<i<e}\log_2{2^i}=\sum\limits_{1<i<e}i= {e^2-e\over{2}}$.  Such
-growth forbids the existence of trivial editing behaviors leading to the
+constant arity trees, paths require an additional bit per concatenation, for the
+subset are growing over depths. The binary size of a path is
+$\textstyle\sum\nolimits_{i=1}^{e}\log_2{2^i}=\sum\nolimits_{i=1}^{e}i=
+{e^2-e\over{2}}$.
+Such growth forbids the existence of trivial editing behaviors leading to the
 worst-case allocation (e.g. Fig.~\ref{fig:allocpathexample}). In that end, \LSEQ
 uses a second component: \emph{two sub-allocation functions}.
 
@@ -249,14 +250,14 @@ exponential tree.
 
 The random editing behavior fills the tree at random. As consequence, the tree
 becomes balanced. Being exponential, the tree stores
-$\sum\limits_{0<i<k}{2^{(i^2-i/2)}}$ elements, where $k$ is the depth of the
-tree. Thus, the depth of paths is upper-bounded by $\mathcal{O}(\sqrt{\log I})$
-concatenations, where $I$ is the number of insertions. Since paths require
-$\mathcal{O}(e^2)$ bits to encode, paths have an optimal logarithmic space
-complexity $\mathcal{O}(\log I)$. This result applies to all variable-size
-identifier allocators (\REF). However, since \LSEQ uses a tree structure
-factorizing common parts of identifiers, the overall space complexity is not the
-sum of identifiers but only $\mathcal{O}(I\log I)$.
+$\textstyle\sum\nolimits_{i=1}^{k}{2^{(i^2-i/2)}}$ elements, where $k$ is the
+depth of the tree. Thus, the depth of paths is upper-bounded by
+$\mathcal{O}(\sqrt{\log I})$ concatenations, where $I$ is the number of
+insertions. Since paths require $\mathcal{O}(e^2)$ bits to encode, paths have an
+optimal logarithmic space complexity $\mathcal{O}(\log I)$. This result applies
+to all variable-size identifier allocators (\REF). However, since \LSEQ uses a
+tree structure factorizing common parts of identifiers, the overall space
+complexity is not the sum of identifiers but only $\mathcal{O}(I\log I)$.
 
 The monotonic editing behavior fills only one branch of the tree. Yet, since the
 maximum arity grows over depths, the tree tends to slow down its growth over
@@ -270,7 +271,7 @@ $\mathcal{O}(I\log I)$.
 
 In the worst-case, each insertion increases the depth of the tree. Thus, after
 $I$ insertions, the tree comprises $e$ elements, where $e$ is the depth of the
-tree. The space complexity of paths grows quadratically $\mathcal{I^2}$ and each
+tree. The space complexity of paths grows quadratically $\mathcal{I}^2$ and each
 new allocated path contains the full tree. Thus, the overall space complexity of
 the tree is $\mathcal{O}(I^2)$ too.
 
@@ -320,8 +321,8 @@ found -- the delete operation removes the nodes it explores iff the latter does
 not have at least another element inside its children. The complexity of one
 binary search depends of the level $l$ at which it is performed:
 $\mathcal{O}(\log 2^l)$. The repeated binary searches lead to an upper bound of
-$\mathcal{O}(\sum\limits_{0<i<e}(\log 2^i))$, where $e$ is the depth of the
-tree. Replacing the depth $e$, upper bounds on time complexity are
+$\mathcal{O}(\textstyle\sum\nolimits_{i=1}^{e}(\log 2^i))$, where $e$ is the
+depth of the tree. Replacing the depth $e$, upper bounds on time complexity are
 $\mathcal{O}(\log I + \sqrt{log I})$, $\mathcal{O}((\log I)^2+\log I)$, and
 $\mathcal{O}(I)$ for random, monotonic, and worst case editing behaviors
 respectively. In the worst case, the algorithms perform one comparison per
@@ -368,7 +369,7 @@ $\mathcal{O}(I)$.
 
 \begin{table}
   \caption{\label{table:lseqlookup}
-    Upper bounds on time complexity of the look-up on a \LSEQ structure.
+    Upper bounds on time complexity of the lookup on a \LSEQ structure.
     Where $I$ is the number of insertions performed on the replicated sequence.}
   \centering
   \input{input/lseqlookuptable.tex}
