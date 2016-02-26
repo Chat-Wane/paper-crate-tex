@@ -166,25 +166,34 @@ Causality tracking aims to track semantically related operations, e.g., the
 removal of an element always follows its insertion. The more constraints on the
 order of operation integration, the more costly it gets. Thus, accurately
 tracking causality relations of one operation with all others requires at least
-$\mathcal{O}(N)$ both locally and in communication overhead. Such communication
-overhead confines the usage to small controlled editing session. \CRATE chooses
+$\mathcal{O}(W)$ both locally and in communication overhead, where $W$ is the
+number of participants that ever wrote in the document. Such communication
+overhead confines its usage to small controlled editing session. \CRATE chooses
 to track only the semantically related pairs of operations: the removal of an
 elements with its insertion. If the operations arrives to an editor out of
-order, the remove will wait for the corresponding insertion. The structure is a
-version vector with exceptions~\cite{malkhi2007concise,
-  mukund2014optimized}. For each member
+order, the remove will wait for the corresponding insertion. On the opposite, it
+immediately integrates received insertions. The structure is a version vector
+with exceptions~\cite{malkhi2007concise, mukund2014optimized}. The vector
+allocates for each member
 \begin{inparaenum}[(i)]
 \item an integer denoting the maximum counter of operations originated from
   this site and
 \item a list of integers denoting the exceptions, i.e., the operations known
   as not received yet.
 \end{inparaenum}
-While the local overhead implied by such structure remains $\mathcal{O}(N)$, the
+While the local overhead implied by such structure remains $\mathcal{O}(W)$, the
 communication overhead is constant $\mathcal{O}(1)$.
 
 The structure also serves as a tool to identify differences between replicas
 when an editor needs to catch up with the current state of the document in the
-live editing session.
+live editing session. The anti-entropy protocol, whose \TODO{name literally
+  means that its goal is to reduce the differences in information} between the
+involved members, selects an editor from its neighborhood at random, and sends
+its local version vector with exceptions. The chosen neighbor performs the
+difference with its own vector, searches the missing operations, and sends them
+back to the requesting editor. All editors periodically perform such
+anti-entropy rounds to ensure that no operations went missing -- due to
+unpredictable network behavior.
 
 %% To guarantee the exactly once delivery of operations, and the causal delivery
 %% of semantically related operations, \CRATE uses a version vector with
@@ -223,14 +232,13 @@ in its document and broadcasts the corresponding messages. Member $m_3$ quickly
 receives both operations. Since it did not receive these operations before, and
 since they do not depend of any other operation, it integrates the operation
 identifiers to its causality structure. It also delivers the operation to the
-shared sequence structure (cf. Section~\ref{subsec:sequence}). In the meantime,
-Member $m_2$ only receives the second operation. Consequently, it marks the
-first operation of $m_1$ as exception and still integrates the received
-operation. Then, $m_3$ removes the first character inserted by $m_1$ and
-broadcasts it. While $m_1$ delivers the removal immediately, $m_2$ waits since
-the targeted operation belongs to the exceptions. Once it receives the missing
-first operation of $m_1$, the exception disappears and the delete operation is
-performed.
+shared sequence structure. In the meantime, Member $m_2$ only receives the
+second operation. Consequently, it marks the first operation of $m_1$ as
+exception and still integrates the received operation. Then, $m_3$ removes the
+first character inserted by $m_1$ and broadcasts it. While $m_1$ delivers the
+removal immediately, $m_2$ waits since the targeted operation belongs to the
+exceptions. Once it receives the missing first operation of $m_1$, the exception
+disappears and the delete operation is performed.
 
 % The local upper-bound on space complexity is:
 % \begin{equation}
