@@ -37,20 +37,13 @@ operations due to dropped messages, or simply because the user worked on offline
 mode for a while. Therefore, it regularly asks to its neighborhood for the
 missing operations.
 
-\TODO{\CRATE is a real-time decentralized editor running directly within
+\CRATE is a real-time decentralized editor running directly within web
 browsers. None of its internal components prevent its scalability. The rest of
 this section describes them. Among others, we show that the communication
-complexity scales well in terms of number of participants and document size.
-}
-% The rest of this section describes each layer with more details. In particular,
-% it describes the series of components that build \TODO{In this paper we show how
-%   the adaptivity of the membership protocol \SPRAY impacts the traffic of the
-%   real-time editor \CRATE. We demonstrate the upper bounds of space and time
-%   complexities of \LSEQ and the conditions under which it applies. We validate
-%   experimentally the aforementioned analysis.}
-
-The rest of this section reviews each layer and details the components inside
-them.
+complexity scales well in terms of number of participants and document size. The
+rest of this section reviews each layer and details the components inside
+them. Section~\ref{sec:experiments} validates its scalability through
+experiments.
 
 \begin{figure}
   \centering
@@ -61,116 +54,162 @@ them.
 \subsection{Communication}
 \label{subsec:communication}
 
-To collaboratively edit a document, users must establish a form of communication
-between them. It firstly requires accessing the editing session. It secondly
-requires building a network of communication channels. It thirdly requires the
-members to use it to spread the changes performed on shared documents.  
+Members of an editing session must be able to communicate their changes in a
+scalable manner. Indeed, an editing session can gather from small to large
+groups during its life time, e.g., massive open online courses (MOOC) may start
+with a large number of students which can quickly decrease due to a lack of
+interest. Also, editing sessions size depend of the targeted document, e.g., a
+document describing a personal project and whose visibility is limited to
+friends gathers significantly less people than a document about a large event,
+such as a collaboratively written report about a conference.
 
-\subsubsection{First access}
+The communication protocol must adapt to these change in membership
+automatically. In that end, \CRATE uses \SPRAY which is a random peer sampling
+protocol that incrementally builds the neighborhood of each editor.
+Neighborhoods size scales logarithmically compared to the number of current
+participants in the editing session. The broadcast protocol makes extensive use
+of neighborhoods to propagate changes. Indeed, when a user performs a change,
+the editor sends it to its neighbors. Each neighbor is in charge of integrating
+and forwarding the change. Changes transitively reach all participants. The
+communication complexity at each editor is $\mathcal{O}(m.\ln(R))$, where $m$ is
+the message size, and $R$ is number of replicas connected during the
+propagation.
 
-The first access to an editing session transits a signaling server. A member
-wishing to share the document provides a \emph{uniform resource locator} (URL)
-that contains
-\begin{inparaenum}[(i)]
-\item an address to the \CRATE's files with the web application
-  code,
-\item and a reference to the editing session. Note that the latter must be
-  unique (for the signaling server and during the sharing time) and
-  immutable (to one document corresponds one editing session).
-\end{inparaenum}
-For instance, the URL \url{http://chat-wane.github.io/CRATE?snow-crab} targets
-the Github file server, and asks to the signaling server about the editing
-session called \emph{snow-crab}.  The signaling server chooses at random an
-available contact among sharers of this editing session. After a round-trip of
-messages, the first WebRTC connection is established, i.e., a connection from
-browser-to-browser that enables real-time communication. Since the joiner has
-access to the editing session through its contact, it does not need the
-signaling server any longer, hence, it disconnects from it. The member
-establishes other WebRTC connections using a membership protocol.
 
-\subsubsection{Membership}
+% To collaboratively edit a document, users must establish a form of communication
+% between them. It firstly requires accessing the editing session. It secondly
+% requires building a network of communication channels. It thirdly requires the
+% members to use it to spread the changes performed on shared documents.  
 
-The membership protocol, called \SPRAY~\cite{nedelec2015spray}, is a random peer
-sampling protocol~\cite{jelasity2007gossip} the primary target of which is
-WebRTC.  As such, the range of users includes small devices (e.g. smartphones,
-tablets, etc.) and establishing a connection requires a three-way
-handshake. These constraints invite to maintain a small number of connections.
+% \subsubsection{First access}
 
-Using \SPRAY, each member owns a set of neighbors which dynamically grows and
-shrinks to reflect the network size. Without any global knowledge,
-\begin{inparaenum}[(i)]
-\item it provides each member with a neighborhood of logarithmic size compared
-  to the global network size;
-\item it quickly converges to a topology exposing similarities with random
-  graphs~\cite{erdos1959random}. Among others,
-  \begin{inparaenum}[(a)]
-  \item it balances the load among members by repeatedly averaging over time the
-    size of neighborhoods pairwise;
-  \item it becomes robust to random crashes or unexpected departures of
-    members;
-  \item the shortest average distance to reach all peers stays small.
-  \end{inparaenum}
-\end{inparaenum}
+% The first access to an editing session transits a signaling server. A member
+% wishing to share the document provides a \emph{uniform resource locator} (URL)
+% that contains
+% \begin{inparaenum}[(i)]
+% \item an address to the \CRATE's files with the web application
+%   code,
+% \item and a reference to the editing session. Note that the latter must be
+%   unique (for the signaling server and during the sharing time) and
+%   immutable (to one document corresponds one editing session).
+% \end{inparaenum}
+% For instance, the URL \url{http://chat-wane.github.io/CRATE?snow-crab} targets
+% the Github file server, and asks to the signaling server about the editing
+% session called \emph{snow-crab}.  The signaling server chooses at random an
+% available contact among sharers of this editing session. After a round-trip of
+% messages, the first WebRTC connection is established, i.e., a connection from
+% browser-to-browser that enables real-time communication. Since the joiner has
+% access to the editing session through its contact, it does not need the
+% signaling server any longer, hence, it disconnects from it. The member
+% establishes other WebRTC connections using a membership protocol.
 
-\SPRAY divides the life-cycle of a member into three phases: the joining, the
-exchanges, and the leaving. They respectively aim to increase, to retain, and
-to decrease the number of connections following a logarithmic progression.
+% \subsubsection{Membership}
 
-\subsubsection{Broadcast}
+% The membership protocol, called \SPRAY~\cite{nedelec2015spray}, is a random peer
+% sampling protocol~\cite{jelasity2007gossip} the primary target of which is
+% WebRTC.  As such, the range of users includes small devices (e.g. smartphones,
+% tablets, etc.) and establishing a connection requires a three-way
+% handshake. These constraints invite to maintain a small number of connections.
 
-The information dissemination protocol\cite{birman1999bimodal} aims to propagate
-the changes performed by users on their shared document. Any operation must
-reach all members (broadcast) to guarantee eventual consistency.  When a user
-performs an operation, \CRATE prepares a message including the result of the
-operation and sends it to the whole network using its neighborhood. Neighbors
-receiving such message forward it to their own neighbors. Hence, messages reach
-all participants transitively. To guarantee termination and to limit the
-flooding, each member forwards each message to their neigbhors only once by
-using a version vector with exceptions (cf. Section~\ref{subsec:causality}).
+% Using \SPRAY, each member owns a set of neighbors which dynamically grows and
+% shrinks to reflect the network size. Without any global knowledge,
+% \begin{inparaenum}[(i)]
+% \item it provides each member with a neighborhood of logarithmic size compared
+%   to the global network size;
+% \item it quickly converges to a topology exposing similarities with random
+%   graphs~\cite{erdos1959random}. Among others,
+%   \begin{inparaenum}[(a)]
+%   \item it balances the load among members by repeatedly averaging over time the
+%     size of neighborhoods pairwise;
+%   \item it becomes robust to random crashes or unexpected departures of
+%     members;
+%   \item the shortest average distance to reach all peers stays small.
+%   \end{inparaenum}
+% \end{inparaenum}
 
-Compared to state-of-the-art~\cite{ganesh2003peer, jelasity2007gossip,
-  voulgaris2005cyclon}, \SPRAY provides a neigbhorhood reflecting the network
-size instead of a constant size neighborhood set at start (commonly oversized to
-handle large networks). As such, information dissemination protocol on top of
-\SPRAY adapts the load to the network size.
+% \SPRAY divides the life-cycle of a member into three phases: the joining, the
+% exchanges, and the leaving. They respectively aim to increase, to retain, and
+% to decrease the number of connections following a logarithmic progression.
 
-The information dissemination protocol impacts the communication complexity at
-each member:
-\begin{equation}
-  \mathcal{O}(m.\ln R)
-\end{equation}
-where $m$ is the message size determined by the layers below, and
-$R$ is the number of replicas in the network including both
-writers and readers of the shared sequence.
+% \subsubsection{Broadcast}
+
+% The information dissemination protocol\cite{birman1999bimodal} aims to propagate
+% the changes performed by users on their shared document. Any operation must
+% reach all members (broadcast) to guarantee eventual consistency.  When a user
+% performs an operation, \CRATE prepares a message including the result of the
+% operation and sends it to the whole network using its neighborhood. Neighbors
+% receiving such message forward it to their own neighbors. Hence, messages reach
+% all participants transitively. To guarantee termination and to limit the
+% flooding, each member forwards each message to their neigbhors only once by
+% using a version vector with exceptions (cf. Section~\ref{subsec:causality}).
+
+% Compared to state-of-the-art~\cite{ganesh2003peer, jelasity2007gossip,
+%   voulgaris2005cyclon}, \SPRAY provides a neigbhorhood reflecting the network
+% size instead of a constant size neighborhood set at start (commonly oversized to
+% handle large networks). As such, information dissemination protocol on top of
+% \SPRAY adapts the load to the network size.
+
+% The information dissemination protocol impacts the communication complexity at
+% each member:
+% \begin{equation}
+%   \mathcal{O}(m.\ln R)
+% \end{equation}
+% where $m$ is the message size determined by the layers below, and
+% $R$ is the number of replicas in the network including both
+% writers and readers of the shared sequence.
 
 
 \subsection{Causality tracking}
 \label{subsec:causality}
 
-To guarantee the exactly once delivery of operations, and the causal delivery of
-semantically related operations, \CRATE uses a version vector with
-exceptions~\cite{malkhi2007concise, mukund2014optimized}.
-
-\subsubsection{Version vector with exceptions}
-
-A vector stores for each member
+Causality tracking aims to track semantically related operations, e.g., the
+removal of an element always follows its insertion. The more constraints on the
+order of operation integration, the more costly it gets. Thus, accurately
+tracking causality relations of one operation with all others requires at least
+$\mathcal{O}(N)$ both locally and in communication overhead. Such communication
+overhead confines the usage to small controlled editing session. \CRATE chooses
+to track only the semantically related pairs of operations: the removal of an
+elements with its insertion. If the operations arrives to an editor out of
+order, the remove will wait for the corresponding insertion. The structure is a
+version vector with exceptions~\cite{malkhi2007concise,
+  mukund2014optimized}. For each member
 \begin{inparaenum}[(i)]
 \item an integer denoting the maximum counter of operations originated from
   this site and
 \item a list of integers denoting the exceptions, i.e., the operations known
   as not received yet.
 \end{inparaenum}
+While the local overhead implied by such structure remains $\mathcal{O}(N)$, the
+communication overhead is constant $\mathcal{O}(1)$.
 
-A unique member identifier along with a monotonically growing counter allows
-differentiating each operation. Thus, when a member performs a change to its
-shared document, it increments its local counter. Then it decorates the message
-with its counter and identifier. Upon reception, \CRATE checks in the version
-vector with exceptions if it already received the operation earlier. In this
-case, it simply discards the operation.  Otherwise, it checks if the operation
-depends on another one. In this case, \CRATE delivers the operation if this
-other operation is delivered. Otherwise, it puts the operation in a buffer
-awaiting for the dependency to arrive. Upon delivery, it integrates the
-operation identifier to the version vector with exceptions.
+The structure also serves as a tool to identify differences between replicas
+when an editor needs to catch up with the current state of the document in the
+live editing session.
+
+%% To guarantee the exactly once delivery of operations, and the causal delivery
+%% of semantically related operations, \CRATE uses a version vector with
+%% exceptions~\cite{malkhi2007concise, mukund2014optimized}.
+
+% \subsubsection{Version vector with exceptions}
+
+% A vector stores for each member
+% \begin{inparaenum}[(i)]
+% \item an integer denoting the maximum counter of operations originated from
+%   this site and
+% \item a list of integers denoting the exceptions, i.e., the operations known
+%   as not received yet.
+% \end{inparaenum}
+
+% A unique member identifier along with a monotonically growing counter allows
+% differentiating each operation. Thus, when a member performs a change to its
+% shared document, it increments its local counter. Then it decorates the message
+% with its counter and identifier. Upon reception, \CRATE checks in the version
+% vector with exceptions if it already received the operation earlier. In this
+% case, it simply discards the operation.  Otherwise, it checks if the operation
+% depends on another one. In this case, \CRATE delivers the operation if this
+% other operation is delivered. Otherwise, it puts the operation in a buffer
+% awaiting for the dependency to arrive. Upon delivery, it integrates the
+% operation identifier to the version vector with exceptions.
 
 \begin{figure}
   \centering
@@ -193,46 +232,46 @@ the targeted operation belongs to the exceptions. Once it receives the missing
 first operation of $m_1$, the exception disappears and the delete operation is
 performed.
 
-The local upper-bound on space complexity is:
-\begin{equation}
-  \mathcal{O}(W)
-\end{equation}
-where $W$ is the number of writers, i.e., users who modified the
-document at least once.  Such structure only requires to piggyback the
-identifiers of operation. Hence, the upper-bound on communication complexity
-is:
-\begin{equation}
-  \mathcal{O}(o.\ln R|)
-\end{equation}
-where $o$ is the operation size determined by the shared sequence structure
-(cf. Section~\ref{subsec:sequence}), and the rest is determined by the
-communication layer (cf. Section~\ref{subsec:communication}).
+% The local upper-bound on space complexity is:
+% \begin{equation}
+%   \mathcal{O}(W)
+% \end{equation}
+% where $W$ is the number of writers, i.e., users who modified the
+% document at least once.  Such structure only requires to piggyback the
+% identifiers of operation. Hence, the upper-bound on communication complexity
+% is:
+% \begin{equation}
+%   \mathcal{O}(o.\ln R|)
+% \end{equation}
+% where $o$ is the operation size determined by the shared sequence structure
+% (cf. Section~\ref{subsec:sequence}), and the rest is determined by the
+% communication layer (cf. Section~\ref{subsec:communication}).
 
-\subsubsection{Anti-entropy} 
+% \subsubsection{Anti-entropy} 
 
-The anti-entropy protocol periodically checks if the local replica diverges from
-another neighbor's one at random. It aims to retrieve missing operations that
-could have been lost during transmissions. For this purpose, a simple difference
-between vectors suffices.
+% The anti-entropy protocol periodically checks if the local replica diverges from
+% another neighbor's one at random. It aims to retrieve missing operations that
+% could have been lost during transmissions. For this purpose, a simple difference
+% between vectors suffices.
 
-For instance, in the prior example depicted by Figure~\ref{fig:timeline}, Member
-$m_2$ receives the second operation of $m_1$ before its first. To catch up,
-$m_2$ could send its version vector with exceptions to one of its neighbors
-chosen at random. Assuming that it picks $m_3$, the latter detects that,
-compared to its own vector, the remote member missed the first operation of
-$m_1$. Then, it sends it back to $m_2$ along with its own vector. Finally, $m_2$
-follows the normal process for the received operations, and additionnaly merges
-its vector with the received one.
+% For instance, in the prior example depicted by Figure~\ref{fig:timeline}, Member
+% $m_2$ receives the second operation of $m_1$ before its first. To catch up,
+% $m_2$ could send its version vector with exceptions to one of its neighbors
+% chosen at random. Assuming that it picks $m_3$, the latter detects that,
+% compared to its own vector, the remote member missed the first operation of
+% $m_1$. Then, it sends it back to $m_2$ along with its own vector. Finally, $m_2$
+% follows the normal process for the received operations, and additionnaly merges
+% its vector with the received one.
 
-Such protocol does not require any additional local metadata. However, the
-communication cost is prohibitively high which encourages to perform this
-reconciliation protocol with great care:
-\begin{equation}
-  \mathcal{O}(W+W+x.o)
-\end{equation}
-where the first $W|$ designates the vector contained in the initiating
-message, and $W+x.o$ the response to this message where $x.o$ are the missing
-operations.
+% Such protocol does not require any additional local metadata. However, the
+% communication cost is prohibitively high which encourages to perform this
+% reconciliation protocol with great care:
+% \begin{equation}
+%   \mathcal{O}(W+W+x.o)
+% \end{equation}
+% where the first $W|$ designates the vector contained in the initiating
+% message, and $W+x.o$ the response to this message where $x.o$ are the missing
+% operations.
 
 \subsection{Shared sequence}
 
@@ -240,35 +279,30 @@ operations.
     
 \subsection{Graphical user interface}
 
-To perform their changes on the shared document, users have a visual
-representation of their respective local copy in their web browser.  Since CRDTs
-for sequences provide functions relying on identifiers rather than indexes,
-\CRATE provides a look-up function which gets the identifiers at a designated
-index, and converse.  Thus, when users perform their insertions, \CRATE gets the
-identifiers at the targeted position and generates the new identifier. When it
-receives an identifier, it firstly inserts it into the tree structure and
-secondly get its index to notify the view.
+\TODO{Redo.}
 
-% \begin{table}
-%   \centering
-%   \input{input/lseqlookuptable.tex}
-%   \caption{\label{table:lseqlookup}
-%     Upper-bound on time complexity of the look-up on a \LSEQ structure.
-%     Where $I$ is the document size.}
-% \end{table}
+% To perform their changes on the shared document, users have a visual
+% representation of their respective local copy in their web browser.  Since CRDTs
+% for sequences provide functions relying on identifiers rather than indexes,
+% \CRATE provides a look-up function which gets the identifiers at a designated
+% index, and converse.  Thus, when users perform their insertions, \CRATE gets the
+% identifiers at the targeted position and generates the new identifier. When it
+% receives an identifier, it firstly inserts it into the tree structure and
+% secondly get its index to notify the view.
 
-Each element in the tree keeps track of its number of children. Such information
-allows quick withdrawing of ranges of elements. Table~\ref{table:lseqlookup}
-shows the time complexity of the look-up operation. When the tree structure is
-balanced, only a small fraction of the tree need to be browsed to find the index
-of elements. On the other hand, the structure generated by monotonic editing
-leads to a linear look-up. Fortunately, the latter case does not happen at local
-insertions since \CRATE can lazily store the last generated identifier to create
-the new one. If a user starts to edit each time at different positions, the
-structure starts to be balanced, and the look-up becomes more efficient
-relatively to the document size. Upon reception, since users only have a partial
-view of the whole document, the look-up of the received operation may fall into
-a range of element not loaded by the view.
+
+% Each element in the tree keeps track of its number of children. Such information
+% allows quick withdrawing of ranges of elements. Table~\ref{table:lseqlookup}
+% shows the time complexity of the look-up operation. When the tree structure is
+% balanced, only a small fraction of the tree need to be browsed to find the index
+% of elements. On the other hand, the structure generated by monotonic editing
+% leads to a linear look-up. Fortunately, the latter case does not happen at local
+% insertions since \CRATE can lazily store the last generated identifier to create
+% the new one. If a user starts to edit each time at different positions, the
+% structure starts to be balanced, and the look-up becomes more efficient
+% relatively to the document size. Upon reception, since users only have a partial
+% view of the whole document, the look-up of the received operation may fall into
+% a range of element not loaded by the view.
 
 
 %%% Local Variables: 
