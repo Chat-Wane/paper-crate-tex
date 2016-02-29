@@ -4,7 +4,7 @@
 
 Distributed collaborative editors such as Google Docs, Etherpad, or SubEthaEdit,
 allow collaborators to work distributed in time, space, and organization
-(\REF). These tools improve both the implication of users and the quality of
+(\REF). These tools improve the implication of users as well as the quality of
 documents. However, trending editors such as Google Docs rely on central servers
 which bring issues in privacy, scalability, and robustness. Decentralized
 editors settle issues in privacy and robustness but scalability issues remain.
@@ -283,20 +283,34 @@ disappears and the delete operation is performed.
 
 \subsection{Shared sequence}
 
-\TODO{Redo.}
+A shared sequence structure maintains consistent replicas of a document. Strong
+eventual consistency (\REF) states that a system is consistent iff replicas
+integrating an identical subset of operations converge to an equivalent
+state. Users visualize a same document.
+
+Section~\ref{sec:proposal} describes the sequence structure representing
+\CRATE's documents. Identifiers associated to each character allow retrieving
+the sequence thanks to a total order. Thus, an insert operation creates a
+unique, and immutable identifier. The editor sends the latter to all members of
+the editing sessions. With the logarithmic factor of dissemination
+(cf. Section~\ref{subsec:communication}), the resulting communication complexity
+is expected to be inbetween $\mathcal{O}((\log I).(\ln R))$ and
+$\mathcal{O}((\log I)^2.(\ln R))$ depending on the editing behavior, where $I$
+is the number of insert operations performed on the sequence, and $R$ the number
+of replicas in the editing session during the propagation.
     
 \subsection{Graphical user interface}
 
-\TODO{Redo.}
-
-% To perform their changes on the shared document, users have a visual
-% representation of their respective local copy in their web browser.  Since CRDTs
-% for sequences provide functions relying on identifiers rather than indexes,
-% \CRATE provides a look-up function which gets the identifiers at a designated
-% index, and converse.  Thus, when users perform their insertions, \CRATE gets the
-% identifiers at the targeted position and generates the new identifier. When it
-% receives an identifier, it firstly inserts it into the tree structure and
-% secondly get its index to notify the view.
+To perform their changes on the document, users have a visual representation of
+their respective local copy in their web browser.  Since CRDTs for sequences
+provide functions relying on identifiers rather than indexes, \CRATE uses a
+lookup function which gets the identifiers at a designated index, and converse.
+Thus, when users perform their insertions, \CRATE gets the identifiers at the
+targeted position and generates the new identifier. When it receives an
+identifier, it firstly inserts it into the tree structure and secondly get its
+index to notify the view. As such, users can edit in real-time, i.e. they do not
+experience any freezes during their edition locally, remote insertions are
+integrated as soon as possible.
 
 
 % Each element in the tree keeps track of its number of children. Such information
