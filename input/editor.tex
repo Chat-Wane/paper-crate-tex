@@ -48,7 +48,8 @@ experiments.
 \begin{figure}
   \centering
   \input{./input/architecture.tex}
-  \caption{\label{fig:architecture}The four layers of \CRATE's architecture.}
+  \caption{\label{fig:architecture}The four layers of decentralized editors'
+    architecture.}
 \end{figure}
 
 \subsection{Communication}
@@ -284,9 +285,9 @@ disappears and the delete operation is performed.
 \subsection{Shared sequence}
 
 A shared sequence structure maintains consistent replicas of a document. Strong
-eventual consistency (\REF) states that a system is consistent iff replicas
-integrating an identical subset of operations converge to an equivalent
-state. Users visualize a same document.
+eventual consistency~\cite{shapiro2011comprehensive} states that a system is
+consistent iff replicas integrating an identical subset of operations converge
+to an equivalent state. Users visualize a same document.
 
 Section~\ref{sec:proposal} describes the sequence structure representing
 \CRATE's documents. Identifiers associated to each character allow retrieving
