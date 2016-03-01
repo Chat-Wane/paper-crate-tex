@@ -71,7 +71,7 @@ $[\ell_1.\ell_2\ldots\ell_e]$.
   {\input{input/treemodelexample.tex}}
   \hspace{20pt}
   \subfloat[Disambiguators operate when same paths have been allocated.]
-  [\label{fig:desexample}The tree uses disambiguators to maintain an
+  [\label{fig:disexample}The tree uses disambiguators to maintain an
   equivalent state, even in presence of concurrent operations resulting
   in same paths.]
   {\input{input/desexample.tex}}
@@ -115,7 +115,7 @@ of the partial order ($\mathcal{P}$, $<_{\mathcal{P}}$) and the total order
 ($\mathcal{D}$, $<_{\mathcal{D}}$) allows ordering the elements of the sequence
 identically at any replica.
 
-Figure~\ref{fig:desexample} depicts a tree containing 6 elements with only 5
+Figure~\ref{fig:disexample} depicts a tree containing 6 elements with only 5
 distinct paths (two values are associated with the path $[3]$). Similarly to the
 previous example, the initial sequence was QWTY, however, in this example, the
 two elements E and R are inserted between the pairs
@@ -141,12 +141,23 @@ the paper.
 
 The most critical part of sequences with variable-size identifiers consists in
 creating the paths. Algorithm~\ref{algo:crdtabstract} shows the general outlines
-of these sequences. It divides the operations (insert and delete) into to
-different parts, the local and the remote phases of the optimistic replication
-paradigm. As we can see, most of the core of the algorithm and the associated
-complexity represents the local part of the \textsc{insert} operation where the
-algorithm has to generate a path (cf. Line~\ref{line:allocpath}) and a
-disambiguator (cf. Line~\ref{line:allocdes}).
+of these sequences. It divides the operations -- insert and delete -- into the
+local and remote parts of the optimistic replication scheme. We can see that the
+core of the algorithm and associated complexity lies in the local part of the
+insert operation where it generates a path (cf. Line~\ref{line:allocpath}) and a
+disambiguator (cf. Line~\ref{line:allocdes}). Function \textsc{convert2Path}
+gets rid of the disambiguators of the identifiers in argument to keep paths
+only. Without evidence of concurrency, it simply returns the paths contained in
+the identifiers. Otherwise, it translates the identifiers into paths that
+maintain the order following the order of paths
+($\mathcal{P},\, <_{\mathcal{P}}$) For instance in Figure~\ref{fig:disexample},
+the result of \textsc{convert2Path} with the identifiers of Character E and
+Character R is the pair $\langle [3.0],\, [3.9]\rangle$. Function
+\textsc{allocPath} allocates a new path between these bounds. Function
+\textsc{allocDis} decorates the path in order to guarantee that the new
+identifier -- as the composition of a path, an element, and a disambiguator --
+consistently fall between the adjacent identifiers that served to create it
+following the order of identifiers ($\mathcal{I}, \, <_\mathcal{I}$).
 
 \begin{algorithm}[h]
   \input{input/crdtabstractalgo.tex}
@@ -154,22 +165,15 @@ disambiguator (cf. Line~\ref{line:allocdes}).
     variable-size identifiers.}
 \end{algorithm}
 
-Let $\mathcal{I}$ be the set of unique triples
-$\mathcal{I}: \mathcal{P}\times\mathcal{A}\times\mathcal{D}$. The set of the
-elements of a sequence is a subset of $\mathcal{I}$. For any element $i$ of a
-sequence ($i \in \mathcal{I}$), let $i.P$, $i.A$, $i.D$ be the respective
-accessors to the path, the element, and the disambiguator of element $i$. The
-function $allocPath$ chooses a path in the tree between two other paths $p.P$
-and $q.P$ where $p<_{\mathcal{T}}q$. This means that element $i$ has to be
-inserted between two elements $p$ and $q$ such that $p$ precedes $q$ in the
-sequence. However, since it is always create new levels in the tree and thus
-new sub-trees, the number of possible paths is infinite, and so is the number
-of $allocPath$ functions. Nevertheless, the function $allocPath$ should choose
-among the all the possible paths the one having the smallest length in order to
-have smaller identifiers keeping good performance. This observation reduces
-considerably the number of possible $allocPath$ functions. Still, the
-allocation of paths without an \emph{a priori} knowledge of the final sequence
-is a non-trivial problem.
+Function \textsc{allocPath} chooses a path in the tree between two other paths
+$p$ and $q$ where $p$ precedes $q$: $p<_{\mathcal{P}}q$. The new path $n$ must
+fall inbetween $p$ and $q$: $p<_\mathcal{P}n<_\mathcal{P}q$. However, the number
+of paths between two paths is infinite, for the order is dense, and so is the
+number of \textsc{allocPath} strategies. Nevertheless, Function
+\textsc{allocPath} should choose the smallest available path among all the
+possible paths for performance sake. This observation reduces considerably the
+number of possible allocation strategies. Still, the allocation of paths without
+an \emph{a priori} knowledge of the final sequence is a non-trivial problem.
 
 \begin{figure*}
   \centering
@@ -181,45 +185,45 @@ is a non-trivial problem.
   [Worst case.]
   {\input{input/allocpathexampleB.tex}}
   \caption{\label{fig:allocpathexample} Two trees filled with the resulting
-    identifiers of two different permutations resulting in an identical
-    sequence $QWERTY$. They use the same function $allocPath$ which allocates
-    the leftmost branch in the tree. All paths of the nearly optimal case have
-    a length of 1 while the tree of the worst case grows up to a depth of 6.}
+    identifiers of two different permutations resulting in an identical sequence
+    QWERTY. They use the same function \textsc{allocPath} which allocates the
+    leftmost branch in the tree. All paths of the nearly optimal case have a
+    length of 1 while the tree of the worst case grows up to a depth of 6.}
 \end{figure*}
 
 Figure~\ref{fig:allocpathexample} illustrates the difficulties of designing a
-function to allocate the paths. It represents the underlying trees of two
-sequences using the allocation function: they allocate the leftmost branch
-available at the lowest depth possible. In both cases the final sequence is
-$QWERTY$, however, the letters are not inserted in the same order. In the first
-case, $Q$ is inserted first at position 0 (initially the sequence is empty),
-followed by $W$ at position 1 (after $Q$) then $E$ is inserted at position 3
-(after $W$), etc. We call the sequence of insert operations $[(Q,\,0)$,
-$(W,\,1)$, $(E,\,2)$, $\ldots]$ the \emph{editing sequence}. In the second
-case, the letter $Y$ is inserted first at position 0 as the sequence is
-initially empty. Then $T$ is inserted. However as the final intended word is
-$QWERTY$, $T$ has to be inserted at a position before $Y$ that represents the
-current state of the sequence. $T$ is thus inserted at position 0 shifting $Y$
-to position $1$, etc. The editing sequence that corresponds to this case
-is thus $[(Y,\,0)$, $(T,\,0)$, $(R,\,0)$, $\ldots]$.
+function allocating paths. It represents the underlying trees of two sequences
+using the allocation function that allocates the leftmost branch available at
+the lowest depth possible. In both cases the final sequence is QWERTY. However,
+the insertion order of characters is different. In the first case, Q is inserted
+first at position 0, followed by W at position 1 (after Q) then E is inserted at
+position 3 (after W), etc. We call the sequence of insert operations
+$[(\text{Q},\,0)$, $(\text{W},\,1)$, $(\text{E},\,2)$, $\ldots]$ the
+\emph{editing sequence}. In the second case, Character Y is inserted first at
+position 0 as the sequence is initially empty. Then T is inserted. However as
+the final intended word is QWERTY, T has to be inserted at a position before Y
+that represents the current state of the sequence. T is thus inserted at
+position 0 shifting Character Y to position 1, etc. The editing sequence that
+corresponds to this case is $[(\text{Y},\,0)$, $(\text{T},\,0)$,
+$(\text{R},\,0)$, $\ldots]$.
 
 
 \begin{itemize}
-\item Case 1: Since the function $allocPath$ allocates the leftmost branches,
-  the following editing sequence $[(Q,\,0)$, $(W,\,1)$, $(E,\,2)$, $\ldots]$
-  leads to the paths $\langle [1],\, Q\rangle$, $\langle [2],\, W\rangle$,
-  $\langle [3],\, E\rangle$, etc. In this case, the depth of the tree never
-  grows. In this regard, this function $allocPath$ is very efficient in terms
-  of the size of the allocated identifiers.
+\item Case 1: Since Function \textsc{allocPath} allocates the leftmost branches,
+  the following editing sequence $[(\text{Q},\,0)$, $(\text{W},\,1)$,
+  $(\text{E},\,2)$, $\ldots]$ leads to the paths
+  $\langle [1],\, \text{Q}\rangle$, $\langle [2],\, \text{W}\rangle$,
+  $\langle [3],\, \text{E}\rangle$, etc. In this case, the depth of the tree
+  never grows. In this regard, the strategy of \textsc{allocPath} is very
+  efficient in terms of the size of the allocated identifiers.
 
-\item Case 2: The editing sequence $[(Y,\,0)$, $(T,\,0)$, $(R,\,0)$, $\ldots]$
-  leads to an increase of the depth of the tree at each element
-  insertion. Indeed, as an element gets the smallest value at its level
-  (cf. the allocation function), there is no way to insert a new element before
-  at the same level hence the new level. The resulting sequence is
-  $\langle [1],\, Y\rangle$, $\langle [0.1],\, T\rangle$,
-  $\langle [0.0.1],\, R \rangle$, etc. Consequently, the size of the paths
-  grows very fast.
+\item Case 2: The editing sequence $[(\text{Y},\,0)$, $(\text{T},\,0)$,
+  $(\text{R},\,0)$, $\ldots]$ leads to an increase of the tree depth per
+  insertion. Indeed, as an element gets the smallest value at its level, there
+  is no room for a new element at the same level, hence a new level. The
+  resulting sequence is $\langle [1],\, \text{}Y\rangle$,
+  $\langle [0.1],\, \text{T}\rangle$, $\langle [0.0.1],\, \text{R} \rangle$,
+  etc. Consequently, the paths grow very fast.
 \end{itemize}
 
 This example shows how the insertion order impacts the length of the allocated
@@ -233,7 +237,7 @@ document and to the activity for example when correcting a document the editing
 in mainly random as the insertions/deletions may correspond to
 errors. Consequently, we are looking for an allocation function which provides
 identifiers with a sub-linear spatial complexity compared to the number of
-insertions whatever is the editing sequence.
+insertions whatever the editing sequence.
 
  
 %%% Local Variables:

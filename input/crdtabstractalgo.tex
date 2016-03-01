@@ -16,8 +16,8 @@
   [0] {\textbf{RECEIVED UPDATE:}}
 
 \algblockdefx[onInsert]{onLocal}{endOnLocal}
-  [0] {\textbf{on} insert ($p \in \mathcal{I},\,\alpha \in \mathcal{A},\,
-   q\in\mathcal{I}$):}
+  [0] {\textbf{on} insert ($previous \in \mathcal{I},\,\alpha \in \mathcal{A},\,
+   next\in\mathcal{I}$):}
   [0] {\textbf{on} delete ($i \in \mathcal{I}$):} 
 
 \algsetblockdefx[onRemote]{onRemote}{endOnRemote}
@@ -46,11 +46,16 @@
   
   \local
     \onLocal
-    \State \textbf{let} $path \leftarrow \textsc{allocPath}(p,\,q)$; \label{line:allocpath}
-    \State \textbf{let} $dis \leftarrow \textsc{allocDis}(p,\, path,\, q)$; \label{line:allocdes}
-    \State $\textsc{broadcast}($'insert'$,\, \langle path,\, \alpha,\, dis \rangle)$;
+    \State \textbf{let}
+    $\langle p,\, q \rangle \leftarrow \textsc{convert2Path}(previous,\, next)$;
+    \State \textbf{let}
+    $path \leftarrow \textsc{allocPath}(p,\,q)$; \label{line:allocpath}
+    \State \textbf{let} 
+    $dis \leftarrow \textsc{allocDis}(p,\, path,\, q)$; \label{line:allocdes}
+    \State $\textsc{broadcast}(\text{'insert'},\,
+    \langle path,\, \alpha,\, dis \rangle)$;
     \endOnLocal
-    \INDSTATE $\textsc{broadcast}($'delete'$,\,i)$;
+    \INDSTATE $\textsc{broadcast}(\text{'delete'},\,i)$;
   \endLocal
   
   \received
