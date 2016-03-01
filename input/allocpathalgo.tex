@@ -13,14 +13,15 @@
     \Function{allocPath}{$p,\, q \in \mathcal{P}$}
     $\rightarrow \mathcal{P}$
     \State \textbf{let} $\langle depth,\,\_ \rangle 
-    \leftarrow getDepthInterval(p,\,q)$;
+    \leftarrow \textsc{getDepthInterval}(p,\,q)$;
     \State \textbf{return} $h(depth)(p,\,q)$; 
     \hfill \comment{Defers the call to a sub-allocation function}
     \EndFunction
     \Statex
     \Function{left-to-right}{$p,\,q \in \mathcal{P}$}
     $\rightarrow \mathcal{P}$
-    \State \textbf{let} $depth,\,interval \leftarrow getDepthInterval(p,\,q);$
+    \State \textbf{let} 
+    $\langle depth,\,interval \rangle \leftarrow \textsc{getDepthInterval}(p,\,q);$
     \hfill \comment{\#1 Get the depth of the new path}
     \State \textbf{let} $step \leftarrow min(boundary,\,interval)$;
     \hfill \comment{\#2 Maximal space between two identifiers}
@@ -30,7 +31,8 @@
     \Statex
     \Function{right-to-left}{$p,\,q \in \mathcal{P}$}
     $\rightarrow \mathcal{P}$
-    \State \textbf{let} $depth,\, interval \leftarrow getDepthInterval(p,\,q);$
+    \State \textbf{let}
+    $\langle depth,\, interval\rangle \leftarrow \textsc{getDepthInterval}(p,\,q);$
     \hfill \comment{\#1}
     \State \textbf{let} $step \leftarrow min(boundary,\,interval)$;
     \hfill \comment{\#2}
@@ -42,7 +44,7 @@
       \State \textbf{let} $depth \leftarrow 0$; $interval \leftarrow 0$;
       \While{$(interval < 2)$}
         \State $depth \leftarrow depth + 1$;
-        \State $interval \leftarrow subPath(q,\,depth) - subPath(p,\,depth)$;
+        \State $interval \leftarrow \textsc{subPath}(q,\,depth) - \textsc{subPath}(p,\,depth)$;
       \EndWhile
       \State \textbf{return} $\langle depth,\, interval\rangle$;
     \EndFunction
