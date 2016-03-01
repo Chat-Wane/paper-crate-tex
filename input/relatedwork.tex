@@ -57,10 +57,10 @@ space complexity of these metadata must be sublinear.
   local area networks. However, their performance degrades when the network size
   grows and becomes unpredictable like wide area networks.
 
-\item [Conflict-free replicated data types]~\cite{shapiro2011conflict,
-    shapiro2011comprehensive} (CRDTs) for sequences constitute the latter
-  approaches which solve concurrent cases by providing commutative, associative,
-  and idempotent operations. As such, and compared to OT, the causality tracking
+\item [Conflict-free replicated data types~\cite{shapiro2011comprehensive,
+    shapiro2011conflict}] (CRDTs) for sequences constitute the latter approaches
+  which solve concurrent cases by providing commutative, associative, and
+  idempotent operations. As such, and compared to OT, the causality tracking
   cost is drastically reduced since it only requires tracking semantically
   related operations. For instance, the removal of a particular element must
   follow its insertion. The commutative property of operations ensures the
@@ -76,9 +76,9 @@ space complexity of these metadata must be sublinear.
   turns, impacts the communication complexity.
 
 % WOOT, WOOT, WOOTH, RGA, SW, PPS, DiCE
-\item [Tombstone-based]~\cite{ahmed2011evaluating, conway2014language,
+\item [Tombstone-based~\cite{ahmed2011evaluating, conway2014language,
     grishchenko2010deep, oster2006data, roh2011replicated, weiss2007wooki,
-    wu2010partial, yu2012stringwise} CRDTs such as WOOT~\cite{oster2006data}
+    wu2010partial, yu2012stringwise}] CRDTs such as WOOT~\cite{oster2006data}
   associate a constant size identifier $\mathcal{O}(1)$ to each element but
   whose removals of elements only hide them to the users. Therefore, removed
   elements keep consuming space leading to a monotonically growing document,

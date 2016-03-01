@@ -2,12 +2,11 @@
 \section{Preliminaries}
 \label{sec:preliminaries}
 
-
-Sequence data structures considered in this paper (for collaborative
-editing) belong to the optimistic class of replication. Each replica owner (a
-collaborator) directly performs operations on its local copy and informs the
-other owners by broadcasting these operations. The consistency criteria ensured
-by such optimistic replication is called strong eventual
+Sequence data structures considered in this paper (for collaborative editing)
+belong to the optimistic class of replication~\cite{saito2005optimistic}. Each
+replica owner (a collaborator) directly performs operations on its local copy
+and informs the other owners by broadcasting these operations. The consistency
+criteria ensured by such optimistic replication is called strong eventual
 consistency~\cite{shapiro2011comprehensive} upon the assumption of the eventual
 delivery of operations, i.e., they guarantee that all replicas will eventually
 converge to an identical state when the system becomes quiescent. This
@@ -17,9 +16,8 @@ collaborative edition~\cite{shapiro2011comprehensive}.
 
 Sequence replicated data structures (\emph{sequence} for short) are the closest
 structures that can implement a shared document. A sequence provides two
-\emph{commutative operations}: insert and delete. Indeed, these operations can
-be integrated in any order as soon as the deletion of an element is integrated
-after its insertion.
+commutative operations: insert and delete. Operations can be integrated in any
+order as soon as the deletion of an element follows its insertion.
 
 The sequence is composed of elements and a unique and immutable identifier is
 associated with each of these elements. The sequence can be seen as a set of
@@ -29,14 +27,14 @@ sequence. The projection of a sequence on the elements builds the document.
 
 When a collaborator performs an insert operation, it first allocates the
 identifier of the element to insert. For instance, let us consider a sequence
-$QWTY$ with the unique, immutable, and totally ordered integer identifiers $1$,
-$2$, $4$, $8$ respectively. A collaborator inserts the element $E$ between $W$
-and $T$. The natural identifier that comes to mind is $3$. The resulting
-sequence is $QWETY$. However, $R$ cannot be inserted between $E$ and $T$ since
+QWTY with the unique, immutable, and totally ordered integer identifiers $1$,
+$2$, $4$, $8$ respectively. A collaborator inserts the element E between W
+and T. The natural identifier that comes to mind is $3$. The resulting
+sequence is QWETY. However, R cannot be inserted between E and T since
 $3$ and $4$ are contiguous. The space of identifiers must be enlarged to handle
 the new insertion. If we consider identifiers as decimal numbers, $3.1$ can be
-associated with the character $R$. If a new character has to be inserted
-between $E$ and $R$, a new identifier will be allocated between $3$ and
+associated with the character R. If a new character has to be inserted
+between E and R, a new identifier will be allocated between $3$ and
 $3.1$. Again, the space will be extended resulting in a new identifier $3.0$
 suffixed by any non null integer. Let $X$ be the suffix, the order is preserved
 since $(3 < 3.0.X < 3.1)$.
@@ -54,9 +52,9 @@ structure where the elements of the sequence are stored at the nodes and where
 the edges of the tree are labelled such that a path from the root to a node
 represents the identifier of the element stored at this node. For instance, the
 character $R$ in the previous example is accessible following the path composed
-of the edges labelled $3$ then $1$. More formally, a sequence is a tree
-$\mathcal{T}$ where each node contains a value i.e. an element of the sequence
-(over an alphabet $\mathcal{A}$). The tree $\mathcal{T}$ is a set of pairs
+of the edges labelled $3$ then $1$. More formally, a sequence is a tree where
+each node contains a value i.e. an element of the sequence (over an alphabet
+$\mathcal{A}$). The tree is a set of pairs
 $\langle\mathcal{P}\subset\{\mathbb{N}\}^*,\, \mathcal{A} \rangle$, i.e., each
 element has a path. Additionally, a total order
 ($\mathcal{P}$,$<_{\mathcal{P}}$) provides an ordering among the paths which
@@ -82,19 +80,19 @@ $[\ell_1.\ell_2\ldots\ell_e]$.
 \end{figure*}
 
 
-Figure~\ref{fig:treemodelexample} shows the underlying 10-ary tree
-$\mathcal{T}$ representing a sequences. Like in the previous scenario, the
-initial sequence is $QWTY$ with the respective paths $[1]$, $[2]$, $[4]$ and
-$[8]$. The insertion of the character $E$ between the pairs
-$\langle [2],\, W\rangle$ and $\langle [4],\, T\rangle$ results in the
-following pair: $\langle [3],\, E \rangle$. Then the insertion of the character
-$R$ needs to start a new level since there is no room at the first level of the
-tree for a new path between $E$ and $T$. The resulting path may be $[3.1]$ if
-label one is chosen for the element $R$ at the second level. This would
-increase the depth of the tree in case there is an insertion between the
-elements $E$ and $R$. The new path would be $[3.0.X]$ where $0<X<10$ (recall
-that we assumed a 10-ary tree). The total order $(\mathcal{P},\,<_\mathcal{P})$
-allows retrieving the sequence $QWERTY$.
+Figure~\ref{fig:treemodelexample} shows the underlying 10-ary tree representing
+a sequences. Like in the previous scenario, the initial sequence is QWTY with
+the respective paths $[1]$, $[2]$, $[4]$ and $[8]$. The insertion of the
+character E between the pairs $\langle [2],\, \text{W}\rangle$ and
+$\langle [4],\, \text{T}\rangle$ results in the following pair:
+$\langle [3],\, \text{E} \rangle$. Then the insertion of Character R needs to
+start a new level since there is no room at the first level of the tree for a
+new path between E and T. The resulting path may be $[3.1]$ if label one is
+chosen for the element R at the second level. This would increase the depth of
+the tree in case there is an insertion between the elements E and R. The new
+path would be $[3.0.X]$ where $0<X<10$ (recall that we assume a 10-ary
+tree). The total order $(\mathcal{P},\,<_\mathcal{P})$ allows retrieving the
+sequence QWERTY.
 
 \subsection{Disambiguation of concurrent cases}
 \label{subsec:disambiguation}
@@ -106,33 +104,37 @@ single collaborator edits. However, it becomes a partial order when the editing
 involves several collaborators. Consequently, it is necessary to totally order
 the elements inserted by different collaborators. To this end, the
 disambiguation function $\delta$ associates a disambiguator to each pair of
-$\mathcal{T}$. $\delta: \mathcal{P}\times\mathcal{A} \rightarrow \mathcal{D}$
-such that ($\mathcal{D}$, $<_{\mathcal{D}}$) is a total order. The function
-$\delta$ is an accessor to additional values that are totally ordered even in
-presence of concurrency. Finally, the pairs in $\mathcal{T}$ can be totally
-ordered with a composition of the local total order ($\mathcal{P}$,
-$<_{\mathcal{P}}$) and the total order between collaborators ($\mathcal{D}$,
-$<_{\mathcal{D}}$). The composition leads to a total order ($\mathcal{T}$,
-$<_{\mathcal{T}}$).
+$\mathcal{T}$. $\delta: \mathcal{D} \rightarrow \mathcal{P}\times\mathcal{A}$.
+There exists a total order ($\mathcal{D}$, $<_{\mathcal{D}}$) such that elements
+of the sequence are always comparable pairwise, even if they have an identical
+path due to concurrency. 
+
+Let the identifiers $\mathcal{I}$ be the set of unique triples
+$\mathcal{I}:\mathcal{P}\times \mathcal{A}\times \mathcal{D}$. The composition
+of the partial order ($\mathcal{P}$, $<_{\mathcal{P}}$) and the total order
+($\mathcal{D}$, $<_{\mathcal{D}}$) allows ordering the elements of the sequence
+identically at any replica.
 
 Figure~\ref{fig:desexample} depicts a tree containing 6 elements with only 5
-distinct paths (two values are associated with the path $[3]$). Similarly to
-the previous example, the initial sequence was $QWTY$, however, in this
-example, the two elements $E$ and $R$ are inserted between the pairs
-$\langle [2],\, W\rangle$ and $\langle [4],\,T\rangle$ by two different
-collaborators concurrently. For both elements, the resulting path is
-$[3]$. After the two elements are inserted, the sequence becomes either
-$QWERTY$ or $QWRETY$. Nevertheless, let
-$\delta(\langle [3],\, R \rangle) = \delta_R$ and
-$\delta(\langle [3],\, T\rangle) = \delta_T$. If we assume
-$\delta_R <_\mathcal{D} \delta_T$, the total order
-$(\mathcal{T}, <_\mathcal{T})$ gives the sequence $QWERTY$. It is worth noting
+distinct paths (two values are associated with the path $[3]$). Similarly to the
+previous example, the initial sequence was QWTY, however, in this example, the
+two elements E and R are inserted between the pairs
+$\langle [2],\, \text{W}\rangle$ and $\langle [4],\, \text{T}\rangle$ by two
+different collaborators concurrently. For both elements, the resulting path is
+$[3]$. After the two elements are inserted, the sequence becomes either QWERTY
+or QWRETY. Nevertheless, let the identifiers
+$\langle [3],\, \text{R},\, \delta_\text{R}\rangle$ and
+$\langle [3],\, \text{T},\, \delta_\text{T} \rangle$. Assuming that
+$\delta_\text{R} <_\mathcal{D} \delta_\text{T}$, the total order
+$(\mathcal{I}, <_\mathcal{I})$ gives the sequence QWERTY. It is worth noting
 that disambiguators are usually computed using a monotonically increasing
 variable and a unique collaborator identifier just like Lamport
 timestamps~\cite{lamport1978time}. Therefore, a collaborator cannot directly
 influence the final position of the character in the sequence using
-disambiguators. The sequence of the example could have ended in $QWRETY$ and it
-would have needed a correction.
+disambiguators. The sequence of the example could have ended in QWRETY and it
+would have needed a correction. Also, the space complexity of disambiguators is
+bounded by their associated path. Therefore, we focus on paths in the rest of
+the paper.
 
 \subsection{Choosing the rightful path}
 \label{subsec:choosing}
