@@ -17,21 +17,20 @@ ensuring causality, i.e., the re-execution order of operations follows
 the \emph{happen before} relationship~\cite{lamport1978time} stated at
 generation.}
 
-Several complexities characterize decentralized editors:
+Four complexities characterize decentralized editors:
 \begin{itemize}
 \item Generation time: complexity to generate locally an operation.
 \item Integration time: complexity to execute remotely an operation.
-\item Space complexity: complexity to store a local copy of the shared sequence,
-  including state descriptors, logs, etc.
+\item Space complexity: complexity to store a local copy of the shared sequence.
 \item Communication complexity: complexity of messages transiting the network.
 \end{itemize}
-Solving scalability issues requires finding a balanced trade-off between
-communication, space and time complexities.  Among others, the communication
-complexity is the most discriminant. It requires $\mathcal{O}(m.\ln{R})$ where
-($\ln{R}$) is a minimal multiplicative factor induced by the broadcasting
-mechanism which depends of the session size $R$ including both readers and
-writers; where $m$ is the message embedding metadata necessary to maintain
-consistency. To scale, the space complexity of these metadata must be sublinear.
+Solving scalability issues requires finding a balance between communication,
+space and time complexities.  Among others, the communication complexity is the
+most discriminant. It requires $\mathcal{O}(m.\ln{R})$ where ($\ln{R}$) is a
+minimal multiplicative factor induced by the broadcasting mechanism which
+depends of the session size $R$ including both readers and writers; where $m$ is
+the message embedding metadata necessary to maintain consistency. To scale, the
+space complexity of these metadata must be sublinear.
 
 \begin{asparadesc}
 \item [Operational transformation] (OT) allows building both centralized and
@@ -56,17 +55,18 @@ consistency. To scale, the space complexity of these metadata must be sublinear.
   historic can be cut at the price of consensus which, once again, does not
   scale. Thus, OT approaches are the best in humble confined environment like
   local area networks. However, their performance degrades when the network size
-  grows and \TODO{becomes less predictable}.
+  grows and becomes unpredictable like wide area networks.
 
-\item [Conflict-free replicated data types] (CRDTs) for sequences constitute the
-  latter approaches which solve concurrent cases by providing commutative and
-  idempotent operations. As such, and compared to OT, the causality tracking
+\item [Conflict-free replicated data types]~\cite{shapiro2011conflict,
+    shapiro2011comprehensive} (CRDTs) for sequences constitute the latter
+  approaches which solve concurrent cases by providing commutative, associative,
+  and idempotent operations. As such, and compared to OT, the causality tracking
   cost is drastically reduced since it only requires tracking semantically
   related operations. For instance, the removal of a particular element must
   follow its insertion. The commutative property of operations ensures the
   consistency of the system. CRDTs provide commutativity by associating a unique
   and immutable identifier to each element. Defining a total order among the
-  identifiers allows retrieving the sequence of characters. 
+  identifiers allows retrieving the sequence of characters.
 
   CRDTs propose interesting trade-offs since they can balance complexities
   depending on the type of structure that represents the document.  In
@@ -76,11 +76,13 @@ consistency. To scale, the space complexity of these metadata must be sublinear.
   turns, impacts the communication complexity.
 
 % WOOT, WOOT, WOOTH, RGA, SW, PPS, DiCE
-\item [Tombstone-based] CRDTs such as WOOT~\cite{oster2006data} associate a
-  constant size identifier $\mathcal{O}(1)$ to each element but whose removals
-  of elements only hide them to the users. Therefore, removed elements keep
-  consuming space leading to a monotonically growing document, hence
-  $\mathcal{O}(H)$.  Destroying removed elements requires running a costly
+\item [Tombstone-based]~\cite{ahmed2011evaluating, conway2014language,
+    grishchenko2010deep, oster2006data, roh2011replicated, weiss2007wooki,
+    wu2010partial, yu2012stringwise} CRDTs such as WOOT~\cite{oster2006data}
+  associate a constant size identifier $\mathcal{O}(1)$ to each element but
+  whose removals of elements only hide them to the users. Therefore, removed
+  elements keep consuming space leading to a monotonically growing document,
+  hence $\mathcal{O}(H)$.  Destroying removed elements requires running a costly
   consensus algorithm to determine if everyone received the removal and agree on
   definitely throw out the element. Such algorithm is prohibitively costly and
   does not scale in number of members, especially in network subject to
@@ -88,33 +90,36 @@ consistency. To scale, the space complexity of these metadata must be sublinear.
   approach do not require further information to track causally related
   operations.
 
-\item [Variable-size identifiers] CRDTs truly destroy elements targeted by
-  removals. However, they allocate identifiers the size of which is determined
-  at generation. The allocation function becomes crucial to maintain identifiers
-  under acceptable boundaries. Unfortunately, they depend of the insert position
-  of elements. For instance, writing the sequence QWERTY left-to-right allocates
-  the identifiers [1] to Q, [2] to W, [3] to E, \ldots, [6] to Y. But with an
-  identical strategy, writing the same sequence right-to-left allocates the
-  identifiers [1] to Y, [1.1] to T, [1.1.1] to R, \ldots We observe a quick
-  growth of identifiers depending on the editing behavior. In both cases, the
-  growth is linear compared to the number of insertions in the sequence, i.e.,
-  $\mathcal{O}(I)$. If the structure stores each identifier in a flat array, it
-  grants fast access at the price of quadratic space complexity
-  $\mathcal{O}(I^2)$. If it factorizes common parts of identifiers as a tree
-  structure, it achieves better space complexity. Yet, in the worst case, a
-  costly distributed consensus is still required to balance the
-  structure~\cite{zawirski2011asynchronous}. Since removals truly erase
+\item [Variable-size identifiers]~\cite{mehdi2014merging, nedelec2013lseq,
+    preguica2009commutative, weiss2009logoot} CRDTs truly destroy elements
+  targeted by removals. However, they allocate identifiers the size of which is
+  determined at generation. The allocation function becomes crucial to maintain
+  identifiers under acceptable boundaries. Unfortunately, they depend of the
+  insert position of elements. For instance, writing the sequence QWERTY
+  left-to-right allocates the identifiers [1] to Q, [2] to W, [3] to E, \ldots,
+  [6] to Y. But with an identical strategy, writing the same sequence
+  right-to-left allocates the identifiers [1] to Y, [1.1] to T, [1.1.1] to R,
+  \ldots We observe a quick growth of identifiers depending on the editing
+  behavior. In both cases, the growth is linear compared to the number of
+  insertions $I$ in the sequence, i.e. $\mathcal{O}(I)$. If the structure stores
+  each identifier in a flat array, it grants fast access at the price of
+  quadratic space complexity $\mathcal{O}(I^2)$. If it factorizes common parts
+  of identifiers as a tree structure, it achieves better space complexity. Yet,
+  in the worst case, a costly distributed consensus is still required to balance
+  the structure~\cite{zawirski2011asynchronous}. Since removals truly erase
   information from the structure, these approaches require a local state vector
-  compacting their history, hence an additional $\mathcal{O}(W)$ on
-  space complexity. It worth noting that, contrarily to OT, the vector is kept
-  local.
+  compacting their history, hence an additional $\mathcal{O}(W)$ on space
+  complexity. It worth noting that, contrarily to OT, the vector is kept local.
+  \TODO{Maybe describe Logoot and Treedoc.}
 
   Algorithm \LSEQ~\cite{nedelec2013lseq} aims to avoid such consensus by
   sublinearly upper-bounding the space complexity of variable-size
   identifiers. It conjectured a polylogarithmic progression of the identifiers
-  size $\mathcal{O}((\log I)^2)$. \TODO{Section~\ref{subsec:sequence} describes its
-  functioning.} In this paper, we demonstrate this upper-bound and we state the
-  conditions under which it applies.
+  size $\mathcal{O}((\log I)^2)$. 
+
+  %% Section~\ref{}Section~\ref{subsec:sequence} describes its
+  %% functioning.} In this paper, we demonstrate this upper-bound and we state the
+  %% conditions under which it applies.
 
 \end{asparadesc}
 
