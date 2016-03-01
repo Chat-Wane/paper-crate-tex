@@ -104,19 +104,19 @@ functions work similarly:
   {\input{input/lseqtreeexampleB.tex}}
   \caption{\label{fig:lseqtreeexample} Example of \LSEQ's exponential trees with
     two antagonist editing behaviors to create the sequence of characters
-    $QWERTY$. Contrarily to the example given in
+    QWERTY. Contrarily to the example given in
     Figure~\ref{fig:allocpathexample}, the depth of trees does not grow linearly.}
 \end{figure}
 
 
 Similarly to the example of Figure~\ref{fig:allocpathexample} the example given
 in Figure~\ref{fig:lseqtreeexample} depicts the resulting trees after two
-antagonist scenarios creating the sequence
-$QWERTY$ \begin{inparaenum}[(i)] \item the left-to-right editing sequence
-  [($Q,\,0$), ($W,\,1$), \ldots] and \item the right-to-left editing sequence
-  [($Y,\,0$), ($T,\,0$), \ldots]. \end{inparaenum} In both cases, the
-exponential tree of \LSEQ starts with a maximum arity $32$ and doubles it at
-each level. Also, it uses the left-to-right and right-to-left sub-allocation
+antagonist scenarios creating the sequence QWERTY \begin{inparaenum}[(i)] \item
+  the left-to-right editing sequence [($\text{Q},\,0$), ($\text{W},\,1$),
+  \ldots] and \item the right-to-left editing sequence [($\text{Y},\,0$),
+  ($\text{T},\,0$), \ldots]. \end{inparaenum} In both cases, the exponential
+tree of \LSEQ starts with a maximum arity $32$ and doubles it at each
+level. Also, it uses the left-to-right and right-to-left sub-allocation
 functions at the first and the second level of the tree respectively. Since the
 first level of the tree uses the function designed for left-to-right editing,
 the scenario involving the left-to-right editing sequence results in a tree of
@@ -125,7 +125,7 @@ Figure~\ref{fig:allocpathexample}, the antagonist scenario only leads to a tree
 of depth 2. Indeed, the identifiers of \LSEQ quickly reach a level of the tree
 where the sub-allocation function is designed to handle the right-to-left
 editing behavior. If such editing behavior continues, the new allocated paths
-will compensate the loss of the first level. 
+will compensate the loss of the first level.
 
 % \begin{asparadesc}
 % \item [The function allocDis] creates the di\-sam\-bi\-gua\-tors which have two
@@ -206,16 +206,16 @@ as a composition of two basic editing behaviors.
 \begin{inparaenum}[(i)]
 \item The random editing behavior where the author inserts new elements at what
   appears random positions in the sequence. For instance, this behavior mostly
-  arises when syntactic corrections are performed, e.g. the author writes
-  $QWETY$ and realizes that the $R$ is missing. She adds the missing character
-  in a second time.
+  arises when syntactic corrections are performed, e.g. the author writes QWETY
+  and realizes that the R is missing. She adds the missing character in a second
+  time.
 \item The monotonic editing behavior where the author repeatedly inserts new
   elements between the last inserted element and an adjacent element (after or
-  before exclusively). For instance, when an author writes $QWERTY$, she
-  generally starts from the first letter $Q$ to the last letter of the word
-  $Y$. On the opposite, insertions in a logfile are usually performed at the
-  beginning for practical reasons. This behavior characterizes both
-  left-to-right and right-to-left editing.
+  before exclusively). For instance, when an author writes QWERTY, she generally
+  starts from the first character Q to the last letter of the word Y. On the
+  opposite, insertions in a logfile are usually performed at the beginning for
+  practical reasons. This behavior characterizes both left-to-right and
+  right-to-left editing.
 \end{inparaenum}
 
 As a consequence, we focus on the space complexity analysis of \LSEQ to random
@@ -255,9 +255,10 @@ depth of the tree. Thus, the depth of paths is upper-bounded by
 $\mathcal{O}(\sqrt{\log I})$ concatenations, where $I$ is the number of
 insertions. Since paths require $\mathcal{O}(e^2)$ bits to encode, paths have an
 optimal logarithmic space complexity $\mathcal{O}(\log I)$. This result applies
-to all variable-size identifier allocators (\REF). However, since \LSEQ uses a
-tree structure factorizing common parts of identifiers, the overall space
-complexity is not the sum of identifiers but only $\mathcal{O}(I\log I)$.
+to all variable-size identifier allocators~\cite{preguica2009commutative,
+  weiss2009logoot}. However, since \LSEQ uses a tree structure factorizing
+common parts of identifiers, the overall space complexity is not the sum of
+identifiers but only $\mathcal{O}(I\log I)$.
 
 The monotonic editing behavior fills only one branch of the tree. Yet, since the
 maximum arity grows over depths, the tree tends to slow down its growth over

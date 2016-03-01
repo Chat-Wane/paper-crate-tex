@@ -232,13 +232,15 @@ the final sequence. Prior work on sequences often made the assumption of a
 left-to-right editing due to observations made on
 corpus~\cite{preguica2009commutative, weiss2009logoot}. However, there exist
 human edited documents that do not correspond to this kind of
-editing~\cite{nedelec2013lseq}. Indeed, the editing depends on the type of the
-document and to the activity for example when correcting a document the editing
-in mainly random as the insertions/deletions may correspond to
-errors. Consequently, we are looking for an allocation function which provides
-identifiers with a sub-linear spatial complexity compared to the number of
-insertions whatever the editing sequence.
-
+editing~\cite{nedelec2013lseq}.
+%% Indeed, the editing depends on the type of the document and to the activity
+%% for example when correcting a document the editing in mainly random as the
+%% insertions and deletions corresponds to errors distributed in the document.
+We are looking for an allocation function which provides identifiers with a
+sublinear space complexity compared to the number of insertions whatever the
+editing sequence. Such allocation function would avoid the need for consensus
+algorithm and would make CRDT-based editors a practicable alternative to the
+current mainstream editors.
  
 %%% Local Variables:
 %%% mode: latex

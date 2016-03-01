@@ -22,68 +22,29 @@ within modern web browsers\footnote{https://github.com/Chat-Wane/CRATE}. The
 experiments ran on the \emph{Grid'5000} testbed involving uptil 601 instances of
 the editor distributed among 101 machines.
 
-\ \\ 
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.475\textwidth]{./img/partialview.eps}
-  \caption{\label{fig:partialview} Average neighborhood size of each peer over
-  the global network size.}
-\end{figure}
-
-\begin{asparadesc}
-\item [Objective:] To show the evolution of the average neighborhood size of
-  members of an editing session. The \SPRAY protocol aims to provide a
-  logarithmically scaling neighborhood compared to the global network
-  size. Furthermore, the protocol builds a dynamic network where the load is
-  balanced among members.
-\item [Description:] During a run, peers dynamically modify their
-  neighborhood. Each peer periodically reports its neighborhood size. Then, we
-  average all these values and measure the variance. The average value defines
-  how connected is a member to the network, impacting (among other) on the
-  information dissemination efficiency. The variance defines how spread are the
-  values; a small value means a good load balancing among members. Runs comprise
-  from 101 members to 601 members with 100 members increments, i.e., 6 different
-  runs.  The first member creates the editing session which is progressively
-  joined by the other writers (1 joiner per 5 seconds). Each member starts
-  sharing the document as soon as its joining. Hence, outsiders can join the
-  network through one of them chosen at random.
-\item [Results:] Figure~\ref{fig:partialview} shows the results of this
-  experiment. The figure displays the network size on the x-axis and the average
-  neighborhood size on the y-axis. It shows the average value of each experiment
-  along with the theoretical expectation: a natural logarithm on the global
-  network size. Each average value also carries the variance measurement. As
-  expected, we observe that the average neighborhood size grows logarithmically
-  compared to the size of the network despite being scattered around the
-  theoretical curve. Figure~\ref{fig:partialview} also shows that the variance
-  is small around the average values. Thus, members have an even neighborhood
-  size. In other terms, the load is well-balanced among members when they need
-  to disseminate information to the whole network. At the opposite of
-  centralized solutions, it builds a topology where no member is more important
-  than another in term of connectivity. As such, the network is more resilient
-  to random crashes or unexpected departures.
-\item [Reasons:] When an outsider wants to join the editing session, it picks a
-  random sharer as first contact. \SPRAY assumes that the neighborhood size of
-  this particular member is already logarithmic compared to the network
-  size. Therefore, it uses this assumption to create additional connections that
-  increase logarithmically in number. Yet, the averages neighborhood size does
-  not follow exactly the theoretical expectation curve. Indeed, the number of
-  neighbors of each member strongly depends of the first contact. However, the
-  specific average value is not necessarily reached, especially considering
-  that, while the theoretical expectation is a floating number, the neighborhood
-  size belongs to the integers. This fact also impacts the variance. Indeed, the
-  \SPRAY protocol exchanges the neighborhood of member over time. During the
-  exchanges, it aims to balance the neighborhood size of each peer. Yet, the
-  average value may not be an integer value. Therefore, the neighborhood size of
-  the members constantly fluctuates around the average value.
-\end{asparadesc}
-
 \ \\
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.475\textwidth]{./img/bench.eps}
-  \caption{\label{fig:bench} Time performance of operations.}
+  \includegraphics[width=0.8\textwidth]{./img/complexity.eps}
+  \caption{\label{fig:complexity} Space complexity of paths allocated by
+    Treedoc, Logoot, and \LSEQ.}
+\end{figure}
+
+\begin{asparadesc}
+\item [Objective:]
+\item [Description:]
+\item [Result:]
+\item [Reason:]
+\end{asparadesc}
+
+\ \\ 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{./img/bench.eps}
+  \caption{\label{fig:bench} Performance of the umptieth operation performed in
+    \LSEQ.}
 \end{figure}
 
 \begin{asparadesc}
@@ -103,7 +64,7 @@ the editor distributed among 101 machines.
   focus on tendencies rather than absolute values. Javascript does a lot of
   on-the-fly optimization which we limit in order to show the real time
   contribution of each operation.
-\item [Results:] Figure~\ref{fig:bench} shows the result of this experiment. The
+\item [Result:] Figure~\ref{fig:bench} shows the result of this experiment. The
   x-axis denotes the number of insert operations performed before the measured
   operation. The y-axis denotes the average time taken by this operation. The
   top part of the figure focuses on a structure filled with insertions following
@@ -114,7 +75,7 @@ the editor distributed among 101 machines.
   editing remains stable, we observe a linear growth with the look-up execution
   time, and a slower growth for both the remote insertions and the remote
   deletions.
-\item [Reasons:] After the insertions at random positions, the underlying tree
+\item [Reason:] After the insertions at random positions, the underlying tree
   of \LSEQ is balanced. Therefore, the range of influence of each operation is
   limited to a small subset of the elements composing the document. For
   instance, the look-up operation does not need to explore each element of the
@@ -135,8 +96,9 @@ the editor distributed among 101 machines.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.475\textwidth]{./img/identifiers.eps}
-  \caption{\label{fig:identifiers} Average size of identifiers.}
+  \includegraphics[width=0.8\textwidth]{./img/identifiers.eps}
+  \caption{\label{fig:identifiers} Size of \LSEQ's paths generated during
+    real-time editing sessions.}
 \end{figure}
 
 \begin{asparadesc}
@@ -154,7 +116,7 @@ the editor distributed among 101 machines.
   each author reports the byte-size of newly generated identifiers along with
   the byte-size of its path in the exponential tree. \TODO{site, counter,
     starting values of the exponential tree}.
-\item [Results:] Figure~\ref{fig:identifiers} shows the result of this
+\item [Result:] Figure~\ref{fig:identifiers} shows the result of this
   experimentation. The x-axis denotes the document size (which is equivalent to
   the number of insert operations since the members do not perform removals) on
   a decimal logarithmic scale. Thus, the document grows from empty to above a
@@ -171,7 +133,7 @@ the editor distributed among 101 machines.
   generates paths the size of which is small comparatively to the whole
   identifier that includes site identifiers and counters to guarantee
   uniqueness.
-\item [Reasons:] The curves of the byte-size are close because the identifiers
+\item [Reason:] The curves of the byte-size are close because the identifiers
   of \LSEQ do not depend of whom created it nor the number of authors involved
   in the document editing. They only depend of the position of insertions which
   globally corresponds to the editing behavior. In this case, the highlighted
@@ -193,9 +155,9 @@ the editor distributed among 101 machines.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.475\textwidth]{./img/traffic.eps}
-  \caption{\label{fig:traffic} Average traffic per second at each peer
-    during the experiments.}
+  \includegraphics[width=0.8\textwidth]{./img/traffic.eps}
+  \caption{\label{fig:traffic} Average traffic per second at each editor during
+    real-time editing session.}
 \end{figure}
 
 \begin{asparadesc}
@@ -211,7 +173,7 @@ the editor distributed among 101 machines.
   identifiers size of each run. This experiment measure average traffic of
   members in Megabyte per second. For the recall, 100 operations are performed
   per second uniformly distributed among participants.
-\item [Results:] Figure~\ref{fig:traffic} shows the result of this experiment.
+\item [Result:] Figure~\ref{fig:traffic} shows the result of this experiment.
   The x-axis denotes the experiment progression. The y-axis shows the average
   outgoing traffic generated by members (in Megabyte per second). As expected,
   we observe three results:
@@ -226,7 +188,7 @@ the editor distributed among 101 machines.
     as well.
   \end{inparaenum}
   Hence, \CRATE scales in terms of number of users and number of operations.
-\item [Reasons:] When an outsider joins the network, it injects a number of
+\item [Reason:] When an outsider joins the network, it injects a number of
   connections roughly logarithmic compared to the current network size. When it
   generates an operation, it sends its result to its neighborhood. Since this
   result (i.e. the identifier) grows polylogarithmically compared to the
