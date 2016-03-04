@@ -1,21 +1,18 @@
 \section{Related Work}
 \label{sec:relatedwork}
 
-Real-time distributed collaborative editors consider multiple
-participants, each hosting a copy of a shared sequence of
-characters. A participant updates at any time its local copy by
-inserting or deleting a character. Then, the operation is eventually
-delivered to all other members. Finally, delivered operations are
-re-executed~\cite{saito2005optimistic}. Consistency requires that all
-members eventually converge to an identical state, i.e., when the
-system is idle, all copies become
-similar~\cite{bailis2013eventual}. Consistency also requires ensuring
-intention preservation, i.e., effects observed at generation time must
-be re-observed at re-execution time regardless of concurrent
-operations~\cite{sun1998achieving}. \TODO{Consistency finally requires
-ensuring causality, i.e., the re-execution order of operations follows
-the \emph{happen before} relationship~\cite{lamport1978time} stated at
-generation.}
+Real-time distributed collaborative editors consider multiple participants, each
+hosting a copy -- or replica -- of a shared sequence of characters. Participants
+can update their copy by inserting or deleting a character at any time. Then,
+the editor eventually delivers the change to all participants. Finally, each
+editor integrates the received operations~\cite{saito2005optimistic}. Strong
+eventual consistency~\cite{bailis2013eventual, shapiro2011comprehensive,
+  sun1998achieving} requires that editors integrating a same set of operations
+converge to an equivalent state, i.e. users see the same document. Furthermore,
+operations must preserve the intention of users, i.e. effects observed at
+generation time must be re-observed at integration time regardless of concurrent
+operations. Finally, the integration order of operations must follow the
+\emph{happen before} relationship~\cite{lamport1978time} stated at generation.
 
 Four complexities characterize decentralized editors:
 \begin{itemize}
@@ -48,7 +45,7 @@ space complexity of these metadata must be sublinear.
   vector~\cite{charronbost1991concerning} the size of which grows linearly
   compared to the number of members $W$ who ever participated in the
   authoring. Since each message embeds such vector, decentralized OT approaches
-  are not praticable in large groups subject to churn where people join and
+  are not practicable in large groups subject to churn where people join and
   leave the network frequently and freely.  As for space complexity, OT
   approaches require an historic of operations $H$, each operation being linked
   to their state vector, hence $\mathcal{O}(W.H)$. Such monotonically growing
@@ -114,19 +111,17 @@ space complexity of these metadata must be sublinear.
   % factorizes common parts of identifiers as a tree structure, it achieves a
   % linear space complexity.
   To provide small identifiers, these approaches eventually require balancing
-  the structure, i.e., relocating identifiers. Nevertheless, it requires a
-  global agreement which is akin to run a distributed consensus
+  the structure, i.e., relocating identifiers. It requires a global agreement
+  which is akin to run a distributed consensus
   protocol~\cite{zawirski2011asynchronous}. Unfortunately, these protocols do
   not scale.
 
   Algorithm \LSEQ~\cite{nedelec2013lseq} aims to avoid such consensus by
   sublinearly upper-bounding the space complexity of variable-size
   identifiers. It conjectured a polylogarithmic progression of its identifiers
-  size $\mathcal{O}((\log I)^2)$.
-
-  %% Section~\ref{}Section~\ref{subsec:sequence} describes its
-  %% functioning.} In this paper, we demonstrate this upper-bound and we state the
-  %% conditions under which it applies.
+  size $\mathcal{O}((\log I)^2)$ compared to the number of insertions in the
+  document. This paper proves the complexity upper-bounds and states the
+  conditions under which it applies.
 \end{asparadesc}
 
 %%% Local Variables: 
