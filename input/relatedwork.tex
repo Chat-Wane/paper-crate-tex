@@ -90,37 +90,43 @@ space complexity of these metadata must be sublinear.
   approach do not require further information to track causally related
   operations.
 
-\item [Variable-size identifiers~\cite{mehdi2014merging, nedelec2013lseq,
-    preguica2009commutative, weiss2009logoot}] CRDTs truly destroy elements
-  targeted by removals. However, they allocate identifiers the size of which is
-  determined at generation. The allocation function becomes crucial to maintain
-  identifiers under acceptable boundaries. Unfortunately, they depend of the
-  insert position of elements. For instance, writing the sequence QWERTY
-  left-to-right allocates the identifiers [1] to Q, [2] to W, [3] to E, \ldots,
-  [6] to Y. But with an identical strategy, writing the same sequence
-  right-to-left allocates the identifiers [1] to Y, [1.1] to T, [1.1.1] to R,
-  \ldots We observe a quick growth of identifiers depending on the editing
-  behavior. In both cases, the growth is linear compared to the number of
-  insertions $I$ in the sequence, i.e. $\mathcal{O}(I)$. If the structure stores
-  each identifier in a flat array, it grants fast access at the price of
-  quadratic space complexity $\mathcal{O}(I^2)$. If it factorizes common parts
-  of identifiers as a tree structure, it achieves better space complexity. Yet,
-  in the worst case, a costly distributed consensus is still required to balance
-  the structure~\cite{zawirski2011asynchronous}. Since removals truly erase
-  information from the structure, these approaches require a local state vector
-  compacting their history, hence an additional $\mathcal{O}(W)$ on space
-  complexity. It worth noting that, contrarily to OT, the vector is kept local.
-  \TODO{Maybe describe Logoot and Treedoc.}
+\item [Variable-size identifiers~\cite{nedelec2013lseq, preguica2009commutative,
+    weiss2009logoot}] CRDTs truly destroy elements targeted by removals.  Since
+  removals truly erase information from the structure, these approaches require
+  a local state vector compacting their history, hence an additional
+  $\mathcal{O}(W)$ on space complexity. It is worth noting that, contrarily to
+  OT, the vector is kept local. Variable-size identifiers approaches allocate
+  identifiers the size of which is determined at generation. The allocation
+  function becomes crucial to maintain identifiers under acceptable
+  boundaries. Unfortunately, they depend of the insert position of elements. For
+  instance, writing the sequence QWERTY left-to-right allocates the identifiers
+  [1] to Q, [2] to W, [3] to E, \ldots, [6] to Y. But with an identical
+  strategy, writing the same sequence right-to-left allocates the identifiers
+  [1] to Y, [1.1] to T, [1.1.1] to R, \ldots We observe a quick growth of
+  identifiers depending on the editing behavior. In both cases, the growth is
+  linear compared to the number of insertions $I$ in the sequence,
+  i.e. $\mathcal{O}(I)$. Both Treedoc~\cite{preguica2009commutative} and
+  Logoot~\cite{weiss2009logoot, weiss2010logootundo} suffer from this
+  identifiers' growth which in turns impacts traffic.
+  % If the structure stores each identifier in a flat array, it grants fast
+  % access
+  % at the price of quadratic space complexity $\mathcal{O}(I^2)$. If it
+  % factorizes common parts of identifiers as a tree structure, it achieves a
+  % linear space complexity.
+  To provide small identifiers, these approaches eventually require balancing
+  the structure, i.e., relocating identifiers. Nevertheless, it requires a
+  global agreement which is akin to run a distributed consensus
+  protocol~\cite{zawirski2011asynchronous}. Unfortunately, these protocols do
+  not scale.
 
   Algorithm \LSEQ~\cite{nedelec2013lseq} aims to avoid such consensus by
   sublinearly upper-bounding the space complexity of variable-size
-  identifiers. It conjectured a polylogarithmic progression of the identifiers
-  size $\mathcal{O}((\log I)^2)$. 
+  identifiers. It conjectured a polylogarithmic progression of its identifiers
+  size $\mathcal{O}((\log I)^2)$.
 
   %% Section~\ref{}Section~\ref{subsec:sequence} describes its
   %% functioning.} In this paper, we demonstrate this upper-bound and we state the
   %% conditions under which it applies.
-
 \end{asparadesc}
 
 %%% Local Variables: 
