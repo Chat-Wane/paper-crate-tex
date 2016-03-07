@@ -3,11 +3,12 @@
 \label{sec:editor}
 
 Distributed collaborative editors such as Google Docs, Etherpad, or SubEthaEdit,
-allow collaborators to work distributed in time, space, and organization
-(\REF). These tools improve the implication of users as well as the quality of
-documents. However, trending editors such as Google Docs rely on central servers
-which bring issues in privacy, scalability, and robustness. Decentralized
-editors settle issues in privacy and robustness but scalability issues remain.
+allow collaborators to work distributed in time, space, and
+organization~\cite{ellis1991groupware}. These tools improve the implication of
+users as well as the quality of documents. However, trending editors such as
+Google Docs rely on central servers which bring issues in privacy, scalability,
+and robustness. Decentralized editors settle issues in privacy and robustness
+but scalability issues remain.
 
 Decentralized editors' architecture comprises 4 layers
 (cf. Figure~\ref{fig:architecture}) and each of them can constitute a barrier to
@@ -37,13 +38,14 @@ operations due to dropped messages, or simply because the user worked on offline
 mode for a while. Therefore, it regularly asks to its neighborhood for the
 missing operations.
 
-\CRATE is a real-time decentralized editor running directly within web
-browsers. None of its internal components prevent its scalability. The rest of
-this section describes them. Among others, we show that the communication
-complexity scales well in terms of number of participants and document size. The
-rest of this section reviews each layer and details the components inside
-them. Section~\ref{sec:experiments} validates its scalability through
-experiments.
+\CRATE~\cite{nedelec2016crate} is a real-time decentralized editor running
+directly within web browsers and available at
+\url{https://github.com/Chat-Wane/CRATE}. None of its internal components
+prevent its scalability. The rest of this section describes them. Among others,
+we show that the communication complexity scales well in terms of number of
+participants and document size. The rest of this section reviews each layer and
+details the components inside them. Section~\ref{sec:experiments} validates its
+scalability through experiments.
 
 \begin{figure}
   \centering
@@ -286,8 +288,8 @@ disappears and the delete operation is performed.
 
 A shared sequence structure maintains consistent replicas of a document. Strong
 eventual consistency~\cite{shapiro2011comprehensive} states that a system is
-consistent iff replicas integrating an identical subset of operations converge
-to an equivalent state. Users visualize a same document.
+consistent iff replicas integrating an identical set of operations converge to
+an equivalent state. Users visualize a same document.
 
 Section~\ref{sec:proposal} describes the sequence structure representing
 \CRATE's documents. Identifiers associated to each character allow retrieving
