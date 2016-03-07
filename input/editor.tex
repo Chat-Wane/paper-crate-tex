@@ -67,17 +67,19 @@ friends gathers significantly less people than a document about a large event,
 such as a collaboratively written report about a conference.
 
 The communication protocol must adapt to these change in membership
-automatically. In that end, \CRATE uses \SPRAY which is a random peer sampling
-protocol that incrementally builds the neighborhood of each editor.
-Neighborhoods size scales logarithmically compared to the number of current
-participants in the editing session. The broadcast protocol makes extensive use
-of neighborhoods to propagate changes. Indeed, when a user performs a change,
-the editor sends it to its neighbors. Each neighbor is in charge of integrating
-and forwarding the change. Changes transitively reach all participants. The
-communication complexity at each editor is $\mathcal{O}(m.\ln(R))$, where $m$ is
-the message size, and $R$ is number of replicas connected during the
-propagation.
+automatically. In that end, \CRATE uses \SPRAY~\cite{nedelec2015spray}, a random
+peer sampling protocol that incrementally builds the neighborhood of each
+editor.  Neighborhoods size scales logarithmically compared to the number of
+current participants in the editing session. The broadcast protocol makes
+extensive use of neighborhoods to propagate changes. Indeed, when a user
+performs a change, the editor sends it to its neighbors. Each neighbor is in
+charge of integrating and forwarding the change. Changes transitively reach all
+participants. The communication complexity at each editor is
+$\mathcal{O}(m.\ln(R))$, where $m$ is the message size, and $R$ is number of
+replicas connected during the propagation.
 
+The code of \SPRAY building networks of browsers is available at
+\url{https://github.com/Chat-Wane/spray-wrtc}.
 
 % To collaboratively edit a document, users must establish a form of communication
 % between them. It firstly requires accessing the editing session. It secondly
@@ -187,16 +189,18 @@ allocates for each member
 While the local overhead implied by such structure remains $\mathcal{O}(W)$, the
 communication overhead is constant $\mathcal{O}(1)$.
 
+The causality tracking structure is available at
+\url{https://github.com/Chat-Wane/version-vector-with-exceptions}.
+
 The structure also serves as a tool to identify differences between replicas
 when an editor needs to catch up with the current state of the document in the
-live editing session. The anti-entropy protocol, whose \TODO{name literally
-  means that its goal is to reduce the differences in information} between the
-involved members, selects an editor from its neighborhood at random, and sends
-its local version vector with exceptions. The chosen neighbor performs the
-difference with its own vector, searches the missing operations, and sends them
-back to the requesting editor. All editors periodically perform such
-anti-entropy rounds to ensure that no operations went missing -- due to
-unpredictable network behavior.
+live editing session. The anti-entropy protocol~\cite{demers1987epidemic}
+reduces the information differences between the involved members. It selects an
+editor from its neighborhood at random, and sends its local version vector with
+exceptions. The chosen neighbor performs the difference with its own vector,
+searches the missing operations, and sends them back to the requesting
+editor. All editors periodically perform such anti-entropy rounds to ensure that
+no operations went missing -- due to unpredictable network behavior.
 
 %% To guarantee the exactly once delivery of operations, and the causal delivery
 %% of semantically related operations, \CRATE uses a version vector with
@@ -301,7 +305,9 @@ is expected to be inbetween $\mathcal{O}((\log I).(\ln R))$ and
 $\mathcal{O}((\log I)^2.(\ln R))$ depending on the editing behavior, where $I$
 is the number of insert operations performed on the sequence, and $R$ the number
 of replicas in the editing session during the propagation.
-    
+
+The code of \LSEQ is available at \url{https://github.com/Chat-Wane/LSEQTree}.
+
 \subsection{Graphical user interface}
 
 To perform their changes on the document, users have a visual representation of
@@ -314,7 +320,6 @@ identifier, it firstly inserts it into the tree structure and secondly get its
 index to notify the view. As such, users can edit in real-time, i.e. they do not
 experience any freezes during their edition locally, remote insertions are
 integrated as soon as possible.
-
 
 % Each element in the tree keeps track of its number of children. Such information
 % allows quick withdrawing of ranges of elements. Table~\ref{table:lseqlookup}

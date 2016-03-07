@@ -1,28 +1,46 @@
 
 \section{Conclusion}
-
 \label{sec:conclusion}
-In the context of collaborative editing, this paper proposed an identifier
-allocation function \LSEQ for building sequence replicated data
-structures. The obtained sequences enjoy good space and time complexities. The
-proof on space complexity demonstrates logarithmic, polylogarithmic, and
-quadratic for, respectively, random, monotonic, and worst-case
-insertions. Using this allocation function and interval version vectors to
-track causality, we developed a distributed collaborative editor called
-\CRATE. This editor is fully decentralised and scales in terms of the
-number of peers, concurrency, and document size. We validated the approach on a
-setup close of the real life conditions and using extreme parameters: low
-startup values, high number of insertions, high number of peers and high
-latency. The experiments confirmed the space complexity of \LSEQ and the
-scalability of \CRATE. As such, it alleviates the issues brought by
-centralised approaches: single point of failure, privacy issues, economic
-intelligence issues, limitations in terms of service, etc. Also, it alleviates
-the scalability issues of decentralised approaches. As such, it can be seen as
-a serious competitor for current trending editors (e.g. Google Docs,
-SubEthaEdit,~\ldots), allowing massive collaborative editing without any
-service providers. More specifically, it opens the field to a new range of
-distributed applications such as massive editing of online courses, or
-collaborative reviewing of co-located events, webinars etc.
+
+This paper provides the complexity analysis of the allocation function
+\LSEQ. Among others, \LSEQ enjoys logarithmic, polylogarithmic, and quadratic
+growth of identifiers for respectively, random, monotonic, and worst-case
+insertions. The worst-case is made non-trivial using two sub-allocation
+functions with antagonist designs. The experiments validates the complexity
+analysis in space and time.  Using \LSEQ, decentralized collaborative editors
+scale in terms of number of insertions performed on the document. This paper
+provided the outlines to build such editor. In particular, we introduced \CRATE
+as the composition of \LSEQ, \SPRAY, and a version vector with exceptions. Such
+composition allows large scale editing of documents in real-time. The
+experiments involving up till 600 browsers confirmed the scalability of such
+composition. Since it settles privacy issues brought by centralized solutions,
+and alleviates scalability issues, such editor competes with current trending
+editors such as Google Docs, Etherpad, or SubEthaEdit. In particular, it allows
+massive collaborative editing of large documents without service
+providers. Hence, it opens the field to a new range of distributed applications
+such as massive editing of online courses, collaborative reviewing of co-located
+events, or webinars.
+
+% In the context of collaborative editing, this paper proposed an identifier
+% allocation function \LSEQ for building sequence replicated data structures. The
+% obtained sequences enjoy good space and time complexities. The proof on space
+% complexity demonstrates logarithmic, polylogarithmic, and quadratic for
+% respectively, random, monotonic, and worst-case insertions.  Using this
+% allocation function and interval version vectors to track causality, we
+% developed a distributed collaborative editor called \CRATE. This editor is fully
+% decentralised and scales in terms of the number of peers, concurrency, and
+% document size. We validated the approach on a setup close of the real life
+% conditions and using extreme parameters: low startup values, high number of
+% insertions, high number of peers and high latency. The experiments confirmed the
+% space complexity of \LSEQ and the scalability of \CRATE. As such, it alleviates
+% the issues brought by centralised approaches: single point of failure, privacy
+% issues, economic intelligence issues, limitations in terms of service,
+% etc. Also, it alleviates the scalability issues of decentralised approaches. As
+% such, it can be seen as a serious competitor for current trending editors
+% (e.g. Google Docs, SubEthaEdit,~\ldots), allowing massive collaborative editing
+% without any service providers. More specifically, it opens the field to a new
+% range of distributed applications such as massive editing of online courses, or
+% collaborative reviewing of co-located events, webinars etc.
 
 
 %% Future work concerns the improvement of our prototype
