@@ -23,13 +23,13 @@ instances of the editor distributed among 101 machines.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{./img/complexity.eps}
-  \caption{\label{fig:complexity}Size of paths allocated by Treedoc, Logoot, and
+  \includegraphics[width=0.8\textwidth]{./img/space.eps}
+  \caption{\label{fig:space}Size of paths allocated by Treedoc, Logoot, and
     \LSEQ.}
 \end{figure}
 
 \begin{asparadesc}
-\item [Objective:] To confirm the space complexity of \LSEQ's identifier and to
+\item [Objective:] To confirm the space complexity of \LSEQ's identifiers and to
   highlight the improvement over state-of-the-art.
 \item [Description:] We consider two editing behaviors:
   \begin{inparaenum}[(i)]
@@ -38,17 +38,42 @@ instances of the editor distributed among 101 machines.
     sequence.
   \end{inparaenum} We measure the average bit size of paths allocated by
   Treedoc~\cite{preguica2009commutative}, Logoot~\cite{weiss2009logoot}, and
-  \LSEQ~\cite{nedelec2013lseq}.
-\item [Result:] Figure~\ref{}
-\item [Reason:]
+  \LSEQ~\cite{nedelec2013lseq}. The generated documents reach half a million
+  characters.
+\item [Result:] Figure~\ref{fig:space} shows the results of the experiment. The
+  x-axis denotes the size of the document. The y-axis denotes the average size
+  of generated paths. The top figure shows the measurements of the random
+  editing behavior while the bottom figure shows the measurements of the
+  left-to-right editing behavior. As expected, we observe that random editing
+  leads to logarithmic growth of paths whatever the allocation function. In
+  addition, Treedoc allocates the smallest paths, followed by \LSEQ, followed by
+  Logoot. Nonetheless, on left-to-right editing, paths allocated by Treedoc grow
+  very quickly -- its plot merges with the y-axis. Logoot's paths grow slower
+  but still linearly compared to the number of insertions in the document. We
+  observe that \LSEQ exposes a better space complexity compared to the
+  state-of-the-art, which eventually leads to smaller allocated paths.
+\item [Reason:] The random editing leads to a balanced underlying structure,
+  hence the logarithmic progression of paths allocated by the three
+  strategies. In this case, Treedoc is better because it has an arity of 2, for
+  it is a binary tree. In this setup, \LSEQ starts with an arity of 8 while
+  Logoot has an arity of 16, hence \LSEQ allocating smaller paths than Logoot in
+  random editing. The left-to-right editing behavior tends to unbalance the tree
+  over insertions. In Treedoc, monotonic editing is the worst case scenario
+  where each new path contains all paths allocated before it. Logoot is designed
+  to handle left-to-right editing. It allocates paths but keeps space for
+  upcoming insertions. Still, since its maximum arity is constant, the number of
+  characters in a branch is constant, hence the linear growth of paths. On the
+  opposite, \LSEQ doubles its arity at each level of the tree. The branch can
+  store twice as much elements as its parent. Hence a growth that scales
+  sublinearly compared to the number of insertions in the document.
 \end{asparadesc}
 
-\ \\ 
+\subsection{Time complexity}
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{./img/bench.eps}
-  \caption{\label{fig:bench} Performance of the umptieth operation performed in
+  \includegraphics[width=0.8\textwidth]{./img/time.eps}
+  \caption{\label{fig:time} Performance of the umptieth operation performed in
     \LSEQ.}
 \end{figure}
 
@@ -69,7 +94,7 @@ instances of the editor distributed among 101 machines.
   focus on tendencies rather than absolute values. Javascript does a lot of
   on-the-fly optimization which we limit in order to show the real time
   contribution of each operation.
-\item [Result:] Figure~\ref{fig:bench} shows the result of this experiment. The
+\item [Result:] Figure~\ref{fig:time} shows the result of this experiment. The
   x-axis denotes the number of insert operations performed before the measured
   operation. The y-axis denotes the average time taken by this operation. The
   top part of the figure focuses on a structure filled with insertions following
@@ -97,66 +122,66 @@ instances of the editor distributed among 101 machines.
   complexity.
 \end{asparadesc}
 
-\ \\
+% \ \\
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{./img/identifiers.eps}
-  \caption{\label{fig:identifiers} Size of \LSEQ's paths generated during
-    real-time editing sessions.}
-\end{figure}
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{./img/identifiers.eps}
+%   \caption{\label{fig:identifiers} Size of \LSEQ's paths generated during
+%     real-time editing sessions.}
+% \end{figure}
 
-\begin{asparadesc}
-\item [Objective:] To confirm the space complexity of the identifiers generated
-  by \LSEQ. On the common monotonic editing behavior, we expect a
-  polylogarithmic growth compared to the document size.
-\item [Description:] The executions follow the previous experiment about the
-  neighborhood size. Thus, the experimentation comprises 6 runs with networks
-  including 101, 201, 301, 401, 501, 601 members. The editing session members
-  are repeatedly inserting new characters at the end of the document. The rate
-  of these operation is 100 operations per second distributed among
-  members. Thus, the experiment involving 101 members forces each member to
-  perform 1 insertion per second, while the experiment involving 601 members
-  forces each member to perform 1 insertion every 6 seconds. During the runs,
-  each author reports the byte-size of newly generated identifiers along with
-  the byte-size of its path in the exponential tree. \TODO{site, counter,
-    starting values of the exponential tree}.
-\item [Result:] Figure~\ref{fig:identifiers} shows the result of this
-  experimentation. The x-axis denotes the document size (which is equivalent to
-  the number of insert operations since the members do not perform removals) on
-  a decimal logarithmic scale. Thus, the document grows from empty to above a
-  million characters. The y-axis of the top part of the figure denotes the
-  byte-size of the identifiers while the bottom part of the figure denotes the
-  byte-size of the path only. First, we observe that all plots are very close
-  from each other. Hence, the size of identifiers does not depend of the number
-  of participants. Second, we observe that the identifiers grows
-  polylogarithmically compared to the size of the document. Indeed, the bottom
-  part of Figure~\ref{fig:identifiers} shows that the increment step of the
-  generated paths is slowly increasing during the experiment. It empirically
-  exposes a small surlinear behavior when the x-axis is on a logarithmic
-  scale. Hence the polylogarithmic curve. Finally, we can observe that \LSEQ
-  generates paths the size of which is small comparatively to the whole
-  identifier that includes site identifiers and counters to guarantee
-  uniqueness.
-\item [Reason:] The curves of the byte-size are close because the identifiers
-  of \LSEQ do not depend of whom created it nor the number of authors involved
-  in the document editing. They only depend of the position of insertions which
-  globally corresponds to the editing behavior. In this case, the highlighted
-  editing behavior is a monotonic left-to-right editing, i.e., repeated
-  insertions at the end of the document. This kind of behavior tends to
-  unbalance the tree by filling only one branch per level of the
-  tree. Fortunately, since the tree exponentially grows (each element has twice
-  as much children as its parent), the path growth slowly decreases over
-  insertions. Nevertheless, it costs one additional bit to encode each
-  concatenation of the path, hence the path growth on the bottom part of the
-  figure. The identifiers are much heavier than the path they carry because they
-  also includes a list of pairs to guarantee the uniqueness of identifiers and a
-  global total order. Each member generates its own globally unique identifier
-  (with high probability) without relying on any remote service. As such, they
-  require large identifiers that does not collide with remote members.
-\end{asparadesc}
+% \begin{asparadesc}
+% \item [Objective:] To confirm the space complexity of the identifiers generated
+%   by \LSEQ. On the common monotonic editing behavior, we expect a
+%   polylogarithmic growth compared to the document size.
+% \item [Description:] The executions follow the previous experiment about the
+%   neighborhood size. Thus, the experimentation comprises 6 runs with networks
+%   including 101, 201, 301, 401, 501, 601 members. The editing session members
+%   are repeatedly inserting new characters at the end of the document. The rate
+%   of these operation is 100 operations per second distributed among
+%   members. Thus, the experiment involving 101 members forces each member to
+%   perform 1 insertion per second, while the experiment involving 601 members
+%   forces each member to perform 1 insertion every 6 seconds. During the runs,
+%   each author reports the byte-size of newly generated identifiers along with
+%   the byte-size of its path in the exponential tree. \TODO{site, counter,
+%     starting values of the exponential tree}.
+% \item [Result:] Figure~\ref{fig:identifiers} shows the result of this
+%   experimentation. The x-axis denotes the document size (which is equivalent to
+%   the number of insert operations since the members do not perform removals) on
+%   a decimal logarithmic scale. Thus, the document grows from empty to above a
+%   million characters. The y-axis of the top part of the figure denotes the
+%   byte-size of the identifiers while the bottom part of the figure denotes the
+%   byte-size of the path only. First, we observe that all plots are very close
+%   from each other. Hence, the size of identifiers does not depend of the number
+%   of participants. Second, we observe that the identifiers grows
+%   polylogarithmically compared to the size of the document. Indeed, the bottom
+%   part of Figure~\ref{fig:identifiers} shows that the increment step of the
+%   generated paths is slowly increasing during the experiment. It empirically
+%   exposes a small surlinear behavior when the x-axis is on a logarithmic
+%   scale. Hence the polylogarithmic curve. Finally, we can observe that \LSEQ
+%   generates paths the size of which is small comparatively to the whole
+%   identifier that includes site identifiers and counters to guarantee
+%   uniqueness.
+% \item [Reason:] The curves of the byte-size are close because the identifiers
+%   of \LSEQ do not depend of whom created it nor the number of authors involved
+%   in the document editing. They only depend of the position of insertions which
+%   globally corresponds to the editing behavior. In this case, the highlighted
+%   editing behavior is a monotonic left-to-right editing, i.e., repeated
+%   insertions at the end of the document. This kind of behavior tends to
+%   unbalance the tree by filling only one branch per level of the
+%   tree. Fortunately, since the tree exponentially grows (each element has twice
+%   as much children as its parent), the path growth slowly decreases over
+%   insertions. Nevertheless, it costs one additional bit to encode each
+%   concatenation of the path, hence the path growth on the bottom part of the
+%   figure. The identifiers are much heavier than the path they carry because they
+%   also includes a list of pairs to guarantee the uniqueness of identifiers and a
+%   global total order. Each member generates its own globally unique identifier
+%   (with high probability) without relying on any remote service. As such, they
+%   require large identifiers that does not collide with remote members.
+% \end{asparadesc}
 
-\ \\
+\subsection{Communication complexity}
 
 \begin{figure}
   \centering
