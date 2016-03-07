@@ -394,20 +394,31 @@ worst case scenario where the access grows linearly. Fortunately,
   can maintain these fast accesses up-to-date.
 \end{inparaenum}
 
-\subsubsection{\TODO{Summary}}
+\subsubsection{Summary}
 
-The space complexity analysis reveals that the allocation function \LSEQ
-sacrifices on the worst-case space complexity to improve the space complexity of
-the monotonic editing behaviours. Nevertheless, in text editing, the worst-case
-happens with a very low probability compared the other cases. Furthermore, it is
-worth noting that usually, the authors do not write a document in a single
-round, starting from the beginning to go straight up to the end (as the
-monotonic analysis could suggest). On the contrary, the authors write sections,
-structure the documents, perform corrections, rewrite parts of the document,
-reorganize, etc. This behavior (between random and monotonic behavior) tends to
-even up the branches of the underlying tree of \LSEQ. In the case of random
-editing, the space complexity is asymptotically optimal $O(log\,n)$ while it is
-very interesting in a ``normal setting'' $O((log\,n)^2)$.
+The complexity analysis reveals the improvements brought by \LSEQ as well as
+their cost.  \LSEQ sacrifices on its worst case complexity to improve on other
+editing behaviors that are considered likely in collaborative editing. The most
+important result is the polylogarithmic space complexity of identifiers, for it
+applies on communication complexity. In comparison, state-of-the-art
+allocators~\cite{preguica2009commutative, weiss2009logoot} only provided
+linearly upper-bounded identifiers. Section~\ref{sec:experiments} validates our
+complexity analysis on experiments. The next section describes the other
+components necessary to build a decentralized collaborative editor that scales.
+
+
+% The space complexity analysis reveals that the allocation function \LSEQ
+% sacrifices on the worst-case space complexity to improve the space complexity of
+% the monotonic editing behaviours. Nevertheless, in text editing, the worst-case
+% happens with a very low probability compared the other cases. Furthermore, it is
+% worth noting that usually, the authors do not write a document in a single
+% round, starting from the beginning to go straight up to the end (as the
+% monotonic analysis could suggest). On the contrary, the authors write sections,
+% structure the documents, perform corrections, rewrite parts of the document,
+% reorganize, etc. This behavior (between random and monotonic behavior) tends to
+% even up the branches of the underlying tree of \LSEQ. In the case of random
+% editing, the space complexity is asymptotically optimal $O(log\,n)$ while it is
+% very interesting in a ``normal setting'' $O((log\,n)^2)$.
 
 %%% Local Variables: 
 %%% mode: latex
