@@ -97,15 +97,15 @@ functions work similarly:
 \begin{figure}
   \centering
   \subfloat[Left-to-right case with \LSEQ.]
-  [Left-to-right editing behavior with \LSEQ.]
+  [Left-to-right editing behavior.]
   {\input{input/lseqtreeexampleA.tex}}
   \subfloat[Right-to-left case with \LSEQ.]
-  [Right-to-left editing behavior with \LSEQ.]
+  [Right-to-left editing behavior.]
   {\input{input/lseqtreeexampleB.tex}}
   \caption{\label{fig:lseqtreeexample} Example of \LSEQ's exponential trees with
     two antagonist editing behaviors to create the sequence of characters
-    QWERTY. Contrarily to the example given in
-    Figure~\ref{fig:allocpathexample}, the depth of trees does not grow linearly.}
+    QWERTY. Contrarily to the example of Figure~\ref{fig:allocpathexample}, the
+    depth of trees does not grow linearly.}
 \end{figure}
 
 
@@ -290,7 +290,11 @@ logarithm and a polylogarithm, hence, a sub-linear upper bound compared to the
 number of insertions. To provide such improvement, \LSEQ sacrifices on its worst
 case complexity that becomes quadratic. However, this worst case is made
 difficult to produce, for the two sub-allocations functions with antagonist
-designs settle each other's deficiency.
+designs settle each other's deficiency. Table~\ref{table:lseqspace} also shows
+that compared to state-of-the-art, \LSEQ significantly improves the identifiers
+size but exposes a small overhead on the full structure, i.e. from
+$\mathcal{O}(I)$ to $\mathcal{O}(I\log I)$. The tradeoff is beneficial since
+communications inherit from the improvement.
 
 \subsubsection{Time complexities}
 

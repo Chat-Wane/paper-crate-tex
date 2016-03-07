@@ -54,18 +54,19 @@ machines.
   state-of-the-art, which eventually leads to smaller allocated paths.
 \item [Reason:] The random editing leads to a balanced underlying structure,
   hence the logarithmic progression of paths allocated by the three
-  strategies. In this case, Treedoc is better because it has an arity of 2, for
-  it is a binary tree. In this setup, \LSEQ starts with an arity of 8 while
-  Logoot has an arity of 16, hence \LSEQ allocating smaller paths than Logoot in
-  random editing. The left-to-right editing behavior tends to unbalance the tree
-  over insertions. In Treedoc, monotonic editing is the worst case scenario
-  where each new path contains all paths allocated before it. Logoot is designed
-  to handle left-to-right editing. It allocates paths but keeps space for
-  upcoming insertions. Still, since its maximum arity is constant, the number of
-  characters in a branch is constant, hence the linear growth of paths. On the
-  opposite, \LSEQ doubles its arity at each level of the tree. The branch can
-  store twice as much elements as its parent. Hence a growth that scales
-  sublinearly compared to the number of insertions in the document.
+  strategies. In this case, Treedoc is better because it has an arity of $2^1$,
+  for it is a binary tree. In this setup, \LSEQ starts with an arity of $2^8$
+  while Logoot has an arity of $2^16$, hence \LSEQ allocating smaller paths than
+  Logoot in random editing. The left-to-right editing behavior tends to
+  unbalance the tree over insertions. In Treedoc, monotonic editing is the worst
+  case scenario where each new path contains all paths allocated before
+  it. Logoot is designed to handle left-to-right editing. It allocates paths but
+  keeps space for upcoming insertions. Still, since its maximum arity is
+  constant, the number of characters in a branch is constant, hence the linear
+  growth of paths. On the opposite, \LSEQ doubles its arity at each level of the
+  tree. The branch can store twice as much elements as its parent. Hence a
+  growth that scales sublinearly compared to the number of insertions in the
+  document.
 \end{asparadesc}
 
 \subsection{Time complexity}
