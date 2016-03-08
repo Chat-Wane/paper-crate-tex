@@ -1,7 +1,7 @@
 \begin{tikzpicture}[scale=1.2]
 
 \newcommand\Y{-19}
-\newcommand\ADDY{-8}
+\newcommand\ADDY{-10}
 
   %% node to node
   \small
@@ -28,18 +28,18 @@
   \draw[->] (-35pt, 6 *\Y pt) -- ( -35pt, \ADDY + 6 *\Y pt); %% Q
 
   %% element to desambiguator
-  \draw[->,densely dashdotted]
-  ( 30pt, \ADDY + \Y pt) -- ( 30pt,2.75*\ADDY+\Y pt); %% Y
-  \draw[->,densely dashdotted]
-  ( 15pt, \ADDY + 2* \Y pt) -- ( 15pt,2.75*\ADDY+ 2* \Y pt); %% T
-  \draw[->,densely dashdotted]
-  ( 0pt, \ADDY + 3* \Y pt) -- (  0pt,2.75*\ADDY+ 3* \Y pt); %% R
-  \draw[->,densely dashdotted]
-  ( -15pt, \ADDY + 4 *\Y pt) -- ( -15pt,2.75*\ADDY+ 4* \Y pt); %% E
-  \draw[->,densely dashdotted]
-  ( -25pt, \ADDY + 5 *\Y pt) -- ( -25pt,2.75*\ADDY+ 5*\Y pt); %% W
-  \draw[->,densely dashdotted]
-  ( -35pt, \ADDY + 6* \Y pt) -- ( -35pt,2.75*\ADDY+ 6*\Y pt); %% Q
+  \draw[<->,densely dotted]
+  ( 30pt,-8+ \ADDY + \Y pt) -- ( 30pt,2.75*\ADDY+\Y pt); %% Y
+  \draw[<->,densely dotted]
+  ( 15pt,-8+ \ADDY + 2* \Y pt) -- ( 15pt,2.75*\ADDY+ 2* \Y pt); %% T
+  \draw[<->,densely dotted]
+  ( 0pt,-8+ \ADDY + 3* \Y pt) -- (  0pt,2.75*\ADDY+ 3* \Y pt); %% R
+  \draw[<->,densely dotted]
+  ( -15pt,-8+ \ADDY + 4 *\Y pt) -- ( -15pt,2.75*\ADDY+ 4* \Y pt); %% E
+  \draw[<->,densely dotted]
+  ( -25pt,-8+ \ADDY + 5 *\Y pt) -- ( -25pt,2.75*\ADDY+ 5*\Y pt); %% W
+  \draw[<->,densely dotted]
+  ( -35pt,-8+ \ADDY + 6* \Y pt) -- ( -35pt,2.75*\ADDY+ 6*\Y pt); %% Q
 
   %% node
   \draw[fill=black] (0pt,0pt) circle (1pt); %% rooot
