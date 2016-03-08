@@ -49,11 +49,11 @@
     \State \textbf{let}
     $\langle p,\, q \rangle \leftarrow \textsc{convert2Path}(previous,\, next)$;
     \State \textbf{let}
-    $path \leftarrow \textsc{allocPath}(p,\,q)$; \label{line:allocpath}
+    $newPath \leftarrow \textsc{allocPath}(p,\,q)$; \label{line:allocpath}
     \State \textbf{let} 
-    $dis \leftarrow \textsc{allocDis}(p,\, path,\, q)$; \label{line:allocdes}
+    $newDis \leftarrow \textsc{allocDis}(p,\, newPath,\, q)$; \label{line:allocdes}
     \State $\textsc{broadcast}(\text{'insert'},\,
-    \langle path,\, \alpha,\, dis \rangle)$;
+    \langle newPath,\, \alpha,\, newDis \rangle)$;
     \endOnLocal
     \INDSTATE $\textsc{broadcast}(\text{'delete'},\,i)$;
   \endLocal

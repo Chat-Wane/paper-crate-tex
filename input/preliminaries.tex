@@ -76,7 +76,7 @@ $[\ell_1.\ell_2\ldots\ell_e]$.
   in same paths.]
   {\input{input/desexample.tex}}
   \caption{Examples of 10-ary trees containing the sequence of characters
-    'QWERTY'.}
+    QWERTY.}
 \end{figure*}
 
 
@@ -102,12 +102,11 @@ replica may get different results after the integration of both
 operations. Indeed, $(\mathcal{P},\,<_\mathcal{P})$ is a total order when a
 single collaborator edits. However, it becomes a partial order when the editing
 involves several collaborators. Consequently, it is necessary to totally order
-the elements inserted by different collaborators. To this end, the
-disambiguation function $\delta$ associates a disambiguator to each pair of
-$\mathcal{T}$. $\delta: \mathcal{D} \rightarrow \mathcal{P}\times\mathcal{A}$.
-There exists a total order ($\mathcal{D}$, $<_{\mathcal{D}}$) such that elements
-of the sequence are always comparable pairwise, even if they have an identical
-path due to concurrency. 
+the elements inserted by different collaborators. To this end, a disambiguator
+is associated to each pair of $\langle element,\,path\rangle$.  There exists a
+total order ($\mathcal{D}$, $<_{\mathcal{D}}$) such that elements of the
+sequence are always comparable pairwise, even if the paths they point to are
+identical -- due to concurrency.
 
 Let the identifiers $\mathcal{I}$ be the set of unique triples
 $\mathcal{I}:\mathcal{P}\times \mathcal{A}\times \mathcal{D}$. The composition
@@ -124,13 +123,12 @@ different collaborators concurrently. For both elements, the resulting path is
 $[3]$. After the two elements are inserted, the sequence becomes either QWERTY
 or QWRETY. Nevertheless, let the identifiers
 $\langle [3],\, \text{R},\, \delta_\text{R}\rangle$ and
-$\langle [3],\, \text{T},\, \delta_\text{T} \rangle$. Assuming that
-$\delta_\text{R} <_\mathcal{D} \delta_\text{T}$, the total order
-$(\mathcal{I}, <_\mathcal{I})$ gives the sequence QWERTY. It is worth noting
-that disambiguators are usually computed using a monotonically increasing
-variable and a unique collaborator identifier just like Lamport
-timestamps~\cite{lamport1978time}. Therefore, a collaborator cannot directly
-influence the final position of the character in the sequence using
+$\langle [3],\, \text{T},\, \delta_\text{T} \rangle$. The use of disambiguators
+$\delta_{\text{R}}$ and $\delta_{\text{T}}$ allows retrieving the sequence
+QWERTY. It is worth noting that disambiguators are usually computed using a
+monotonically increasing variable and a unique collaborator identifier just like
+Lamport timestamps~\cite{lamport1978time}. Therefore, a collaborator cannot
+directly influence the final position of the character in the sequence using
 disambiguators. The sequence of the example could have ended in QWRETY and it
 would have needed a correction. Also, the space complexity of disambiguators is
 bounded by their associated path. Therefore, we focus on paths in the rest of
