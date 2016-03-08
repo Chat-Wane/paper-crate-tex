@@ -68,27 +68,27 @@ approach. Two classes of CRDTs designed for sequences exist:
 \noindent The contributions of this paper are threefold:
 \begin{itemize}
 \item Compared to previous work~\cite{nedelec2013concurrency, nedelec2013lseq},
-  we prove the upper bounds on space and time complexities of \LSEQ. This result
+  it proves the upper bounds on space and time complexities of \LSEQ. This result
   opens the way for building decentralized and scalable real-time editors.
-\item We ran extensive experiments characterizing \LSEQ's behavior that
-  validates our analysis and compares with state-of-the-art approaches. Results
-  show that \LSEQ scales better in terms of document size.
+\item It provides experiments characterizing \LSEQ's behavior that validates our
+  analysis and compares with state-of-the-art approaches. Results show that
+  \LSEQ scales better in terms of document size.
 \item We describe all the outlines to develop a distributed collaborative editor
-  for massive editing of large documents. Following these guidlines, we built a
+  for massive editing of large documents. Following these guidelines, we built a
   real-time decentralized editor running in web
-  browsers\footnote{\url{https://github.com/Chat-Wane/CRATE}}. In the Grid'5000
-  testbed, we launched editing sessions involving up till 600 connected
-  browsers. The resulting documents reach millions of characters. It validates
-  the scalability of the editor built on top of \LSEQ.
+  browsers~\cite{nedelec2016crate}. In the Grid'5000 testbed, we launched
+  editing sessions involving up till 600 connected browsers. The resulting
+  documents reach millions of characters. It validates the scalability of the
+  editor built on top of \LSEQ.
 \end{itemize}
 
 The remainder of this paper is organized as follows:
 Section~\ref{sec:relatedwork} reviews the related work.
 Section~\ref{sec:preliminaries} describes the necessary background to understand
 the replicated data types for sequences. Section~\ref{sec:proposal} describes
-the principle and functionning of \LSEQ. In particular, it provides its
-complexity. Section~\ref{sec:editor} is about the decentralized real-time editor
-built on top of \LSEQ. Experiments of Section~\ref{sec:experiments} highlights
+the principle and functioning of \LSEQ. In particular, it provides its
+complexity. Section~\ref{sec:editor} describes the architecture of decentralized
+real-time editors. The experiments of Section~\ref{sec:experiments} highlight
 its scalability while validating the complexity analysis.
 Section~\ref{sec:conclusion} concludes.
 

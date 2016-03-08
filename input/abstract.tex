@@ -6,15 +6,24 @@
   privacy, single point of failure and scalability.  Decentralized editors
   settle privacy problems but scalability issues remain.  None of existing
   algorithms provide satisfying complexities in both communication and space.
-  In this paper, we propose \CRATE; a working decentralized real-time editor
-  that supports large number of users working on large documents. In particular,
-  \CRATE achieves a sublinearly upper-bounded communication complexity in
-  $\mathcal{O}((\log d)^2\ln{m})$ where $d$ is the document size and $m$ the
-  membership size. Thanks to WebRTC, \CRATE can be easily deployed on a network
-  of browsers.  We evaluate \CRATE on large-scale experiments in the Grid'5000
-  testbed involving uptill 600 participants. As expected, we observe a
-  logarithmic progression of the generated traffic according to the size of the
-  shared document and the number of participants.
+  In this paper, we provide the complexity analysis of \LSEQ, an algorithm the
+  result of which enjoys a polylogarithmic upper bound on space complexity. In
+  turns, it directly impacts traffic. We provide the outline to build a
+  decentralized real-time editor. We evaluate our editor \CRATE on large scale
+  experiments involving up till 600 participants. The results show a traffic
+  increasing as $\mathcal{O}((\log I)^2\ln R)$ where $I$ is the number of
+  insertions in the document, and $R$ the number of participants. As such, the
+  editor scales well in both these dimensions.
+
+  % In this paper, we propose \CRATE; a working decentralized real-time editor
+  % that supports large number of users working on large documents. In particular,
+  % \CRATE achieves a sublinearly upper-bounded communication complexity in
+  % $\mathcal{O}((\log d)^2\ln{m})$ where $d$ is the document size and $m$ the
+  % membership size. Thanks to WebRTC, \CRATE can be easily deployed on a network
+  % of browsers.  We evaluate \CRATE on large-scale experiments in the Grid'5000
+  % testbed involving uptill 600 participants. As expected, we observe a
+  % logarithmic progression of the generated traffic according to the size of the
+  % shared document and the number of participants.
 \end{abstract}
 
 %%% Local Variables:
