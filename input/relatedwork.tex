@@ -14,7 +14,7 @@ generation time must be re-observed at integration time regardless of concurrent
 operations. Finally, the integration order of operations must follow the
 \emph{happen before} relationship~\cite{lamport1978time} stated at generation.
 
-Four complexities characterize decentralized editors:
+Four complexities characterize editors:
 \begin{itemize}
 \item Generation time: complexity to generate locally an operation.
 \item Integration time: complexity to execute remotely an operation.
@@ -23,11 +23,14 @@ Four complexities characterize decentralized editors:
 \end{itemize}
 Solving scalability issues requires finding a balance between communication,
 space and time complexities.  Among others, the communication complexity is the
-most discriminant. It requires $\mathcal{O}(m.\ln{R})$ where ($\ln{R}$) is a
-minimal multiplicative factor induced by the broadcasting mechanism which
-depends of the session size $R$ including both readers and writers; where $m$ is
-the message embedding metadata necessary to maintain consistency. To scale, the
-space complexity of these metadata must be sublinear.
+most discriminant and depends of metadata required to ensure strong eventual
+consistency as well as messages dissemination in the network.
+
+% It requires $\mathcal{O}(m.\ln{R})$ where ($\ln{R}$) is a minimal multiplicative
+% factor induced by the broadcasting mechanism which depends of the session size
+% $R$ including both readers and writers; where $m$ is the message embedding
+% metadata necessary to maintain consistency. To scale, the space complexity of
+% these metadata must be sublinear.
 
 \begin{asparadesc}
 \item [Operational transformation] (OT) allows building both centralized and
