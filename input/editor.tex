@@ -4,7 +4,7 @@
 
 Distributed collaborative editors such as Google Docs, Etherpad, or SubEthaEdit,
 allow collaborators to work distributed in time, space, and
-organization~\cite{ellis1991groupware}. These tools improve the implication of
+organizations~\cite{ellis1991groupware}. These tools improve the implication of
 users as well as the quality of documents. However, trending editors such as
 Google Docs rely on central servers which bring issues in privacy, scalability,
 and robustness. Decentralized editors settle issues in privacy and robustness
@@ -18,11 +18,11 @@ scalability:
   and the information dissemination protocols;
 \item the causality layer includes the causality tracking structure that
   guarantees a delivery order of operations reflecting a form of causality,
-  e.g., it ensures that the removal of an element always follows its insertion;
-\item the sequence structure layer includes a convergent replicated structure
-  representing the document;
-\item the graphical user interface includes the editor as a graphical entity
-  that users can interact with. %% inside web browsers.
+  e.g. it ensures that the removal of an element always follows its insertion;
+\item the sequence layer includes a convergent replicated structure representing
+  the document;
+\item the user interface layer includes the editor as a graphical entity that
+  users can interact with. %% inside web browsers.
 \end{inparaenum}
 
 The left part of the figure depicts the common process chain: when the user
@@ -35,8 +35,8 @@ condition is verified, it applies the operation to the distributed sequence
 which notifies the graphical user interface of the changes.  The right part of
 the figure corresponds to the catch up strategy where a member may have missed
 operations due to dropped messages, or simply because the user worked on offline
-mode for a while. Therefore, it regularly asks to its neighborhood for the
-missing operations.
+mode for a while. Therefore, when the editor is online, it regularly asks to its
+neighborhood for the missing operations.
 
 \CRATE~\cite{nedelec2016crate} is a real-time decentralized editor running
 directly within web browsers and available at
@@ -61,10 +61,14 @@ Members of an editing session must be able to communicate their changes in a
 scalable manner. Indeed, an editing session can gather from small to large
 groups during its life time, e.g., massive open online courses (MOOC) may start
 with a large number of students which can quickly decrease due to a lack of
-interest. Also, editing sessions size depend of the targeted document, e.g., a
-document describing a personal project and whose visibility is limited to
-friends gathers significantly less people than a document about a large event,
-such as a collaboratively written report about a conference.
+interest~\cite{breslow2013studying}. Also, editing sessions size depend of the
+targeted document, e.g., a document describing a personal project and whose
+visibility is limited to friends gathers significantly less people than a
+document about a large event, such as a collaboratively written report about a
+conference.
+
+%% Among others, each member of the editing session must be able to start editing 
+%% whenever she wants.
 
 The communication protocol must adapt to these change in membership
 automatically. In that end, \CRATE uses \SPRAY~\cite{nedelec2015spray}, a random
