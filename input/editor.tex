@@ -80,15 +80,15 @@ protocol~\cite{jelasity2007gossip} that incrementally builds and maintains the
 neighborhood of editors. Thus, each editor has a small set of editors to
 communicate with. The size of sets scales logarithmically compared to the number
 of current participants in the editing session. If the editing session starts
-with 10 participants, they have 2.3 neigbhors in average. If the editing session
+with 10 participants, they have 2.3 neighbors in average. If the editing session
 grows to 1000 connected participants, they have 6.9 neighbors in average. If the
 editing session reaches 10 participants again, they have 2.3 neighbors in
 average again.
 
 To broadcast operations, the editor makes extensive use of neighborhoods to
 propagate changes. Indeed, when a user performs a change, the editor sends it to
-the editors in its neigbhorhood. Each neighbor is in charge of integrating and
-forwarding the change to its own neigbhors. Changes transitively reach all
+the editors in its neighborhood. Each neighbor is in charge of integrating and
+forwarding the change to its own neighbors. Changes transitively reach all
 editors very quickly. The communication complexity at each editor is
 upper-bounded by $\mathcal{O}(M \ln(R))$, where $M$ is the message size, and $R$
 is number of replicas connected during the propagation.
@@ -195,20 +195,20 @@ where $W$ is the number of participants that ever wrote in the
 document~\cite{charronbost1991concerning}. Such communication overhead confines
 its usage to small controlled editing session.
 
-\CRATE chooses to track only the semantically related pairs of operations: the
-removal of an elements with its insertion. If the operations arrives to an
-editor out of order, the remove will wait for the corresponding insertion. On
-the opposite, it immediately integrates received insertions. The structure is a
-version vector with exceptions~\cite{malkhi2007concise,
-  mukund2014optimized}. The vector allocates for each member
+\CRATE tracks only the semantically related pairs of operations: the removal of
+an elements with its insertion. If the operations arrives to an editor out of
+order, the removal will wait for the corresponding insertion. On the opposite,
+it immediately integrates received insertions. The structure is a version vector
+with exceptions~\cite{malkhi2007concise, mukund2014optimized}. The vector
+allocates for each member
 \begin{inparaenum}[(i)]
 \item an integer denoting the maximum counter of operations originated from
   this site and
 \item a list of integers denoting the exceptions, i.e., the operations known
   as not received yet.
 \end{inparaenum}
-While the local overhead implied by such structure remains $\mathcal{O}(W)$, the
-communication overhead is constant $\mathcal{O}(1)$.
+While the local overhead implied by such structure upper-bounded by remains
+$\mathcal{O}(W)$, the communication overhead is constant $\mathcal{O}(1)$.
 
 The causality tracking structure is available at
 \url{https://github.com/Chat-Wane/version-vector-with-exceptions}.
@@ -220,7 +220,7 @@ reduces the information differences between the involved members. It selects an
 editor from its neighborhood at random, and sends its local version vector with
 exceptions. The chosen neighbor performs the difference with its own vector,
 searches the missing operations, and sends them back to the requesting
-editor. All editors periodically perform such anti-entropy rounds to ensure that
+editor. All editors periodically perform such anti-entropy rounds ensuring that
 no operations went missing -- due to unpredictable network behavior.
 
 %% To guarantee the exactly once delivery of operations, and the causal delivery
@@ -312,23 +312,30 @@ disappears and the delete operation is performed.
 
 \subsection{Shared sequence}
 
-A shared sequence structure maintains consistent replicas of a document. Strong
-eventual consistency~\cite{shapiro2011comprehensive} states that a system is
-consistent iff replicas integrating an identical set of operations converge to
-an equivalent state. Users visualize a same document.
+Strong eventual consistency states that a system is correct iff replicas
+integrating a same set of operations converge to an equivalent
+state~\cite{shapiro2011comprehensive}. The shared sequence structure aims to
+provide convergent copies of the document. Thus, users visualize the same
+document.
 
-Section~\ref{sec:proposal} describes the sequence structure representing
-\CRATE's documents. Identifiers associated to each character allow retrieving
-the sequence thanks to a total order. Thus, an insert operation creates a
-unique, and immutable identifier. The editor sends the latter to all members of
-the editing sessions. With the logarithmic factor of dissemination
-(cf. Section~\ref{subsec:communication}), the resulting communication complexity
-is expected to be inbetween $\mathcal{O}((\log I).(\ln R))$ and
-$\mathcal{O}((\log I)^2.(\ln R))$ depending on the editing behavior, where $I$
-is the number of insert operations performed on the sequence, and $R$ the number
-of replicas in the editing session during the propagation.
+\CRATE uses a conflict-free replicated data type for
+sequences~\cite{shapiro2011conflict} to represent its documents. Such sequence
+types rely on unique and immutable identifiers. \CRATE uses \LSEQ to provide the
+identifiers. Delete operations truely remove the targeted element from the
+underlying structure. Furthermore, the size of these identifiers are expected to
+be between a logarithm and a polylogarithm compared to the number of insertions
+in the sequence. Being sublinear, the communication complexity becomes
+acceptable. Being sublinear, the structure does not require balancing which
+needs consensus algorithms that do not scale.
 
 The code of \LSEQ is available at \url{https://github.com/Chat-Wane/LSEQTree}.
+
+The logarithmic multiplicative factor of broadcast, the constant cost of
+causality tracking, and the cost of identifiers, lead to a communication
+complexity bounded between $\mathcal{O}((\log I).(\ln R))$ and
+$\mathcal{O}((\log I)^2.(\ln R))$ depending on the editing behavior, where $I$
+is the number of insert operations performed on the sequence, and $R$ the number
+of replicas in the editing session during the message propagation.
 
 \subsection{Graphical user interface}
 
