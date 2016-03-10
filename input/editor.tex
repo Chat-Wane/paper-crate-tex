@@ -182,19 +182,25 @@ The code of \SPRAY building networks of browsers is available at
 \subsection{Causality tracking}
 \label{subsec:causality}
 
-Causality tracking aims to track semantically related operations, e.g., the
-removal of an element always follows its insertion. The more constraints on the
-order of operation integration, the more costly it gets. Thus, accurately
-tracking causality relations of one operation with all others requires at least
-$\mathcal{O}(W)$ both locally and in communication overhead, where $W$ is the
-number of participants that ever wrote in the document. Such communication
-overhead confines its usage to small controlled editing session. \CRATE chooses
-to track only the semantically related pairs of operations: the removal of an
-elements with its insertion. If the operations arrives to an editor out of
-order, the remove will wait for the corresponding insertion. On the opposite, it
-immediately integrates received insertions. The structure is a version vector
-with exceptions~\cite{malkhi2007concise, mukund2014optimized}. The vector
-allocates for each member
+To preserve consistent replicas, the same outcome must results from the
+generation of the operation and its integration~\cite{sun1998achieving}. Often,
+the behavior of an operation depends of others previously integrated. For
+instance, the generation of a removal operation requires the targeted element to
+exist, hence, its insert operation to be integrated. These \emph{happens before}
+relationships~\cite{lamport1978time} constrains the integration order.
+Unfortunately, the more constraints on the order, the more costly it gets. For
+instance, accurately tracking causal relations of one operation with all others
+requires at least $\mathcal{O}(W)$ both locally and in communication overhead,
+where $W$ is the number of participants that ever wrote in the
+document~\cite{charronbost1991concerning}. Such communication overhead confines
+its usage to small controlled editing session.
+
+\CRATE chooses to track only the semantically related pairs of operations: the
+removal of an elements with its insertion. If the operations arrives to an
+editor out of order, the remove will wait for the corresponding insertion. On
+the opposite, it immediately integrates received insertions. The structure is a
+version vector with exceptions~\cite{malkhi2007concise,
+  mukund2014optimized}. The vector allocates for each member
 \begin{inparaenum}[(i)]
 \item an integer denoting the maximum counter of operations originated from
   this site and
@@ -245,7 +251,8 @@ no operations went missing -- due to unpredictable network behavior.
 \begin{figure}
   \centering
   \input{./input/timelineexample.tex}
-  \caption{\label{fig:timeline} Causality tracking example.}
+  \caption{\label{fig:timeline} Causality tracking example. Triples in vectors
+    are $\langle origin,\,max,\, exceptions \rangle$.}
 \end{figure}
 
 Figure~\ref{fig:timeline} depicts an editing session involving 3 users. The
