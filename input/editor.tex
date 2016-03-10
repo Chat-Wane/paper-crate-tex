@@ -321,7 +321,7 @@ document.
 \CRATE uses a conflict-free replicated data type for
 sequences~\cite{shapiro2011conflict} to represent its documents. Such sequence
 types rely on unique and immutable identifiers. \CRATE uses \LSEQ to provide the
-identifiers. Delete operations truely remove the targeted element from the
+identifiers. Delete operations truly remove the targeted element from the
 underlying structure. Furthermore, the size of these identifiers are expected to
 be between a logarithm and a polylogarithm compared to the number of insertions
 in the sequence. Being sublinear, the communication complexity becomes
@@ -339,16 +339,25 @@ of replicas in the editing session during the message propagation.
 
 \subsection{Graphical user interface}
 
-To perform their changes on the document, users have a visual representation of
-their respective local copy in their web browser.  Since CRDTs for sequences
-provide functions relying on identifiers rather than indexes, \CRATE uses a
-lookup function which gets the identifiers at a designated index, and converse.
-Thus, when users perform their insertions, \CRATE gets the identifiers at the
-targeted position and generates the new identifier. When it receives an
-identifier, it firstly inserts it into the tree structure and secondly get its
-index to notify the view. As such, users can edit in real-time, i.e. they do not
-experience any freezes during their edition locally, remote insertions are
-integrated as soon as possible.
+Each participant owns a replica of the shared document. Yet the application must
+give the illusion of single document being accessed by multiple
+participants.
+
+\CRATE is a real-time editor -- written in HTML, CSS, and JavaScript -- that
+runs directly within web browsers. It establishes browser-to-browser
+communications using the recent WebRTC technology~\cite{webrtc}. It uses the Ace
+code editor available at \url{https://ace.c9.io} to create the view available to
+users.
+
+Users are always able to modify the document whenever they please.  Since CRDTs
+for sequences provide functions relying on identifiers rather than indexes,
+\CRATE uses a lookup function which gets the identifiers at a designated index,
+and converse.  Thus, when users perform their insertions, \CRATE gets the
+identifiers at the targeted position and generates the new identifier. When it
+receives an identifier, it firstly inserts it into the tree structure and
+secondly get its index to notify the view. As such, users can edit in real-time,
+i.e. they do not experience any freezes during their edition locally, remote
+insertions are integrated as soon as possible.
 
 % Each element in the tree keeps track of its number of children. Such information
 % allows quick withdrawing of ranges of elements. Table~\ref{table:lseqlookup}
