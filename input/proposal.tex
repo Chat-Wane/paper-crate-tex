@@ -250,7 +250,7 @@ exponential tree.
 
 The random editing behavior fills the tree at random. As consequence, the tree
 becomes balanced. Being exponential, the tree stores
-$\textstyle\sum\nolimits_{i=1}^{k}{2^{(i^2-i/2)}}$ elements, where $k$ is the
+$\textstyle\sum\nolimits_{i=1}^{k}{2^{(i^2-i)/2}}$ elements, where $k$ is the
 depth of the tree. Thus, the depth of paths is upper-bounded by
 $\mathcal{O}(\sqrt{\log I})$ concatenations, where $I$ is the number of
 insertions. Since paths require $\mathcal{O}(e^2)$ bits to encode, paths have an

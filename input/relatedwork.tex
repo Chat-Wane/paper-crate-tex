@@ -53,9 +53,10 @@ consistency as well as messages dissemination in the network.
   approaches require an historic of operations $H$, each operation being linked
   to their state vector, hence $\mathcal{O}(W.H)$. Such monotonically growing
   historic can be cut at the price of consensus which, once again, does not
-  scale. Thus, OT approaches are the best in humble confined environment like
-  local area networks. However, their performance degrades when the network size
-  grows and becomes unpredictable like wide area networks.
+  scale~\cite{mostefaoui2015signature}. Thus, OT approaches are the best in
+  humble confined environment like local area networks. However, their
+  performance degrades when the network size grows and becomes unpredictable
+  like wide area networks.
 
 \item [Conflict-free replicated data types~\cite{shapiro2011comprehensive,
     shapiro2011conflict}] (CRDTs) for sequences constitute the latter approaches

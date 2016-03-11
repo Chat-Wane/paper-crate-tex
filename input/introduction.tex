@@ -56,7 +56,8 @@ approach. Two classes of CRDTs designed for sequences exist:
   but piggyback variable-size identifiers. Depending on the identifier
   allocation strategy, the size of identifiers may grow linearly with the
   document size, increasing the communication cost. Balancing the structure
-  requires consensus algorithms that do not scale.
+  requires consensus algorithms that do not
+  scale~\cite{mostefaoui2015signature}.
 
   In previous works, we proposed an identifier allocation strategy called
   \LSEQ~\cite{nedelec2013concurrency, nedelec2013lseq}. It aims to avoid such
