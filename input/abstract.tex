@@ -5,16 +5,17 @@
   browsers. Yet, main stream editors rely on central servers with issues in
   privacy, single point of failure and scalability.  Decentralized editors
   settle privacy problems but scalability issues remain.  None of existing
-  algorithms provide satisfying complexities in both communication and space.
-  In this paper, we provide the complexity analysis of \LSEQ, an algorithm the
-  result of which enjoys a polylogarithmic upper bound on space complexity. In
-  turns, it directly impacts traffic. We provide the outline to build a
-  decentralized real-time editor. We build an editor following these guidelines
-  and evaluate it on large scale experiments involving up till 600
+  algorithms provide a satisfying complexity in both communication and space.
+  In this paper, we provide the complexity analysis of \LSEQ, an algorithm
+  generating identifiers enjoying a polylogarithmic upper bound on space
+  complexity which in turns directly impacts traffic. We provide the outline to
+  build a decentralized real-time editor. We build an editor following these
+  guidelines and evaluate it on large scale experiments involving up till 600
   participants. The results show a traffic increasing as
   $\mathcal{O}((\log I)^2\ln R)$ where $I$ is the number of insertions in the
   document, and $R$ the number of participants. As such, the editor scales well
-  in both these dimensions.
+  in both these dimensions and does not require running consensus protocols
+  known to be overly expensive in distributed systems.
 
   % In this paper, we propose \CRATE; a working decentralized real-time editor
   % that supports large number of users working on large documents. In particular,
