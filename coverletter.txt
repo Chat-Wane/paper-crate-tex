@@ -35,7 +35,10 @@ Compared to previous works[1,2]:
   running in web browsers available at https://github.com/Chat-Wane/CRATE.
   In the Grid'5000 testbed, we launched editing sessions involving up
   till 600 connected browsers. It validates the scalability of editors built
-  on top of LSeq.
+  on top of LSeq. CRATE editor has been accepted as a demo in WWW'2016.
+
+See:
+http://www2016.ca/program/program-by-track/accepted-demos.html#crate-writing-stories-together-with-our-browsers
 
 Best regards,
 
