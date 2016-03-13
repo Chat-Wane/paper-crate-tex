@@ -31,8 +31,10 @@ Compared to previous works[1,2]:
 
 * We describe all the outlines to develop a distributed collaborative
   editor for massive editing of large documents.  Following these
-  guidelines, we built a real-time scalable and decentralized editor
-  running in web browsers available at https://github.com/Chat-Wane/CRATE.
+  guidelines, we built CRATE: the first real-time scalable and decentralized editor
+  based on CRDT running on a network of web browsers.
+
+  CRATE is publically available at https://github.com/Chat-Wane/CRATE.
   In the Grid'5000 testbed, we launched editing sessions involving up
   till 600 connected browsers. It validates the scalability of editors built
   on top of LSeq. CRATE editor has been accepted as a demo in WWW'2016.
