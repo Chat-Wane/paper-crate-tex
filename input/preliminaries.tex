@@ -2,17 +2,17 @@
 \section{Preliminaries}
 \label{sec:preliminaries}
 
-Sequence data structures considered in this paper (for collaborative editing)
-belong to the optimistic class of replication~\cite{saito2005optimistic}. Each
-replica owner (a collaborator) directly performs operations on its local copy
-and informs the other owners by broadcasting these operations. The consistency
-criteria ensured by such optimistic replication is called strong eventual
-consistency~\cite{shapiro2011comprehensive} upon the assumption of the eventual
-delivery of operations, i.e., they guarantee that all replicas will eventually
-converge to an identical state when the system becomes quiescent. This
-consistency criterion is weaker than sequential consistency and linearisability
-and is not comparable with causal consistency, yet strong enough for
-collaborative edition~\cite{shapiro2011comprehensive}.
+% Sequence data structures considered in this paper (for collaborative editing)
+% belong to the optimistic class of replication~\cite{saito2005optimistic}. Each
+% replica owner (a collaborator) directly performs operations on its local copy
+% and informs the other owners by broadcasting these operations. The consistency
+% criteria ensured by such optimistic replication is called strong eventual
+% consistency~\cite{shapiro2011comprehensive} upon the assumption of the eventual
+% delivery of operations, i.e., they guarantee that all replicas will eventually
+% converge to an identical state when the system becomes quiescent. This
+% consistency criterion is weaker than sequential consistency and linearisability
+% and is not comparable with causal consistency, yet strong enough for
+% collaborative edition~\cite{shapiro2011comprehensive}.
 
 Sequence replicated data structures (\emph{sequence} for short) are the closest
 structures that can implement a shared document. A sequence provides two
@@ -97,22 +97,24 @@ sequence QWERTY.
 \subsection{Disambiguation of concurrent cases}
 \label{subsec:disambiguation}
 
-Two collaborators concurrently performing an operation on their respective
-replica may get different results after the integration of both
-operations. Indeed, $(\mathcal{P},\,<_\mathcal{P})$ is a total order when a
+% Two collaborators concurrently performing an operation on their respective
+% replica may get different results after the integration of both
+% operations. Indeed,
+The order among paths $(\mathcal{P},\,<_\mathcal{P})$ is a total order when a
 single collaborator edits. However, it becomes a partial order when the editing
-involves several collaborators. Consequently, it is necessary to totally order
-the elements inserted by different collaborators. To this end, a disambiguator
-is associated to each pair of $\langle element,\,path\rangle$.  There exists a
-total order ($\mathcal{D}$, $<_{\mathcal{D}}$) such that elements of the
-sequence are always comparable pairwise, even if the paths they point to are
-identical -- due to concurrency.
+session involves several collaborators. For instance, two collaborators
+inserting a character at a same position in the sequence and at a same time may
+end up with the same path. In such case the order of characters is not strictly
+defined and may break the convergence property. Disambiguators use globally
+unique markers to provide a total order among elements even in presence of
+concurrent insertions. Each pair of $\langle element,\,path\rangle$ is
+associated with a disambiguator. 
 
 Let the identifiers $\mathcal{I}$ be the set of unique triples
 $\mathcal{I}:\mathcal{P}\times \mathcal{A}\times \mathcal{D}$. The composition
-of the partial order ($\mathcal{P}$, $<_{\mathcal{P}}$) and the total order
-($\mathcal{D}$, $<_{\mathcal{D}}$) allows ordering the elements of the sequence
-identically at any replica.
+of the partial order ($\mathcal{P}$, $<_{\mathcal{P}}$) and the total order of
+disambiguators ($\mathcal{D}$, $<_{\mathcal{D}}$) allows ordering the elements
+of the sequence identically at any replica.
 
 Figure~\ref{fig:disexample} depicts a tree containing 6 elements with only 5
 distinct paths (two values are associated with the path $[3]$). Similarly to the
@@ -165,63 +167,55 @@ following the order of identifiers ($\mathcal{I}, \, <_\mathcal{I}$).
 
 Function \textsc{allocPath} chooses a path in the tree between two other paths
 $p$ and $q$ where $p$ precedes $q$: $p<_{\mathcal{P}}q$. The new path $n$ must
-fall inbetween $p$ and $q$: $p<_\mathcal{P}n<_\mathcal{P}q$. However, the number
-of paths between two paths is infinite, for the order is dense, and so is the
-number of \textsc{allocPath} strategies. Nevertheless, Function
-\textsc{allocPath} should choose the smallest available path among all the
-possible paths for performance sake. This observation reduces considerably the
-number of possible allocation strategies. Still, the allocation of paths without
-an \emph{a priori} knowledge of the final sequence is a non-trivial problem.
+fall inbetween $p$ and $q$: $p<_\mathcal{P}n<_\mathcal{P}q$. 
+% However, the number of paths between two paths is infinite, for the order is
+% dense, and so is the number of \textsc{allocPath} strategies. Nevertheless,
+Function \textsc{allocPath} should choose the smallest available path among all
+the possible paths for performance sake.
+% This observation reduces considerably the number of possible allocation
+% strategies.
+As illustrated in Figure~\ref{fig:allocpathexample}, the allocation of paths
+without an \emph{a priori} knowledge of the final sequence is a non-trivial
+problem.
 
 \begin{figure*}
   \centering
   \subfloat[Optimal case.]
-  [Optimal case.]
+  [\label{fig:allocpathexampleA} Optimal case.]
   {\input{input/allocpathexampleA.tex}}
   \hspace{50pt}
   \subfloat[Worst case.]
-  [Worst case.]
+  [\label{fig:allocpathexampleB} Worst case.]
   {\input{input/allocpathexampleB.tex}}
   \caption{\label{fig:allocpathexample} Two trees filled with the resulting
     identifiers of two different permutations resulting in an identical sequence
-    QWERTY. They use the same function \textsc{allocPath} which allocates the
-    leftmost branch in the tree. All paths of the nearly optimal case have a
-    length of 1 while the tree of the worst case grows up to a depth of 6.}
+    QWERTY. Function \textsc{allocPath} allocates the leftmost branch in the
+    tree. All paths of the nearly optimal case have a length of 1 while the tree
+    of the worst case grows up to a depth of 6.}
 \end{figure*}
 
-Figure~\ref{fig:allocpathexample} illustrates the difficulties of designing a
-function allocating paths. It represents the underlying trees of two sequences
-using the allocation function that allocates the leftmost branch available at
-the lowest depth possible. In both cases the final sequence is QWERTY. However,
-the insertion order of characters is different. In the first case, Q is inserted
-first at position 0, followed by W at position 1 (after Q) then E is inserted at
-position 3 (after W), etc. We call the sequence of insert operations
-$[(\text{Q},\,0)$, $(\text{W},\,1)$, $(\text{E},\,2)$, $\ldots]$ the
-\emph{editing sequence}. In the second case, Character Y is inserted first at
-position 0 as the sequence is initially empty. Then T is inserted. However as
-the final intended word is QWERTY, T has to be inserted at a position before Y
-that represents the current state of the sequence. T is thus inserted at
-position 0 shifting Character Y to position 1, etc. The editing sequence that
-corresponds to this case is $[(\text{Y},\,0)$, $(\text{T},\,0)$,
-$(\text{R},\,0)$, $\ldots]$.
+Suppose that Function \textsc{allocPath} allocates the leftmost branch available
+at the lowest depth possible. Suppose two insertion orders resulting in an
+identical sequence of characters QWERTY.  In the first case, Q is inserted first
+at position 0, followed by W at position 1 (after Q) then E is inserted at
+position 3 (after W), etc.  In the second case, Y is inserted first at position
+0 as the sequence is initially empty. Then T is inserted. However as the final
+intended word is QWERTY, T has to be inserted at a position before Y that
+represents the current state of the sequence. T is thus inserted at position 0
+shifting Character Y to position 1, etc.
 
 
-\begin{itemize}
-\item Case 1: Since Function \textsc{allocPath} allocates the leftmost branches,
-  the following editing sequence $[(\text{Q},\,0)$, $(\text{W},\,1)$,
-  $(\text{E},\,2)$, $\ldots]$ leads to the paths
-  $\langle [1],\, \text{Q}\rangle$, $\langle [2],\, \text{W}\rangle$,
-  $\langle [3],\, \text{E}\rangle$, etc. In this case, the depth of the tree
-  never grows. In this regard, the strategy of \textsc{allocPath} is very
-  efficient in terms of the size of the allocated identifiers.
+\begin{itemize}[noitemsep, leftmargin=*]
+\item Figure~\ref{fig:allocpathexampleA}: In this case, the insertion order
+  exactly follows the expectations of the allocation function. The depth of the
+  tree never grows. Operations remain efficient.
 
-\item Case 2: The editing sequence $[(\text{Y},\,0)$, $(\text{T},\,0)$,
-  $(\text{R},\,0)$, $\ldots]$ leads to an increase of the tree depth per
-  insertion. Indeed, as an element gets the smallest value at its level, there
-  is no room for a new element at the same level, hence a new level. The
-  resulting sequence is $\langle [1],\, \text{}Y\rangle$,
-  $\langle [0.1],\, \text{T}\rangle$, $\langle [0.0.1],\, \text{R} \rangle$,
-  etc. Consequently, the paths grow very fast.
+\item Figure~\ref{fig:allocpathexampleB}: In this case, the insertion order goes
+  against the expectations of the allocation function. The depth of the tree
+  increase at each insertion. Indeed, as an element gets the smallest value at
+  its level, there is no room for a new element at the same level, hence the
+  creation of a new level. The depth of the tree grows very fast decreasing the
+  efficiency of operations.
 \end{itemize}
 
 This example shows how the insertion order impacts the length of the allocated

@@ -19,10 +19,10 @@ Decentralized real-time editors~\cite{oster2006data, sun1998operational,
   sun2009contextbased} do not require intermediate servers and by the same
 settle privacy issues. However, scalability issues remain.  Addressing
 scalability requires finding a good trade-off between communication, space and
-time complexities. Achieving a sublinear communication complexity compared to
-the number of participants is crucial for supporting large groups.
+time complexities. Among others, achieving a sublinear communication complexity
+compared to the number of participants is crucial for supporting large groups.
 
-To provide availability and responsiveness of documents, real-time editors use
+To provide availability of documents and responsiveness, real-time editors use
 optimistic replication~\cite{saito2005optimistic} of sequences, text documents
 being sequences of characters. As such, each user manages a local copy of the
 document and directly performs her modifications on it. Changes are broadcast to
@@ -31,27 +31,27 @@ replicas integrating an identical set of operations converge to an equivalent
 state, i.e. users read a same document~\cite{shapiro2011conflict}.
 
 Decentralized algorithms of Operational
-Transformation~\cite{sun2009contextbased} (OT) require piggybacking a state or a
-context vector in order to detect concurrent operations. Unfortunately, state
-vectors grow linearly with respect to the number of members that ever
-participated in the authoring. Hence, these approaches are efficient for small
-groups of users, but poorly scale to highly dynamic large groups of users and
-high network latency.
+Transformation~\cite{sun2009contextbased} (OT) piggyback a state or a context
+vector in order to detect concurrent operations. Unfortunately, state vectors
+grow linearly with respect to the number of members that ever participated in
+the authoring. Hence, these approaches are efficient for small groups of users,
+but poorly scale to highly dynamic large groups of users and high network
+latency.
 
 Conflict-Free Replicated Data Types~\cite{shapiro2011comprehensive} (CRDTs) do
 not pay the price of concurrency detection by providing commutative
-operations. However, they require to piggyback unique and immutable identifiers
-on every operation broadcast on the network. The size of this identifier is the
-key for the communication complexity and consequently the scalability of the
+operations. However, they piggyback unique and immutable identifiers on every
+operation broadcast on the network. The size of this identifier is the key for
+the communication complexity and consequently the scalability of the
 approach. Two classes of CRDTs designed for sequences exist:
-\begin{itemize}
-\item CRDTs such as WOOT~\cite{oster2006data} piggyback a constant-size
+\begin{itemize}[noitemsep, leftmargin=*]
+\item  CRDTs such as WOOT~\cite{oster2006data} piggyback a constant-size
   identifier which is optimal. However, it requires to keep tombstones, i.e., it
   marks elements as removed and hide them from the users. An empty document may
   store thousands of deleted elements. Tombstones degrade integration time of
   operations. This integration time blocks the user and eventually make the
-  real-time editor unusable. Removing tombstones requires garbage
-  collecting algorithms that do not scale.
+  real-time editor unusable. Removing tombstones requires garbage collecting
+  algorithms that do not scale~\cite{abdullahi1998garbage}.
 \item CRDTs such as Logoot~\cite{weiss2010logootundo} do not require tombstones
   but piggyback variable-size identifiers. Depending on the identifier
   allocation strategy, the size of identifiers may grow linearly with the
@@ -68,7 +68,7 @@ approach. Two classes of CRDTs designed for sequences exist:
 \end{itemize}
 
 \noindent The contributions of this paper are threefold:
-\begin{itemize}
+\begin{itemize}[noitemsep, leftmargin=*]
 \item Compared to previous work~\cite{nedelec2013concurrency, nedelec2013lseq},
   it proves the upper bounds on space and time complexities of \LSEQ. This result
   opens the way for building decentralized and scalable real-time editors.

@@ -2,7 +2,7 @@
 \label{sec:experiments}
 
 The objective of this experiment section is twofold:
-\begin{itemize}
+\begin{itemize}[noitemsep, leftmargin=*]
 \item To confirm the complexity of \LSEQ. Monotonic editing behavior should lead
   to a polylogarithmic growth of identifiers compared to the number of
   insertions. Time complexity should be logarithmic except for the lookup which
@@ -47,10 +47,11 @@ involving up till 601 instances of the editor distributed among 101 machines.
   leads to logarithmic growth of paths whatever the allocation function. In
   addition, Treedoc allocates the smallest paths, followed by \LSEQ, followed by
   Logoot. Nonetheless, on left-to-right editing, paths allocated by Treedoc grow
-  very quickly -- its plot merges with the y-axis. Logoot's paths grow slower
-  but still linearly compared to the number of insertions in the document. We
-  observe that \LSEQ exposes a better space complexity compared to the
-  state-of-the-art, which eventually leads to smaller allocated paths.
+  extremely quickly to such an extent that its plot merges with the
+  y-axis. Logoot's paths grow slower but still linearly compared to the number
+  of insertions in the document. We observe that \LSEQ exposes a better space
+  complexity compared to the state-of-the-art, which eventually leads to smaller
+  allocated paths.
 \item [Reason:] The random editing leads to a balanced underlying structure,
   hence the logarithmic progression of paths allocated by the three
   strategies. In this case, Treedoc is better because it has an arity of $2^1$,
@@ -101,7 +102,7 @@ involving up till 601 instances of the editor distributed among 101 machines.
   axis are on a logarithmic scale. The top part of the figure focuses on a
   structure filled with insertions following a random editing behavior while the
   bottom part of the figure focuses on a structure filled with insertions
-  following a monotonic editing behavior. We observer that the measured values
+  following a monotonic editing behavior. We observe that the measured values
   barely grow after random editing, regardless of the operation. On the other
   hand, while the local insertion after monotonic editing remains stable, we
   observe a linear growth with the lookup execution time, and a slower growth

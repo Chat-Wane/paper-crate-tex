@@ -14,17 +14,20 @@ generation time must be re-observed at integration time regardless of concurrent
 operations. Finally, the integration order of operations must follow the
 \emph{happen before} relationship~\cite{lamport1978time} stated at generation.
 
-Four complexities characterize editors:
-\begin{itemize}
+\noindent Four complexities characterize editors:
+\begin{itemize}[noitemsep, leftmargin=*]
 \item Generation time: complexity to generate locally an operation.
 \item Integration time: complexity to execute remotely an operation.
 \item Space complexity: complexity to store a local copy of the shared sequence.
 \item Communication complexity: complexity of messages transiting the network.
 \end{itemize}
 Solving scalability issues requires finding a balance between communication,
-space and time complexities.  Among others, the communication complexity is the
-most discriminant and depends of metadata required to ensure strong eventual
-consistency as well as messages dissemination in the network.
+space and time complexities %  Among others, the communication complexity is the
+% most discriminant and depends of metadata required to ensure strong eventual
+% consistency as well as messages dissemination in the network.
+where the communication complexity complexity plays the most important role. The
+challenge consists in providing a sublinear upper bound on communication
+complexity without making other complexities impracticable.
 
 % It requires $\mathcal{O}(m.\ln{R})$ where ($\ln{R}$) is a minimal multiplicative
 % factor induced by the broadcasting mechanism which depends of the session size
