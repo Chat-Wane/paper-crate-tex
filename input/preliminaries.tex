@@ -49,17 +49,17 @@ boundary.
 Variable-size identifiers can be represented as a concatenation of basic
 elements (e.g. integers). The resulting sequence can be represented by a tree
 structure where the elements of the sequence are stored at the nodes and where
-the edges of the tree are labelled such that a path from the root to a node
+the edges of the tree are labeled such that a path from the root to a node
 represents the identifier of the element stored at this node. For instance, the
 character $R$ in the previous example is accessible following the path composed
-of the edges labelled $3$ then $1$. More formally, a sequence is a tree where
+of the edges labeled $3$ then $1$. More formally, a sequence is a tree where
 each node contains a value i.e. an element of the sequence (over an alphabet
 $\mathcal{A}$). The tree is a set of pairs
 $\langle\mathcal{P}\subset\{\mathbb{N}\}^*,\, \mathcal{A} \rangle$, i.e., each
 element has a path. Additionally, a total order
 ($\mathcal{P}$,$<_{\mathcal{P}}$) provides an ordering among the paths which
 allows to retrieve the order of the elements in the sequence. Notation: a path
-composed of $e$ edges labelled $\ell_1,\ell_2,\ldots,\ell_e$ will be noted
+composed of $e$ edges labeled $\ell_1,\ell_2,\ldots,\ell_e$ will be noted
 $[\ell_1.\ell_2\ldots\ell_e]$.
 
 \begin{figure*}
@@ -74,7 +74,7 @@ $[\ell_1.\ell_2\ldots\ell_e]$.
   [\label{fig:disexample}The tree uses disambiguators to maintain an
   equivalent state, even in presence of concurrent insertions resulting
   in same paths. For simplicity sake, only the disambiguators of E, R, and T 
-  are explicit.]
+  are displayed.]
   {\input{input/desexample.tex}}
   \caption{Examples of 10-ary trees containing the sequence of characters
     QWERTY.}
@@ -108,8 +108,9 @@ inserting a character at a same position in the sequence and at a same time may
 end up with the same path. In such case the order of characters is not strictly
 defined and may break the convergence property. Disambiguators use globally
 unique markers to provide a total order among elements even in presence of
-concurrent insertions. Each pair of $\langle element,\,path\rangle$ is
-associated with a disambiguator. 
+concurrent insertions. These markers usually comprise unique site identifiers
+along with Lamport clocks~\cite{lamport1978time}. Each pair of
+$\langle element,\,path\rangle$ is associated with a disambiguator.
 
 Let the identifiers $\mathcal{I}$ be the set of unique triples
 $\mathcal{I}:\mathcal{P}\times \mathcal{A}\times \mathcal{D}$. The composition
@@ -118,24 +119,40 @@ disambiguators ($\mathcal{D}$, $<_{\mathcal{D}}$) allows ordering the elements
 of the sequence identically at any replica.
 
 Figure~\ref{fig:disexample} depicts a tree containing 6 elements with only 5
-distinct paths (two values are associated with the path $[3]$). Similarly to the
-previous example, the initial sequence was QWTY, however, in this example, the
-two elements E and R are inserted between the pairs
-$\langle [2],\, \text{W}\rangle$ and $\langle [4],\, \text{T}\rangle$ by two
-different collaborators concurrently. For both elements, the resulting path is
-$[3]$. After the two elements are inserted, the sequence becomes either QWERTY
-or QWRETY. Nevertheless, let the identifiers
-$\langle [3],\, \text{R},\, \delta_\text{R}\rangle$ and
-$\langle [3],\, \text{T},\, \delta_\text{T} \rangle$. The use of disambiguators
-$\delta_{\text{R}}$ and $\delta_{\text{T}}$ allows retrieving the sequence
-QWERTY. It is worth noting that disambiguators are usually computed using a
-monotonically increasing variable and a unique collaborator identifier just like
-Lamport timestamps~\cite{lamport1978time}. Therefore, a collaborator cannot
-directly influence the final position of the character in the sequence using
-disambiguators. The sequence of the example could have ended in QWRETY and it
-would have needed a correction. Also, the space complexity of disambiguators is
-bounded by their associated path. Therefore, we focus on paths in the rest of
-the paper.
+distinct paths. First, Collaborator $c_1$ inserts QW.  Then, at a same time, the
+collaborators $c_1$ and $c_2$ insert respectively E and T which happens to
+generate an identical path: [$3$]. To solve the order ambiguity, the
+disambiguator $\langle c_1,\, 3\rangle$ is associated with E; the disambiguator
+$\langle c_2,\, 1\rangle$ is associated with T. Retrieving the order of elements
+simply consists in comparing at each level the paths, then the site identifiers,
+then the clocks. In this example, the character E precedes the character T
+because $c_1 < c_2$. Then, Collaborator $c_1$ inserts Y at the end of the
+sequence. Finally, she inserts R between E and T. Since E and T have an
+identical path, there is not enough room for new insertions at this level. The
+allocation function chooses a path [$3.X$] where $0<X<10$. By copying the
+disambiguator of E at the first level, it ensures that the new identifier will
+follow the character E and precede the character T.  Collaborators cannot
+influence the final position of the character in the sequence using
+disambiguators, for disambiguators are automatically computed without concerns
+about positions. The sequence of the example could have ended in QWTREY and it
+would have needed a correction. It is worth noting that the space complexity of
+disambiguators is upper-bounded by their respective path. Therefore, we focus on
+paths in the rest of the paper.
+
+
+% Similarly to the previous example, the initial sequence was QWTY, however, in
+% this example, the two elements E and R are inserted between the pairs
+% $\langle [2],\, \text{W}\rangle$ and $\langle [4],\, \text{T}\rangle$ by two
+% different collaborators concurrently. For both elements, the resulting path is
+% $[3]$. After the two elements are inserted, the sequence becomes either QWERTY
+% or QWRETY. Nevertheless, let the identifiers
+% $\langle [3],\, \text{R},\, \delta_\text{R}\rangle$ and
+% $\langle [3],\, \text{T},\, \delta_\text{T} \rangle$. The use of disambiguators
+% $\delta_{\text{R}}$ and $\delta_{\text{T}}$ allows retrieving the sequence
+% QWERTY. It is worth noting that disambiguators are usually computed using a
+% monotonically increasing variable and a unique collaborator identifier just like
+% Lamport timestamps~\cite{lamport1978time}.
+
 
 \subsection{Choosing the rightful path}
 \label{subsec:choosing}
