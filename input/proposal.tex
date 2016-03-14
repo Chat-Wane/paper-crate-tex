@@ -5,13 +5,13 @@
 
 \LSEQ (polyLogarithmic SEQuence) is the name of the proposed allocation
 function. Any sequence data structure using variable-size identifiers can use
-it. Prior works~\cite{nedelec2013concurrency, nedelec2013lseq} empirically
+it. Our prior works~\cite{nedelec2013concurrency, nedelec2013lseq} empirically
 showed that \LSEQ provides a sublinear upper bound on its identifiers' space
 complexity. Nevertheless, we did not provide any complexity analysis to support
 these observations. In this section we prove the polylogarithmic growth of
 \LSEQ's identifiers and state the conditions upon which it applies. The
 complexity analysis also includes the space complexity of the replicated
-structure, and the time complexity of operations provided by this structure. 
+structure, and the time complexity of operations provided by this structure.
 
 \LSEQ improves the identifiers' space complexity by degrading its worst case
 complexity. However, the worst case is made non-trivial. If a malicious user
@@ -19,8 +19,8 @@ tries to produce the worst case scenario, other editors can detect her easily,
 for there is a large difference between the expected space complexity and the
 worst case space complexity.
 
-This section starts by describing the allocation strategy. Then, it
-provides the proof of its complexity.
+This section starts by describing the allocation strategy. Then, it provides its
+complexity analysis.
 
 \subsection{Allocation of paths}
 \label{subsec:lseqallocation}
@@ -35,42 +35,26 @@ with a small depth.
 \caption{\label{algo:allocpath}Allocation of paths}
 \end{algorithm}
 
-Algorithm~\ref{algo:allocpath} shows the instructions of the three components of
-\LSEQ. First, \textsc{allocPath} processes the distance between the two paths in
-argument at each level of the exponential tree until it finds enough space for
-one insertion.  Then, the hash function $h$ transfers the call to a
-sub-allocation function depending on the found depth. These sub-allocation
-functions work similarly:
-\begin{inparaenum}[(i)]
-\item Get the depth and the interval of the new path to allocate.
-\item Limit the range within the level for the allocation of the new path. A
-  small number of paths are left available inbetween elements to provide more
-  flexibility in regards to spellchecking.
-\item However, while \textsc{left-to-right} uses the previous path and adds a
-  random value within the processed range, \textsc{right-to-left} uses the next
-  path and subtracts a random value within the processed range. In turns,
-  \textsc{left-to-right} allocates a branch closer to the previous path while
-  \textsc{right-to-left} does the opposite, respectively leaving more space for
-  future insertions in queue and in front of the newly inserted element.
-\end{inparaenum}
+Algorithm~\ref{algo:allocpath} shows the instructions of \LSEQ. First,
+\textsc{allocPath} processes the distance between the two paths in order to
+retrieve the smallest level of the tree that contains enough room for the new
+element.
 
-%%%%%%%%%%
+Then, a \emph{hash function} $h$ defers the path allocation to a \emph{sub-allocation
+function} depending on the depth found for the new path. The hash function of
+every participant must give identical results~\cite{nedelec2013concurrency}.
+% A hidden seed within the replicated document initializes it, for that all
+% participants must make identical choices~\cite{nedelec2013concurrency}.
+The choices between the sub-allocation functions must follow a uniform
+distribution, for we have no knowledge about the future editing behaviors, and
+we do not want to favor any.
 
-% The function \textsc{allocPath} chooses the path associated with each element in
-% order to encode its relative position with regard to its adjacent elements in
-% the sequence. For the sake of performance, it aims to keep the underlying tree
-% with a small depth. 
-
-
-It comprises 3 components. Each of these components fails to provide an
-efficient allocation function. Nevertheless, their composition allows to get the
-best of each by canceling their respective deficiency.
-
-The first component is an \emph{exponential
+\LSEQ uses two sub-allocation functions. Indeed, contrarily to state-of-the-art
+approaches, \LSEQ uses an \emph{exponential
   tree}~\cite{andersson1996faster,andersson2007dynamic}. Such tree allows each
 node to have twice as much children as its parents. Regarding the formalization
 of Section~\ref{sec:preliminaries}, it means a restriction over
-$\mathcal{P}$. Indeed, the path is no longer a sequence of natural numbers but a
+$\mathcal{P}$. The path is no longer a sequence of natural numbers but a
 sequence of number chosen among a subset of $\mathbb{N}$, the size of which is
 doubled at each concatenation. For instance, let the path
 [$\ell_1.\ell_2\ldots\ell_e$] with $\ell_1\in\mathbb{N}_{<2}$, then
@@ -80,25 +64,51 @@ subset are growing over depths. The binary size of a path is
 $\textstyle\sum\nolimits_{i=1}^{e}\log_2{2^i}=\sum\nolimits_{i=1}^{e}i=
 {e^2-e\over{2}}$.
 Such growth forbids the existence of trivial editing behaviors leading to the
-worst-case allocation (e.g. Fig.~\ref{fig:allocpathexample}). In that end, \LSEQ
-uses a second component: \emph{two sub-allocation functions}.
+worst case allocation (e.g. Figure~\ref{fig:allocpathexample}).
 
 Since one allocation function is not enough to characterize efficiently any
-editing behavior, it uses two functions with antagonist designs in order to
-settle each other's weaknesses. A sub-allocation function targets left-to-right
-editing behaviors such as the one used in Figure~\ref{fig:allocpathexample}. The
-other one targets the right-to-left editing and takes the lead when the former
-one did not manage to provide small-sized paths. In such cases, \LSEQ must be
-efficient enough to compensate the loss due to its unsuitable choice of
-sub-allocation function. The third \LSEQ's component aims to make this
-choice.
+editing behavior, \LSEQ uses two functions with antagonist designs in order to
+settle each other's weaknesses. Line~\ref{line:lefttoright} shows the
+sub-allocation function that targets left-to-right editing behaviors such as the
+one used in Figure~\ref{fig:allocpathexample}. Line~\ref{line:righttoleft} shows
+the other one that targets the right-to-left editing behaviors. These
+sub-allocation functions operates very similarly, for the former chooses the
+path starting from the preceding path and adds a small random value while the
+latter chooses a path starting from the following path and subtracts a small
+random value. They aim to leave more space for future insertions in queue and in
+front of the new path, respectively.  When one of these sub-allocation function
+do not manage to provide small-sized paths, the other quickly takes the lead. In
+such case, \LSEQ must be efficient enough to compensate the loss due to its
+unsuitable choice of sub-allocation function.
 
-The third component is a \emph{hash function} that assigns to each depth of the
-exponential tree a sub-allocation function.  A hidden seed within the replicated
-document initializes it. Hence, all participants make identical
-choices. Furthermore, choices between the sub-allocation functions must follow a
-uniform distribution, for we have no knowledge about the future editing
-behaviors, and we do not want to favor any.
+
+% These sub-allocation functions work similarly:
+% \begin{inparaenum}[(i)]
+% \item Get the depth and the interval of the new path to allocate.
+% \item Limit the range within the level for the allocation of the new path. A
+%   small number of paths are left available inbetween elements to provide more
+%   flexibility in regards to spellchecking.
+% \item However, while \textsc{left-to-right} uses the previous path and adds a
+%   random value within the processed range, \textsc{right-to-left} uses the next
+%   path and subtracts a random value within the processed range. In turns,
+%   \textsc{left-to-right} allocates a branch closer to the previous path while
+%   \textsc{right-to-left} does the opposite, respectively leaving more space for
+%   future insertions in queue and in front of the newly inserted element.
+% \end{inparaenum}
+
+%%%%%%%%%%
+
+% The function \textsc{allocPath} chooses the path associated with each element in
+% order to encode its relative position with regard to its adjacent elements in
+% the sequence. For the sake of performance, it aims to keep the underlying tree
+% with a small depth. 
+
+
+% It comprises 3 components. Each of these components fails to provide an
+% efficient allocation function. Nevertheless, their composition allows to get the
+% best of each by canceling their respective deficiency.
+
+
 
 % Combining the three components provides identifiers with a sub-linear average
 % size compared to the number of insertions performed which makes it well-suited
@@ -132,21 +142,24 @@ behaviors, and we do not want to favor any.
 
 Similarly to the example of Figure~\ref{fig:allocpathexample} the example given
 in Figure~\ref{fig:lseqtreeexample} depicts the resulting trees after two
-antagonist scenarios creating the sequence QWERTY \begin{inparaenum}[(i)] \item
-  the left-to-right editing sequence [($\text{Q},\,0$), ($\text{W},\,1$),
-  \ldots] and \item the right-to-left editing sequence [($\text{Y},\,0$),
-  ($\text{T},\,0$), \ldots]. \end{inparaenum} In both cases, the exponential
-tree of \LSEQ starts with a maximum arity $32$ and doubles it at each
-level. Also, it uses the left-to-right and right-to-left sub-allocation
-functions at the first and the second level of the tree respectively. Since the
-first level of the tree uses the function designed for left-to-right editing,
-the scenario involving the left-to-right editing sequence results in a tree of
-depth 1. On the other hand, contrarily to the allocation function presented in
-Figure~\ref{fig:allocpathexample}, the antagonist scenario only leads to a tree
-of depth 2. Indeed, the identifiers of \LSEQ quickly reach a level of the tree
-where the sub-allocation function is designed to handle the right-to-left
-editing behavior. If such editing behavior continues, the new allocated paths
-will compensate the loss of the first level.
+antagonist scenarios creating the sequence QWERTY
+\begin{inparaenum}[(i)]
+\item the left-to-right insertions sequence [($\text{Q},\,0$), ($\text{W},\,1$),
+  \ldots] and
+\item the right-to-left insertions sequence [($\text{Y},\,0$), ($\text{T},\,0$),
+  \ldots].
+\end{inparaenum}
+In both cases, the exponential tree of \LSEQ starts with a maximum arity $32$
+and doubles it at each level. Also, it uses the left-to-right and right-to-left
+sub-allocation functions at the first and the second level of the tree
+respectively. Since the first level of the tree uses the function designed for
+left-to-right editing, the scenario involving the left-to-right editing sequence
+results in a tree of depth 1. On the other hand -- and contrarily to the
+allocation function presented in Figure~\ref{fig:allocpathexample} -- the
+antagonist scenario only leads to a tree of depth 2. Indeed, the identifiers of
+\LSEQ quickly reach a level of the tree where the sub-allocation function is
+designed to handle the right-to-left editing behavior. If such editing behavior
+continues, the new allocated paths will compensate the loss of the first level.
 
 % \begin{asparadesc}
 % \item [The function allocDis] creates the di\-sam\-bi\-gua\-tors which have two
@@ -245,7 +258,7 @@ analysis. It is worth noting that monotonic editing behavior represents an
 unfavorable case since it tends to unbalance the underlying tree storing the
 replicated sequence. As soon as the participants start to edit at different
 positions -- which is closer from a real-life use case -- the tree becomes more
-balanced and operations become more efficient proportionnally. Also, the
+balanced and operations become more efficient proportionally. Also, the
 analysis does not include an average case since it requires to know the average
 distribution of the position of edits performed by a human collaborator which is
 obviously very complex.
@@ -263,7 +276,7 @@ communication complexity, for that each identifier is broadcast to all
 participants; The latter being important since it represents the replicated
 document stored locally by each participant.
 
-As stated in Section~\ref{subsec:lseqallocation}, paths require 1 additionnal
+As stated in Section~\ref{subsec:lseqallocation}, paths require 1 additional
 bit per concatenation. In turns, paths require $\mathcal{O}(e^2)$ bits to
 encode, where $e$ is the depth of the element in the tree. Fortunately, the
 depth is upper-bounded depending on the editing behavior that filled the
@@ -341,7 +354,7 @@ complexity is constant $\mathcal{O}(1)$.
 
 Both the remote insert and delete operations perform the same instructions to
 integrate the received result. Consequently, they have an identical time
-complexity. Random, montonic, and worst case editing behaviors respectively lead
+complexity. Random, monotonic, and worst case editing behaviors respectively lead
 to $\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and $\mathcal{O}(I)$
 levels in the exponential tree structure. Since children of each node are
 ordered by path, we perform binary searches recursively until the right leaf is
@@ -366,13 +379,13 @@ element, i.e. per level, in the tree until they reach the deepest leaf.
 \end{table}
 
 To interface the user's view of the document with the underlying replicated
-sequence, an additionnal lookup operation is necessary. Its goal is to retrieve
+sequence, an additional lookup operation is necessary. Its goal is to retrieve
 the identifier of the element at the specified index in the sequence, and
 converse. Since the structure is a tree, this access is not direct.
 
 To consistently manage the translation between sequence structure and the tree
 structure, the latter stores with each node the number of elements included in
-its subtrees. Each insertion and removal updates these counters as they explore
+its sub-trees. Each insertion and removal updates these counters as they explore
 a path. Then, processing an index comes down to count the number of elements in
 the siblings of explored nodes starting from the beginning or the end of the
 sequence. Unfortunately, it can be costly depending on the editing behavior that

@@ -18,7 +18,7 @@
     \hfill \comment{Defers the call to a sub-allocation function}
     \EndFunction
     \Statex
-    \Function{left-to-right}{$p,\,q \in \mathcal{P}$}
+    \Function{left-to-right}{$p,\,q \in \mathcal{P}$}\label{line:lefttoright}
     $\rightarrow \mathcal{P}$
     \State \textbf{let} 
     $\langle depth,\,interval \rangle \leftarrow \textsc{getDepthInterval}(p,\,q);$
@@ -29,7 +29,7 @@
     \hfill \comment{\#3 Create the new path}
     \EndFunction
     \Statex
-    \Function{right-to-left}{$p,\,q \in \mathcal{P}$}
+    \Function{right-to-left}{$p,\,q \in \mathcal{P}$}\label{line:righttoleft}
     $\rightarrow \mathcal{P}$
     \State \textbf{let}
     $\langle depth,\, interval\rangle \leftarrow \textsc{getDepthInterval}(p,\,q);$
