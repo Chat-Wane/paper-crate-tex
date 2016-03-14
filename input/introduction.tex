@@ -72,20 +72,19 @@ approach. Two classes of CRDTs designed for sequences exist:
 \item Compared to previous work~\cite{nedelec2013concurrency, nedelec2013lseq},
   it proves the upper bounds on space and time complexities of \LSEQ. This result
   opens the way for building decentralized and scalable real-time editors.
-\item to measure the overall performances of a real working system, we
-  built CRATE: a real-time decentralized editor running in web
-  browsers~\cite{nedelec2016crate}. Compared to Google doc, CRATE
-  enable real-time editing whatever the number of participants. to
-  better preserve privacy of users, CRATE ensures that shared
-  documents only exist within browsers participating to the real-time
-  editing session. In this paper, we describe the complete
-  architecture of CRATE with underlying algorithms and analyse the
-  complexity of each component.
+\item To measure the overall performances of a real working system, we built
+  \CRATE: a real-time decentralized editor running in web
+  browsers~\cite{nedelec2016crate}. Compared to Google Docs, \CRATE enables
+  real-time editing whatever the number of participants. To better preserve
+  privacy of users, \CRATE ensures that shared documents only exist within
+  browsers participating to the editing session. In this paper, we describe the
+  complete architecture of \CRATE and review the contribution of each component
+  to the scalability of the system. %% analyse the complexity of each component.
 \item It provides experiments characterizing \LSEQ's behavior that
   validates our analysis and compares with state-of-the-art
   approaches. Results show that \LSEQ achieves an original tradeoff
   between communication, time and space complexity on a real working
-  system. In the Grid'5000 testbed, we launched CRATE editing sessions
+  system. In the Grid'5000 testbed, we launched \CRATE editing sessions
   involving up till 600 connected browsers. The resulting documents
   reach millions of characters. It validates the scalability of a full
   working editor built on top of \LSEQ.
