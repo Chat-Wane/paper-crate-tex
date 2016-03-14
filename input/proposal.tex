@@ -7,7 +7,7 @@
 function. Any sequence data structure using variable-size identifiers can use
 it. Prior works~\cite{nedelec2013concurrency, nedelec2013lseq} empirically
 showed that \LSEQ provides a sublinear upper bound on its identifiers' space
-complexity. Nevertheless, they did not provide complexity analysis to support
+complexity. Nevertheless, we did not provide any complexity analysis to support
 these observations. In this section we prove the polylogarithmic growth of
 \LSEQ's identifiers and state the conditions upon which it applies. The
 complexity analysis also includes the space complexity of the replicated
@@ -19,10 +19,8 @@ tries to produce the worst case scenario, other editors can detect her easily,
 for there is a large difference between the expected space complexity and the
 worst case space complexity.
 
-Since a sequence data structure using \LSEQ scales in terms of document size,
-building such CRDT-based real-time editor allows ergonomic and massive
-collaborative editing of huge documents. This section starts by describing the
-allocation strategy. Then, it provides the proof of its complexity.
+This section starts by describing the allocation strategy. Then, it
+provides the proof of its complexity.
 
 \subsection{Allocation of paths}
 \label{subsec:lseqallocation}
