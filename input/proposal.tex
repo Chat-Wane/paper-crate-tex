@@ -438,9 +438,14 @@ editing behaviors that are considered likely in collaborative editing. The most
 important result is the polylogarithmic space complexity of identifiers, for it
 applies on communication complexity. In comparison, state-of-the-art
 allocators~\cite{preguica2009commutative, weiss2009logoot} only provided
-linearly upper-bounded identifiers. Section~\ref{sec:experiments} validates our
-complexity analysis on experiments. The next section describes the other
-components necessary to build a decentralized collaborative editor that scales.
+linearly upper-bounded identifiers. Other analysis such as the local space
+consumed by the replicated structure, and the time complexity of provided
+operations shows that the tree as replicated structure is
+efficient. Nonetheless, based on preferences, one could choose a flattened tree
+representation to improve the performance of operations at the cost of increased
+memory usage.  Section~\ref{sec:experiments} validates our complexity analysis
+on experiments. The next section describes the other components necessary to
+build a decentralized collaborative editor that scales.
 
 
 % The space complexity analysis reveals that the allocation function \LSEQ
