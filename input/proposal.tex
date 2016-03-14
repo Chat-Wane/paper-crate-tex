@@ -27,12 +27,46 @@ allocation strategy. Then, it provides the proof of its complexity.
 \subsection{Allocation of paths}
 \label{subsec:lseqallocation}
 
-The function \textsc{allocPath} chooses the path associated with each element in
+Function \textsc{allocPath} chooses the path associated with each element in
 order to encode its relative position with regard to its adjacent elements in
 the sequence. For the sake of performance, it aims to keep the underlying tree
-with a small depth. It comprises 3 components. Each of these components fails to
-provide an efficient allocation function. Nevertheless, their composition allows
-to get the best of each by canceling their respective deficiency.
+with a small depth.
+
+\begin{algorithm}
+\input{input/allocpathalgo.tex}
+\caption{\label{algo:allocpath}Allocation of paths}
+\end{algorithm}
+
+Algorithm~\ref{algo:allocpath} shows the instructions of the three components of
+\LSEQ. First, \textsc{allocPath} processes the distance between the two paths in
+argument at each level of the exponential tree until it finds enough space for
+one insertion.  Then, the hash function $h$ transfers the call to a
+sub-allocation function depending on the found depth. These sub-allocation
+functions work similarly:
+\begin{inparaenum}[(i)]
+\item Get the depth and the interval of the new path to allocate.
+\item Limit the range within the level for the allocation of the new path. A
+  small number of paths are left available inbetween elements to provide more
+  flexibility in regards to spellchecking.
+\item However, while \textsc{left-to-right} uses the previous path and adds a
+  random value within the processed range, \textsc{right-to-left} uses the next
+  path and subtracts a random value within the processed range. In turns,
+  \textsc{left-to-right} allocates a branch closer to the previous path while
+  \textsc{right-to-left} does the opposite, respectively leaving more space for
+  future insertions in queue and in front of the newly inserted element.
+\end{inparaenum}
+
+%%%%%%%%%%
+
+% The function \textsc{allocPath} chooses the path associated with each element in
+% order to encode its relative position with regard to its adjacent elements in
+% the sequence. For the sake of performance, it aims to keep the underlying tree
+% with a small depth. 
+
+
+It comprises 3 components. Each of these components fails to provide an
+efficient allocation function. Nevertheless, their composition allows to get the
+best of each by canceling their respective deficiency.
 
 The first component is an \emph{exponential
   tree}~\cite{andersson1996faster,andersson2007dynamic}. Such tree allows each
@@ -79,29 +113,7 @@ behaviors, and we do not want to favor any.
 % $Z \subset \{\mathbb{N}\}^{k-l}$. Finally, $p_j<_{\mathcal{P}}p_k$ iff
 % $Y[1]<Z[1]$.
 
-\begin{algorithm}
-\input{input/allocpathalgo.tex}
-\caption{\label{algo:allocpath}Allocation of paths}
-\end{algorithm}
 
-Algorithm~\ref{algo:allocpath} shows the instructions of the three components of
-\LSEQ. First, \textsc{allocPath} processes the distance between the two paths in
-argument at each level of the exponential tree until it finds enough space for
-one insertion.  Then, the hash function $h$ transfers the call to a
-sub-allocation function depending on the found depth. These sub-allocation
-functions work similarly:
-\begin{inparaenum}[(i)]
-\item Get the depth and the interval of the new path to allocate.
-\item Limit the range within the level for the allocation of the new path. A
-  small number of paths are left available inbetween elements to provide more
-  flexibility in regards to spellchecking.
-\item However, while \textsc{left-to-right} uses the previous path and adds a
-  random value within the processed range, \textsc{right-to-left} uses the next
-  path and subtracts a random value within the processed range. In turns,
-  \textsc{left-to-right} allocates a branch closer to the previous path while
-  \textsc{right-to-left} does the opposite, respectively leaving more space for
-  future insertions in queue and in front of the newly inserted element.
-\end{inparaenum}
 %% The unexplicit function $subPath$ returns a truncated path from the root to the
 %% depth passed as argument.
 
