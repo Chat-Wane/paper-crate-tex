@@ -51,12 +51,14 @@ neighborhood for the missing operations.
 
 \CRATE~\cite{nedelec2016crate} is a real-time decentralized editor running
 directly within web browsers and available at
-\url{https://github.com/Chat-Wane/CRATE}. None of its internal components
-prevent its scalability. The rest of this section describes them. Among others,
-we show that the communication complexity scales well in terms of number of
-participants and document size. The rest of this section reviews each layer and
-details the components inside them. Section~\ref{sec:experiments} validates its
-scalability through experiments.
+\url{https://github.com/Chat-Wane/CRATE}. 
+%% None of its internal components prevent its scalability.
+This section describes the components of \CRATE present in each layer and it
+reviews their contribution to the scalability of the system. Among others, the
+communication complexity scales well in terms of number of participants and
+document size. Section~\ref{sec:experiments} validates this claim through
+experiments.
+%% Other dimensions such as concurrency rate are not part of 
 
 
 \subsection{Communication}
@@ -90,12 +92,13 @@ To broadcast operations, the editor makes extensive use of neighborhoods to
 propagate changes. Indeed, when a user performs a change, the editor sends it to
 the editors in its neighborhood. Each neighbor is in charge of integrating and
 forwarding the change to its own neighbors. Changes transitively reach all
-editors very quickly. The communication complexity at each editor is
-upper-bounded by $\mathcal{O}(M \ln(R))$, where $M$ is the message size, and $R$
-is number of replicas connected during the propagation.
+editors very quickly, for the average shortest path from an editor to others
+remain very small. The communication complexity at each editor is upper-bounded
+by $\mathcal{O}(M \ln(R))$, where $M$ is the message size, and $R$ is number of
+replicas connected during the propagation.
 
-The code of \SPRAY building networks of browsers is available at
-\url{https://github.com/Chat-Wane/spray-wrtc}.
+%% The code of \SPRAY building networks of browsers is available at
+%% \url{https://github.com/Chat-Wane/spray-wrtc}.
 
 % To collaboratively edit a document, users must establish a form of communication
 % between them. It firstly requires accessing the editing session. It secondly
@@ -189,7 +192,7 @@ the behavior of an operation depends of others previously integrated. For
 instance, the generation of a removal operation requires the targeted element to
 exist, hence, its insert operation to be integrated. These \emph{happens before}
 relationships~\cite{lamport1978time} constrains the integration order.
-Unfortunately, the more constraints on the order, the more costly it gets. For
+Unfortunately, the more the order is constrained, the more costly it gets. For
 instance, accurately tracking causal relations of one operation with all others
 requires at least $\mathcal{O}(W)$ both locally and in communication overhead,
 where $W$ is the number of participants that ever wrote in the
@@ -211,8 +214,8 @@ allocates for each member
 While the local overhead implied by such structure upper-bounded by remains
 $\mathcal{O}(W)$, the communication overhead is constant $\mathcal{O}(1)$.
 
-The causality tracking structure is available at
-\url{https://github.com/Chat-Wane/version-vector-with-exceptions}.
+%% The causality tracking structure is available at
+%% \url{https://github.com/Chat-Wane/version-vector-with-exceptions}.
 
 The structure also serves as a tool to identify differences between replicas
 when an editor needs to catch up with the current state of the document in the
@@ -222,7 +225,8 @@ editor from its neighborhood at random, and sends its local version vector with
 exceptions. The chosen neighbor performs the difference with its own vector,
 searches the missing operations, and sends them back to the requesting
 editor. All editors periodically perform such anti-entropy rounds ensuring that
-no operations went missing -- due to unpredictable network behavior.
+no operations went missing -- due to unpredictable network behavior or because
+some collaborators worked offline.
 
 %% To guarantee the exactly once delivery of operations, and the causal delivery
 %% of semantically related operations, \CRATE uses a version vector with
@@ -256,18 +260,19 @@ no operations went missing -- due to unpredictable network behavior.
     are $\langle origin,\,max,\, exceptions \rangle$.}
 \end{figure}
 
-Figure~\ref{fig:timeline} depicts an editing session involving 3 users. The
-version vector with exceptions starts empty. Member $m_1$ inserts two characters
-in its document and broadcasts the corresponding messages. Member $m_3$ quickly
-receives both operations. Since it did not receive these operations before, and
-since they do not depend of any other operation, it integrates the operation
-identifiers to its causality structure. It also delivers the operation to the
-shared sequence structure. In the meantime, Member $m_2$ only receives the
-second operation. Consequently, it marks the first operation of $m_1$ as
-exception and still integrates the received operation. Then, $m_3$ removes the
-first character inserted by $m_1$ and broadcasts it. While $m_1$ delivers the
-removal immediately, $m_2$ waits since the targeted operation belongs to the
-exceptions. Once it receives the missing first operation of $m_1$, the exception
+Figure~\ref{fig:timeline} depicts an editing session involving 3
+collaborators. The version vector with exceptions starts empty. Collaborator
+$c_1$ inserts two characters in its document and broadcasts the corresponding
+messages. Collaborator $c_3$ quickly receives both operations. Since it did not
+receive these operations before, and since they do not depend of any other
+operation, it integrates the operation identifiers to its causality
+structure. It also delivers the operation to the shared sequence structure. In
+the meantime, Collaborator $c_2$ only receives the second
+operation. Consequently, it marks the first operation of $c_1$ as exception and
+still integrates the received operation. Then, $c_3$ removes the first character
+inserted by $c_1$ and broadcasts it. While $c_1$ delivers the removal
+immediately, $c_2$ waits since the targeted operation belongs to the
+exceptions. Once it receives the missing first operation of $c_1$, the exception
 disappears and the delete operation is performed.
 
 % The local upper-bound on space complexity is:
@@ -327,9 +332,10 @@ underlying structure. Furthermore, the size of these identifiers are expected to
 be between a logarithm and a polylogarithm compared to the number of insertions
 in the sequence. Being sublinear, the communication complexity becomes
 acceptable. Being sublinear, the structure does not require balancing which
-needs consensus algorithms that do not scale.
+needs consensus algorithms that do not scale~\cite{mostefaoui2015signature}.
 
-The code of \LSEQ is available at \url{https://github.com/Chat-Wane/LSEQTree}.
+%% The code of \LSEQ is available at
+%% \url{https://github.com/Chat-Wane/LSEQTree}.
 
 The logarithmic multiplicative factor of broadcast, the constant cost of
 causality tracking, and the cost of identifiers, lead to a communication
@@ -346,19 +352,28 @@ participants.
 
 \CRATE is a real-time editor -- written in HTML, CSS, and JavaScript -- that
 runs directly within web browsers. It establishes browser-to-browser
-communications using the recent WebRTC technology~\cite{webrtc}. It uses the Ace
-code editor available at \url{https://ace.c9.io} to create the view available to
-users.
+communications using the recent WebRTC technology~\cite{webrtc}. It provides a
+user friendly editor using Ace~\cite{ace}.
 
-Users are always able to modify the document whenever they please.  Since CRDTs
-for sequences provide functions relying on identifiers rather than indexes,
-\CRATE uses a lookup function which gets the identifiers at a designated index,
-and converse.  Thus, when users perform their insertions, \CRATE gets the
-identifiers at the targeted position and generates the new identifier. When it
-receives an identifier, it firstly inserts it into the tree structure and
-secondly get its index to notify the view. As such, users can edit in real-time,
-i.e. they do not experience any freezes during their edition locally, remote
-insertions are integrated as soon as possible.
+%% It uses the Ace code editor available at \url{https://ace.c9.io} to create
+%% the view available to users.
+
+Since CRDTs for sequences provide functions relying on identifiers rather than
+indexes, \CRATE uses a lookup function which gets the identifiers at a
+designated index, and converse. For the recall, the lookup time complexity is
+upper-bounded by $\mathcal{O}(2^{\sqrt{\log I}})$ for random editing and by
+$\mathcal{O}(I)$ for monotonic editing -- the latter being the worst case
+scenario. However, as stated in Section~\ref{subsubsec:time}, it constitutes a
+very pessimistic upper bound, for the efficiency of the operation can be easily
+improved.
+
+Users are always able to modify the document whenever they please.  When users
+perform their insertions, \CRATE gets the identifiers at the targeted position
+and generates the new identifier. When it receives an identifier, it firstly
+inserts it into the tree structure and secondly get its index to notify the
+view. As such, users can edit in real-time, i.e. they do not experience any
+freezes during their edition locally, remote insertions are integrated as soon
+as possible.
 
 % Each element in the tree keeps track of its number of children. Such information
 % allows quick withdrawing of ranges of elements. Table~\ref{table:lseqlookup}
