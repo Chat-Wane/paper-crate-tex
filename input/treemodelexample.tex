@@ -13,9 +13,9 @@
   \draw[thick] (0pt,0pt) -- node[anchor=east]{8} ( 50pt,-30pt); %% Y
   \draw[dashed,thick] (0pt,0pt) -- node[anchor=south west]{9} ( 70pt,-30pt);
 
-  \draw[thick] (-10pt,-30pt) -- node[anchor=west]{1} ( 10pt,-60pt); %% R
-  \draw[thick] (-10pt,-30pt) -- node[anchor=west]{\textbf{0}} (-10pt,-60pt);
-  \draw[thick] (-10pt,-60pt) -- node[anchor=east]{\textbf{X}} (  0pt,-90pt); %% ?
+  \draw[thick] (-10pt,-30pt) -- node[anchor=west]{\textbf{1}} ( 10pt,-60pt); %% R
+%  \draw[thick] (-10pt,-30pt) -- node[anchor=west]{\textbf{0}} (-10pt,-60pt);
+%  \draw[thick] (-10pt,-60pt) -- node[anchor=east]{\textbf{X}} (  0pt,-90pt); %% ?
 
 
   %% node to element
@@ -26,7 +26,7 @@
   \draw[->] ( 50pt,\Y pt) -- ( 50pt, \ADDY +\Y pt);
 
   \draw[->] ( 10pt,2 * \Y pt) -- ( 10pt, \ADDY + 2 * \Y pt);
-  \draw[->] (  0pt,3 * \Y pt) -- (  0pt, \ADDY + 3 * \Y pt);
+%  \draw[->] (  0pt,3 * \Y pt) -- (  0pt, \ADDY + 3 * \Y pt);
 
   %% nodes
   \draw[fill=black] ( 0pt,  0pt) circle (1pt); 
@@ -38,9 +38,9 @@
   \draw[fill=white] ( 50pt, -30pt) circle (1pt); %% Y
   \draw[fill=black] ( 70pt, -30pt) circle (1pt);
 
-  \draw[fill=white] (-10pt, 2 * \Y pt) circle (1pt); %% R
+%  \draw[fill=white] (-10pt, 2 * \Y pt) circle (1pt); %% R
   \draw[fill=white] ( 10pt, 2 * \Y pt) circle (1pt); %% x
-  \draw[fill=white] (  0pt, 3 * \Y pt) circle (1pt); %% ?
+%  \draw[fill=white] (  0pt, 3 * \Y pt) circle (1pt); %% ?
 
   %% elements
   \draw[fill=white](-60pt,-4 + \ADDY + \Y pt)
@@ -56,8 +56,8 @@
 
   \draw[fill=white]( 10pt,-4 + \ADDY + 2 * \Y pt)
   node{\textbf{R}} +(-4pt,-4pt) rectangle +(4pt,4pt) ; %% R
-  \draw[fill=white](  0pt,-4 + \ADDY + 3 * \Y pt)
-  node{\textbf{?}} +(-4pt,-4pt) rectangle +(4pt,4pt) ; %% ?
-
+%  \draw[fill=white](  0pt,-4 + \ADDY + 3 * \Y pt)
+%  node{\textbf{?}} +(-4pt,-4pt) rectangle +(4pt,4pt) ; %% ?
+  \draw(0, -8+\ADDY+ 2.5*\Y pt);
 
 \end{tikzpicture}
