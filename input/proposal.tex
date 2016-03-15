@@ -76,8 +76,8 @@ sub-allocation functions operates very similarly, for the former chooses the
 path starting from the preceding path and adds a small random value while the
 latter chooses a path starting from the following path and subtracts a small
 random value. They aim to leave more space for future insertions in queue and in
-front of the new path, respectively.  When one of these sub-allocation function
-do not manage to provide small-sized paths, the other quickly takes the lead. In
+front of the new path, respectively.  When one of these sub-allocation functions
+does not manage to provide small-sized paths, the other quickly takes the lead. In
 such case, \LSEQ must be efficient enough to compensate the loss due to its
 unsuitable choice of sub-allocation function.
 
