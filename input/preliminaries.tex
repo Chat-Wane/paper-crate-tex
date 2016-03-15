@@ -151,19 +151,19 @@ of these sequences. It divides the operations -- insert and delete -- into the
 local and remote parts of the optimistic replication scheme. We can see that the
 core of the algorithm and associated complexity lies in the local part of the
 insert operation where it generates a path (cf. Line~\ref{line:allocpath}) and a
-disambiguator (cf. Line~\ref{line:allocdes}). Function \textsc{convert2Path}
+disambiguator (cf. Line~\ref{line:allocdes}). The function \textsc{convert2Path}
 gets rid of the disambiguators of the identifiers in argument to keep paths
 only. Without evidence of concurrency, it simply returns the paths contained in
 the identifiers. Otherwise, it translates the identifiers into paths that
 maintain the order following the order of paths
 ($\mathcal{P},\, <_{\mathcal{P}}$). For instance in Figure~\ref{fig:disexample},
 the result of \textsc{convert2Path} with the identifiers of Character E and
-Character T is the pair $\langle [3.0],\, [3.9]\rangle$. Function
-\textsc{allocPath} allocates a new path between these bounds. Function
-\textsc{allocDis} decorates the path in order to guarantee that the new
-identifier -- as the composition of a path, an element, and a disambiguator --
-consistently fall between the adjacent identifiers that served to create it
-following the order of identifiers ($\mathcal{I}, \, <_\mathcal{I}$).
+Character T is the pair $\langle [3.0],\, [3.9]\rangle$. The function
+\textsc{allocPath} allocates a new path between these bounds.  \textsc{allocDis}
+decorates the path in order to guarantee that the new identifier -- as the
+composition of a path, an element, and a disambiguator -- consistently fall
+between the adjacent identifiers that served to create it following the order of
+identifiers ($\mathcal{I}, \, <_\mathcal{I}$).
 
 \begin{algorithm}[h]
   \input{input/crdtabstractalgo.tex}
@@ -171,12 +171,12 @@ following the order of identifiers ($\mathcal{I}, \, <_\mathcal{I}$).
     variable-size identifiers.}
 \end{algorithm}
 
-Function \textsc{allocPath} chooses a path in the tree between two other paths
+The function \textsc{allocPath} chooses a path in the tree between two other paths
 $p$ and $q$ where $p$ precedes $q$: $p<_{\mathcal{P}}q$. The new path $n$ must
 fall between $p$ and $q$: $p<_\mathcal{P}n<_\mathcal{P}q$.
 % However, the number of paths between two paths is infinite, for the order is
 % dense, and so is the number of \textsc{allocPath} strategies. Nevertheless,
-Function \textsc{allocPath} should choose the smallest available path among all
+The function \textsc{allocPath} should choose the smallest available path among all
 the possible paths for performance sake.
 % This observation reduces considerably the number of possible allocation
 % strategies.
@@ -192,14 +192,14 @@ the possible paths for performance sake.
   {\input{input/allocpathexampleB.tex}}
   \caption{\label{fig:allocpathexample} Two trees filled with the resulting
     identifiers of two different permutations resulting in an identical sequence
-    QWERTY. Function \textsc{allocPath} allocates the leftmost branch in the
+    QWERTY. The function \textsc{allocPath} allocates the leftmost branch in the
     tree. All paths of the optimal case have a length of 1 while the tree of the
     worst case grows up to a depth of 6.}
 \end{figure*}
 
 As illustrated in Figure~\ref{fig:allocpathexample}, the allocation of paths
 without an \emph{a priori} knowledge of the final sequence is a non-trivial
-problem.  Suppose that Function \textsc{allocPath} allocates the leftmost branch
+problem.  Suppose that \textsc{allocPath} allocates the leftmost branch
 available at the lowest depth possible. Suppose two insertion orders resulting
 in an identical sequence of characters QWERTY.  In the first case, Q is inserted
 first at position 0, followed by W at position 1 (after Q) then E is inserted at

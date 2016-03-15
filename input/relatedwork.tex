@@ -6,14 +6,15 @@ hosting a copy -- or replica -- of a shared sequence of characters. The
 participants can update their copy by inserting or deleting characters at any
 time. Then, the editor eventually delivers the change to all
 participants. Finally, each editor integrates the received
-operations~\cite{saito2005optimistic}. Strong eventual
-consistency~\cite{bailis2013eventual, shapiro2011comprehensive,
-  sun1998achieving} requires that editors integrating a same set of operations
-converge to an equivalent state, i.e. users see the same document. Furthermore,
-operations must preserve the intention of users, i.e. effects observed at
-generation time must be re-observed at integration time regardless of concurrent
-operations. Finally, the integration order of operations must follow the
-\emph{happen before} relationship~\cite{lamport1978time} stated at generation.
+operations~\cite{saito2005optimistic}. To ensure that participants read
+identical documents, strong eventual consistency~\cite{bailis2013eventual,
+  shapiro2011comprehensive, sun1998achieving} states that a system is correct if
+and only if editors integrating a same set of operations converge to an
+equivalent state. Furthermore, operations must preserve the intention of users,
+i.e. effects observed at generation time must be re-observed at integration time
+regardless of concurrent operations. Finally, the integration order of
+operations must follow the \emph{happen before}
+relationship~\cite{lamport1978time} stated at generation.
 
 \noindent Four complexities characterize editors:
 \begin{itemize}[noitemsep, leftmargin=*]
@@ -77,7 +78,7 @@ order among the identifiers allows retrieving the sequence of characters.
 depending on the type of structure that represents the document.  In particular,
 increasing the generation time of operations to decrease the integration time is
 profitable since an operation generated once is re-executed many
-times. Nevertheless, the identifiers consume space which, in turns, impacts the
+times. Nevertheless, the identifiers consume space which, in turn, impacts the
 communication complexity.
 
 % WOOT, WOOT, WOOTH, RGA, SW, PPS, DiCE

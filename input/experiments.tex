@@ -18,6 +18,7 @@ We conducted the experiments using a JavaScript implementation directly usable
 within web browsers. Part of the experiments ran on the \emph{Grid'5000} testbed
 involving up till 601 instances of the editor distributed among 101 machines.
 
+
 \subsection{Space complexity}
 
 \begin{figure}
@@ -26,6 +27,8 @@ involving up till 601 instances of the editor distributed among 101 machines.
   \caption{\label{fig:space}Size of paths allocated by Treedoc, Logoot, and
     \LSEQ.}
 \end{figure}
+
+
 
 \begin{asparadesc}
 \item [Objective:] To confirm the space complexity of \LSEQ's identifiers and to
@@ -71,12 +74,6 @@ involving up till 601 instances of the editor distributed among 101 machines.
 
 \subsection{Time complexity}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{./img/time.eps}
-  \caption{\label{fig:time} Performance of the umptieth operation performed in
-    \LSEQ.}
-\end{figure}
 
 \begin{asparadesc}
 \item [Objective:] To confirm the time complexity of \LSEQ's operations. We
@@ -123,6 +120,14 @@ involving up till 601 instances of the editor distributed among 101 machines.
   the structure resulting from monotonic editing behavior. Hence, a lower time
   complexity.
 \end{asparadesc}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{./img/time.eps}
+  \caption{\label{fig:time} Performance of the umptieth operation performed in
+    \LSEQ.}
+\end{figure}
+
 
 % \ \\
 
