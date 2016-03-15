@@ -25,9 +25,9 @@ Solving scalability issues requires finding a balance between communication,
 space and time complexities %  Among others, the communication complexity is the
 % most discriminant and depends of metadata required to ensure strong eventual
 % consistency as well as messages dissemination in the network.
-where the communication complexity complexity plays the most important role. The
-challenge consists in providing a sublinear upper bound on communication
-complexity without making other complexities impracticable.
+where the communication complexity plays the most important role. The challenge
+consists in providing a sublinear upper bound on communication complexity
+without making other complexities impracticable.
 
 % It requires $\mathcal{O}(m.\ln{R})$ where ($\ln{R}$) is a minimal multiplicative
 % factor induced by the broadcasting mechanism which depends of the session size
@@ -46,7 +46,7 @@ complexity without making other complexities impracticable.
   depends of concurrency and differs among the algorithms.  For instance, COT's
   integration time complexity is exponential. It can reduce it to linear at the
   expense of space complexity. SOCT2's integration time complexity is quadratic.
-  Whatever the trade-off, OT's integration algorithms rely on concurrency
+  Whatever the tradeoff, OT's integration algorithms rely on concurrency
   detection which costs, at least, a state
   vector~\cite{charronbost1991concerning} the size of which grows linearly
   compared to the number of members $W$ who ever participated in the
@@ -72,7 +72,7 @@ complexity without making other complexities impracticable.
   and immutable identifier to each element. Defining a total order among the
   identifiers allows retrieving the sequence of characters.
 
-  CRDTs propose interesting trade-offs since they can balance complexities
+  CRDTs propose interesting tradeoff since they can balance complexities
   depending on the type of structure that represents the document.  In
   particular, increasing the generation time of operations to decrease the
   integration time is profitable since an operation generated once is
@@ -96,20 +96,20 @@ complexity without making other complexities impracticable.
   track causally related operations.
 
 \item [Variable-size identifiers~\cite{nedelec2013lseq, preguica2009commutative,
-    weiss2009logoot}] CRDTs truly destroy elements targeted by removals.  Since
-  removals truly erase information from the structure, these approaches require
-  a local state vector compacting their history, hence an additional
-  $\mathcal{O}(W)$ on space complexity. It is worth noting that, contrarily to
-  OT, the vector is kept local. Variable-size identifiers approaches allocate
-  identifiers the size of which is determined at generation. The allocation
-  function becomes crucial to maintain identifiers under acceptable
-  boundaries. Unfortunately, they depend of the insert position of elements. For
-  instance, writing the sequence QWERTY left-to-right allocates the identifiers
-  [1] to Q, [2] to W, [3] to E, \ldots, [6] to Y. But with an identical
-  strategy, writing the same sequence right-to-left allocates the identifiers
-  [1] to Y, [1.1] to T, [1.1.1] to R, \ldots We observe a quick growth of
-  identifiers depending on the editing behavior. In both cases, the growth is
-  linear compared to the number of insertions $I$ in the sequence,
+    weiss2009logoot}] CRDTs such as Logoot~\cite{weiss2009logoot} truly destroy
+  elements targeted by removals.  Since removals truly erase information from
+  the structure, these approaches require a local state vector compacting their
+  history, hence an additional $\mathcal{O}(W)$ on space complexity. It is worth
+  noting that, contrarily to OT, the vector is kept local. Variable-size
+  identifiers approaches allocate identifiers the size of which is determined at
+  generation. The allocation function becomes crucial to maintain identifiers
+  under acceptable boundaries. Unfortunately, they depend of the insert position
+  of elements. For instance, writing the sequence QWERTY left-to-right allocates
+  the identifiers [1] to Q, [2] to W, [3] to E, \ldots, [6] to Y. But with an
+  identical strategy, writing the same sequence right-to-left allocates the
+  identifiers [1] to Y, [1.1] to T, [1.1.1] to R, \ldots We observe a quick
+  growth of identifiers depending on the editing behavior. In both cases, the
+  growth is linear compared to the number of insertions $I$ in the sequence,
   i.e. $\mathcal{O}(I)$. Both Treedoc~\cite{preguica2009commutative} and
   Logoot~\cite{weiss2009logoot, weiss2010logootundo} suffer from this
   identifiers' growth which in turns impacts traffic.
@@ -128,7 +128,7 @@ complexity without making other complexities impracticable.
   sublinearly upper-bounding the space complexity of variable-size
   identifiers. It conjectured a polylogarithmic progression of its identifiers
   size $\mathcal{O}((\log I)^2)$ compared to the number of insertions in the
-  document. This paper proves the complexity upper-bounds and states the
+  document. This paper proves the complexity upper bounds and states the
   conditions under which it applies.
 \end{asparadesc}
 

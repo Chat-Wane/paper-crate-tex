@@ -1,4 +1,5 @@
 
+
 \section{Introduction}
 
 Google Docs made real-time editing in browsers easy for millions of
@@ -24,7 +25,7 @@ compared to the number of participants is crucial for supporting large groups.
 
 To provide availability of documents and responsiveness, real-time editors use
 optimistic replication~\cite{saito2005optimistic} of sequences, text documents
-being sequences of characters. As such, each user manages a local copy of the
+being sequences of characters. As such, each user hosts a local copy of the
 document and directly performs her modifications on it. Changes are broadcast to
 all replica owners where they are integrated. The system is correct iff the
 replicas integrating an identical set of operations converge to an equivalent
@@ -70,9 +71,10 @@ approach. Two classes of CRDTs designed for sequences exist:
 \noindent The contributions of this paper are threefold:
 \begin{itemize}[noitemsep, leftmargin=*]
 \item Compared to previous work~\cite{nedelec2013concurrency, nedelec2013lseq},
-  it proves the upper bounds on space and time complexities of \LSEQ. This result
-  opens the way for building decentralized and scalable real-time editors.
-\item To measure the overall performances of a real working system, we built
+  it proves the upper bounds on space and time complexities of \LSEQ and the
+  conditions upon which they apply. This result opens the way for building
+  decentralized and scalable real-time editors.
+\item To measure the overall performance of a real working system, we built
   \CRATE: a real-time decentralized editor running in web
   browsers~\cite{nedelec2016crate}. Compared to Google Docs, \CRATE enables
   real-time editing whatever the number of participants. To better preserve
@@ -80,14 +82,14 @@ approach. Two classes of CRDTs designed for sequences exist:
   browsers participating to the editing session. In this paper, we describe the
   complete architecture of \CRATE and review the contribution of each component
   to the scalability of the system. %% analyse the complexity of each component.
-\item It provides experiments characterizing \LSEQ's behavior that
-  validates our analysis and compares with state-of-the-art
-  approaches. Results show that \LSEQ achieves an original tradeoff
-  between communication, time and space complexity on a real working
-  system. In the Grid'5000 testbed, we launched \CRATE editing sessions
-  involving up till 600 connected browsers. The resulting documents
-  reach millions of characters. It validates the scalability of a full
-  working editor built on top of \LSEQ.
+\item It provides experiments characterizing \LSEQ's behavior that validate our
+  analysis and compare it to state-of-the-art approaches. Results show that
+  \LSEQ achieves an original tradeoff between time and space complexities. In
+  the Grid'5000 testbed, we launched \CRATE editing sessions involving up till
+  600 connected web browsers. The generated traffic inherits from the
+  scalability of both \LSEQ and messages dissemination. The resulting documents
+  reach millions of characters. It validates the scalability of a full working
+  editor built on top of \LSEQ.
 \end{itemize}
 
 The remainder of this paper is organized as follows:

@@ -93,7 +93,7 @@ propagate changes. Indeed, when a user performs a change, the editor sends it to
 the editors in its neighborhood. Each neighbor is in charge of integrating and
 forwarding the change to its own neighbors. Changes transitively reach all
 editors very quickly, for the average shortest path from an editor to others
-remain very small. The communication complexity at each editor is upper-bounded
+remains very small. The communication complexity at each editor is upper-bounded
 by $\mathcal{O}(M \ln(R))$, where $M$ is the message size, and $R$ is number of
 replicas connected during the propagation.
 
@@ -186,7 +186,7 @@ replicas connected during the propagation.
 \subsection{Causality tracking}
 \label{subsec:causality}
 
-To preserve consistent replicas, the same outcome must results from the
+To preserve consistent replicas, the same outcome must result from the
 generation of the operation and its integration~\cite{sun1998achieving}. Often,
 the behavior of an operation depends of others previously integrated. For
 instance, the generation of a removal operation requires the targeted element to
@@ -211,7 +211,7 @@ allocates for each member
 \item a list of integers denoting the exceptions, i.e., the operations known
   as not received yet.
 \end{inparaenum}
-While the local overhead implied by such structure upper-bounded by remains
+While the local overhead implied by such structure remains upper-bounded by
 $\mathcal{O}(W)$, the communication overhead is constant $\mathcal{O}(1)$.
 
 %% The causality tracking structure is available at

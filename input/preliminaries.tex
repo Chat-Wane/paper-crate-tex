@@ -168,7 +168,7 @@ gets rid of the disambiguators of the identifiers in argument to keep paths
 only. Without evidence of concurrency, it simply returns the paths contained in
 the identifiers. Otherwise, it translates the identifiers into paths that
 maintain the order following the order of paths
-($\mathcal{P},\, <_{\mathcal{P}}$) For instance in Figure~\ref{fig:disexample},
+($\mathcal{P},\, <_{\mathcal{P}}$). For instance in Figure~\ref{fig:disexample},
 the result of \textsc{convert2Path} with the identifiers of Character E and
 Character T is the pair $\langle [3.0],\, [3.9]\rangle$. Function
 \textsc{allocPath} allocates a new path between these bounds. Function
@@ -192,9 +192,6 @@ Function \textsc{allocPath} should choose the smallest available path among all
 the possible paths for performance sake.
 % This observation reduces considerably the number of possible allocation
 % strategies.
-As illustrated in Figure~\ref{fig:allocpathexample}, the allocation of paths
-without an \emph{a priori} knowledge of the final sequence is a non-trivial
-problem.
 
 \begin{figure*}
   \centering
@@ -208,14 +205,16 @@ problem.
   \caption{\label{fig:allocpathexample} Two trees filled with the resulting
     identifiers of two different permutations resulting in an identical sequence
     QWERTY. Function \textsc{allocPath} allocates the leftmost branch in the
-    tree. All paths of the nearly optimal case have a length of 1 while the tree
-    of the worst case grows up to a depth of 6.}
+    tree. All paths of the optimal case have a length of 1 while the tree of the
+    worst case grows up to a depth of 6.}
 \end{figure*}
 
-Suppose that Function \textsc{allocPath} allocates the leftmost branch available
-at the lowest depth possible. Suppose two insertion orders resulting in an
-identical sequence of characters QWERTY.  In the first case, Q is inserted first
-at position 0, followed by W at position 1 (after Q) then E is inserted at
+As illustrated in Figure~\ref{fig:allocpathexample}, the allocation of paths
+without an \emph{a priori} knowledge of the final sequence is a non-trivial
+problem.  Suppose that Function \textsc{allocPath} allocates the leftmost branch
+available at the lowest depth possible. Suppose two insertion orders resulting
+in an identical sequence of characters QWERTY.  In the first case, Q is inserted
+first at position 0, followed by W at position 1 (after Q) then E is inserted at
 position 3 (after W), etc.  In the second case, Y is inserted first at position
 0 as the sequence is initially empty. Then T is inserted. However as the final
 intended word is QWERTY, T has to be inserted at a position before Y that
