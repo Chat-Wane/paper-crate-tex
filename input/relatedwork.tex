@@ -84,15 +84,16 @@ complexity without making other complexities impracticable.
     grishchenko2010deep, oster2006data, roh2011replicated, weiss2007wooki,
     wu2010partial, yu2012stringwise}] CRDTs such as WOOT~\cite{oster2006data}
   associate a constant size identifier $\mathcal{O}(1)$ to each element but
-  whose removals of elements only hide them to the users. Therefore, removed
-  elements keep consuming space leading to a monotonically growing document,
-  hence $\mathcal{O}(H)$.  Destroying removed elements requires running a costly
-  consensus algorithm to determine if everyone received the removal and agree on
-  definitely throw out the element. Such algorithm is prohibitively costly and
-  does not scale in number of members, especially in network subject to
-  churn. Since the structure contains the full history of the document, such
-  approach does not require further information to track causally related
-  operations.
+  removals of elements only hide them to the users. Therefore, removed elements
+  keep consuming space leading to a monotonically growing document, hence
+  $\Theta(I)$ where $I$ are the insertions performed on the document.  Destroying
+  removed elements requires running consensus algorithms to determine if
+  everyone received the removal and agree on definitely throw out the
+  element. Such algorithms are prohibitively costly and do not scale in number
+  of members, especially in network subject to
+  churn~\cite{mostefaoui2015signature}. Since the structure contains the full
+  history of the document, such approach does not require further information to
+  track causally related operations.
 
 \item [Variable-size identifiers~\cite{nedelec2013lseq, preguica2009commutative,
     weiss2009logoot}] CRDTs truly destroy elements targeted by removals.  Since
