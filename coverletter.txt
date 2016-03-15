@@ -1,9 +1,14 @@
+This manuscript is submitted for the special issue on Trends and Advances in
+Collaboration Technologies and Systems. The manuscript is original and is not
+published nor submitted to another venue.
+
+
 
 Dear Editors,
 
 Please find enclosed a paper entitled "A Polylog Sequence Encoding for
 Collaborative Editing" . This paper is a major extension of the
-paper:
+papers:
 
 [1] Nédelec, B., Molli, P., Mostefaoui, A., & Desmontils, E. (2013,
 September). LSEQ: an adaptive structure for sequences in distributed
@@ -34,13 +39,13 @@ Compared to previous works[1,2]:
   guidelines, we built CRATE: the first real-time scalable and decentralized editor
   based on CRDT running on a network of web browsers.
 
-  CRATE is publically available at https://github.com/Chat-Wane/CRATE.
+  CRATE is publicly available at https://github.com/Chat-Wane/CRATE.
   In the Grid'5000 testbed, we launched editing sessions involving up
   till 600 connected browsers. It validates the scalability of editors built
-  on top of LSeq. CRATE editor has been accepted as a demo in WWW'2016.
+  on top of LSeq. CRATE editor has been accepted as a demo in WWW'2016 [3].
 
 See:
-http://www2016.ca/program/program-by-track/accepted-demos.html#crate-writing-stories-together-with-our-browsers
+[3] http://www2016.ca/program/program-by-track/accepted-demos.html#crate-writing-stories-together-with-our-browsers
 
 Best regards,
 
