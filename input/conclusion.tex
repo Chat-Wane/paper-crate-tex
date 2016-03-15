@@ -1,4 +1,49 @@
 
+\section{Conclusion-pascal}
+\label{sec:conclusion}
+
+In this paper, we described how it is possible to build a
+decentralized collaborative editor that allow real-time editing
+anytime, anywhere, whatever the number of participants. 
+
+First, we demonstrated that a decentralized editor can be deployed by
+just clicking on a http link as for google doc. We made decentralized
+editors easy to use.
+
+Second, thanks to a new trade-off on different complexities, real-time
+sessions are established at affordable cost without a cloud
+provider. Hence, shared documents belongs only to participants without
+a collaboration provider.
+
+Third, we removed any limitations on the number of participants
+allowing real-time editing to be used not only for small groups but
+also in large events such as conferences, massive online
+lectures. CRATE can smoothly handle the transitions from small groups
+to large groups enlarging the affordance of real-time editing.
+
+Compared to previous work, we established a new tradeoff on
+communication, time and space complexities by first upper-bounding
+communication complexity to a sublinear complexity and keep time and space
+complexities in acceptable classes of complexities.  We validated
+experimentally this new tradeoff on a real working system publicly
+available.
+
+In perspective, we aim to study how users behave when editing in large
+group. Does current user interfaces can handle such scenario? 
+CRATE allow to provide real-time editing on client ressources. It
+makes real-time editing cheap for any web applications because it does
+not require additional ressources from web application provider. We
+aim to see how CRATE can be embedded in well-known applications such as
+Wikipedia. In this case, any wikipedia article can be observed in real
+time.
+
+Finally, we demonstrated how one well-known collaborative application
+can be provided without a collaboration provider. We aim to explore if
+other collaborative applications such as shared calendar or
+crowdsourcing platforms can deployed on a network of browsers.
+
+
+
 \section{Conclusion}
 \label{sec:conclusion}
 
@@ -20,6 +65,8 @@ massive collaborative editing of large documents without service
 providers. Hence, it opens the field to a new range of distributed applications
 such as massive editing of online courses, collaborative reviewing of co-located
 events, or webinars.
+
+
 
 % In the context of collaborative editing, this paper proposed an identifier
 % allocation function \LSEQ for building sequence replicated data structures. The
