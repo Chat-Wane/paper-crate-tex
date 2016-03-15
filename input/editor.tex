@@ -36,7 +36,7 @@ that comprises 4 layers where each can constitute an obstacle to scalability:
   users can interact with. %% inside web browsers.
 \end{inparaenum}
 
-The left part of the figure depicts the common process chain: when the user
+The left part of the figure depicts the common process chain: when a user
 performs an operation on the document, the operation is applied to the
 distributed sequence. Then it decorates the operation with causality tracking
 metadata. Finally, the editor broadcasts it using the neighborhood provided by
@@ -85,7 +85,7 @@ communicate with. The size of sets scales logarithmically compared to the number
 of current participants in the editing session. If the editing session starts
 with 10 participants, they have 2.3 neighbors in average. If the editing session
 grows to 1000 connected participants, they have 6.9 neighbors in average. If the
-editing session reaches 10 participants again, they have 2.3 neighbors in
+editing session shrinks to 10 participants again, they have 2.3 neighbors in
 average again.
 
 To broadcast operations, the editor makes extensive use of neighborhoods to
@@ -192,7 +192,7 @@ the behavior of an operation depends of others previously integrated. For
 instance, the generation of a removal operation requires the targeted element to
 exist, hence, its insert operation to be integrated. These \emph{happens before}
 relationships~\cite{lamport1978time} constrains the integration order.
-Unfortunately, the more the order is constrained, the more costly it gets. For
+Unfortunately, the more the order is constrained, the more costly it becomes. For
 instance, accurately tracking causal relations of one operation with all others
 requires at least $\mathcal{O}(W)$ both locally and in communication overhead,
 where $W$ is the number of participants that ever wrote in the
@@ -200,7 +200,7 @@ document~\cite{charronbost1991concerning}. Such communication overhead confines
 its usage to small controlled editing session.
 
 \CRATE tracks only the semantically related pairs of operations: the removal of
-an elements with its insertion. If the operations arrives to an editor out of
+an element with its insertion. If the operations arrives to an editor out of
 order, the removal will wait for the corresponding insertion. On the opposite,
 it immediately integrates received insertions. The structure is a version vector
 with exceptions~\cite{malkhi2007concise, mukund2014optimized}. The vector
@@ -318,8 +318,8 @@ disappears and the delete operation is performed.
 
 \subsection{Shared sequence}
 
-Strong eventual consistency states that a system is correct iff replicas
-integrating a same set of operations converge to an equivalent
+Strong eventual consistency states that a system is correct if and only if
+replicas integrating a same set of operations converge to an equivalent
 state~\cite{shapiro2011comprehensive}. The shared sequence structure aims to
 provide convergent copies of the document. Thus, users visualize the same
 document.
@@ -329,10 +329,11 @@ sequences~\cite{shapiro2011conflict} to represent its documents. Such sequence
 types rely on unique and immutable identifiers. \CRATE uses \LSEQ to provide the
 identifiers. Delete operations truly remove the targeted element from the
 underlying structure. Furthermore, the size of these identifiers are expected to
-be between a logarithm and a polylogarithm compared to the number of insertions
-in the sequence. Being sublinear, the communication complexity becomes
-acceptable. Being sublinear, the structure does not require balancing which
-needs consensus algorithms that do not scale~\cite{mostefaoui2015signature}.
+be bounded between a logarithmic bound and a polylogarithmic bound compared to
+the number of insertions in the sequence. Being sublinear, the communication
+complexity becomes acceptable. Being sublinear, the structure does not require
+balancing which needs consensus algorithms that do not
+scale~\cite{mostefaoui2015signature}.
 
 %% The code of \LSEQ is available at
 %% \url{https://github.com/Chat-Wane/LSEQTree}.
@@ -347,7 +348,7 @@ of replicas in the editing session during the message propagation.
 \subsection{Graphical user interface}
 
 Each participant owns a replica of the shared document. Yet the application must
-give the illusion of single document being accessed by multiple
+give the illusion of a single document being accessed by multiple
 participants.
 
 \CRATE is a real-time editor -- written in HTML, CSS, and JavaScript -- that
@@ -360,7 +361,7 @@ user friendly editor using Ace~\cite{ace}.
 
 Since CRDTs for sequences provide functions relying on identifiers rather than
 indexes, \CRATE uses a lookup function which gets the identifiers at a
-designated index, and converse. For the recall, the lookup time complexity is
+designated index, and conversely. Recall that the lookup time complexity is
 upper-bounded by $\mathcal{O}(2^{\sqrt{\log I}})$ for random editing and by
 $\mathcal{O}(I)$ for monotonic editing -- the latter being the worst case
 scenario. However, as stated in Section~\ref{subsubsec:time}, it constitutes a

@@ -7,11 +7,11 @@ The objective of this experiment section is twofold:
   to a polylogarithmic growth of identifiers compared to the number of
   insertions. Time complexity should be logarithmic except for the lookup which
   is expected to be linear after monotonic editing.
-\item To show the impact on generated traffic on a real decentralized
+\item To show the impact on the generated traffic on a real decentralized
   collaborative editor. We expect that both the identifier size and neighborhood
   size impact the traffic. Since the former grows polylogarithmically, and the
   latter grows logarithmically, we expect the traffic to scale in terms of
-  number users and number of operations.
+  the number of users and the number of operations.
 \end{itemize}
 
 We conducted the experiments using a JavaScript implementation directly usable
@@ -84,7 +84,7 @@ involving up till 601 instances of the editor distributed among 101 machines.
   editing.
 \item [Description:] This experiment involves one user who performs operations
   on its local copy of the document. The benchmark ran on a MacBook Pro with 2.5
-  GHz Intel Core i5, with Node.js 4.1.1 on Darwin 64-bit. To each operation, we
+  GHz Intel Core i5, with Node.js 4.1.1 on Darwin 64-bit. For each operation, we
   create a document containing $I-1$ characters and measure the time taken by
   the $I^{th}$ operation. The operation set includes the lookup, the local part
   of an insertion, the remote part of an insertion, and the remote part of a

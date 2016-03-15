@@ -55,8 +55,8 @@ approaches, \LSEQ uses an \emph{exponential
 node to have twice as much children as its parents. Regarding the formalization
 of Section~\ref{sec:preliminaries}, it means a restriction over
 $\mathcal{P}$. The path is no longer a sequence of natural numbers but a
-sequence of number chosen among a subset of $\mathbb{N}$, the size of which is
-doubled at each concatenation. For instance, let the path
+sequence of numbers chosen among a subset of $\mathbb{N}$, the size of which is
+doubled at each concatenation. For instance, let us consider the path
 [$\ell_1.\ell_2\ldots\ell_e$] with $\ell_1\in\mathbb{N}_{<2}$, then
 $\ell_2\in \mathbb{N}_{<4}$, and $\ell_{e}\in\mathbb{N}_{<2^e}$. Compared to
 constant arity trees, paths require an additional bit per concatenation, for the
@@ -72,7 +72,7 @@ settle each other's weaknesses. Line~\ref{line:lefttoright} shows the
 sub-allocation function that targets left-to-right editing behaviors such as the
 one used in Figure~\ref{fig:allocpathexample}. Line~\ref{line:righttoleft} shows
 the other one that targets the right-to-left editing behaviors. These
-sub-allocation functions operates very similarly, for the former chooses the
+sub-allocation functions operate very similarly. The former chooses the
 path starting from the preceding path and adds a small random value while the
 latter chooses a path starting from the following path and subtracts a small
 random value. They aim to leave more space for future insertions in queue and in
@@ -149,7 +149,7 @@ antagonist scenarios creating the sequence QWERTY
 \item the right-to-left insertions sequence [($\text{Y},\,0$), ($\text{T},\,0$),
   \ldots].
 \end{inparaenum}
-In both cases, the exponential tree of \LSEQ starts with a maximum arity $32$
+In both cases, the exponential tree of \LSEQ starts with a maximum arity $2^5$
 and doubles it at each level. Also, it uses the left-to-right and right-to-left
 sub-allocation functions at the first and the second level of the tree
 respectively. Since the first level of the tree uses the function designed for
@@ -276,13 +276,13 @@ communication complexity, for that each identifier is broadcast to all
 participants; The latter being important since it represents the replicated
 document stored locally by each participant.
 
-As stated in Section~\ref{subsec:lseqallocation}, paths require 1 additional
-bit per concatenation. In turns, paths require $\mathcal{O}(e^2)$ bits to
-encode, where $e$ is the depth of the element in the tree. Fortunately, the
-depth is upper-bounded depending on the editing behavior that filled the
-exponential tree.
+As stated in Section~\ref{subsec:lseqallocation}, paths require 1 additional bit
+per concatenation. In turn, paths require $\mathcal{O}(e^2)$ bits to be encoded,
+where $e$ is the depth of the element in the tree. Fortunately, the depth is
+upper-bounded depending on the editing behavior that filled the exponential
+tree.
 
-The random editing behavior fills the tree at random. As consequence, the tree
+The random editing behavior fills the tree at random. As a consequence, the tree
 becomes balanced. Being exponential, the tree stores
 $\textstyle\sum\nolimits_{i=1}^{k}{2^{(i^2-i)/2}}$ elements, where $k$ is the
 depth of the tree. Thus, the depth of paths is upper-bounded by
@@ -393,7 +393,7 @@ sequence. Unfortunately, it can be costly depending on the editing behavior that
 filled the tree.
 
 The random editing behavior leads to an exponential tree of depth bounded by
-$\mathcal{O}(\sqrt{\log I})$. In such case, a very small portion of the whole
+$\mathcal{O}(\sqrt{\log I})$. In such a case, a very small portion of the whole
 tree will be explored. The upper bound happens when the explored nodes are
 exactly in the middle of its siblings, for it forces to check at least half of
 these sibling per depth. Since each node stores twice as much children as its
@@ -435,12 +435,12 @@ worst case scenario where the access grows linearly. Fortunately,
 
 The complexity analysis reveals the improvements brought by \LSEQ as well as
 their cost.  \LSEQ sacrifices on its worst case complexity to improve on other
-editing behaviors that are considered likely in collaborative editing. The most
-important result is the polylogarithmic space complexity of identifiers, for it
-applies on communication complexity. In comparison, state-of-the-art
-allocators~\cite{preguica2009commutative, weiss2009logoot} only provided
-linearly upper-bounded identifiers. Other analysis such as the local space
-consumed by the replicated structure, and the time complexity of provided
+editing behaviors that are considered more likely to happen in collaborative
+editing. The most important result is the polylogarithmic space complexity of
+identifiers, for it applies on communication complexity. In comparison,
+state-of-the-art allocators~\cite{preguica2009commutative, weiss2009logoot} only
+provided linearly upper-bounded identifiers. Other analysis such as the local
+space consumed by the replicated structure, and the time complexity of provided
 operations shows that the tree as replicated structure is
 efficient. Nonetheless, based on preferences, one could choose an array -- as a
 flat version of the tree -- to improve the performance of operations at the cost

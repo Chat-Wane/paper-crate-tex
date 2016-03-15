@@ -2,11 +2,12 @@
 \label{sec:relatedwork}
 
 Real-time distributed collaborative editors consider multiple participants, each
-hosting a copy -- or replica -- of a shared sequence of characters. Participants
-can update their copy by inserting or deleting a character at any time. Then,
-the editor eventually delivers the change to all participants. Finally, each
-editor integrates the received operations~\cite{saito2005optimistic}. Strong
-eventual consistency~\cite{bailis2013eventual, shapiro2011comprehensive,
+hosting a copy -- or replica -- of a shared sequence of characters. The
+participants can update their copy by inserting or deleting characters at any
+time. Then, the editor eventually delivers the change to all
+participants. Finally, each editor integrates the received
+operations~\cite{saito2005optimistic}. Strong eventual
+consistency~\cite{bailis2013eventual, shapiro2011comprehensive,
   sun1998achieving} requires that editors integrating a same set of operations
 converge to an equivalent state, i.e. users see the same document. Furthermore,
 operations must preserve the intention of users, i.e. effects observed at
@@ -35,102 +36,101 @@ without making other complexities impracticable.
 % metadata necessary to maintain consistency. To scale, the space complexity of
 % these metadata must be sublinear.
 
-\begin{asparadesc}
-\item [Operational transformation] (OT) allows building both centralized and
-  decentralized real-time editors. At generation, the processing time of
-  operations is constant. At integration, OT transforms the received operations
-  against concurrent ones which were generated on the same state. An integration
-  algorithm such as COT~\cite{sun2009contextbased} or
-  SOCT2~\cite{vidot2000copies} along with transformation functions (ensuring
-  transformation properties) guarantee a consistent model. The integration time
-  depends of concurrency and differs among the algorithms.  For instance, COT's
-  integration time complexity is exponential. It can reduce it to linear at the
-  expense of space complexity. SOCT2's integration time complexity is quadratic.
-  Whatever the tradeoff, OT's integration algorithms rely on concurrency
-  detection which costs, at least, a state
-  vector~\cite{charronbost1991concerning} the size of which grows linearly
-  compared to the number of members $W$ who ever participated in the
-  authoring. Since each message embeds such vector, decentralized OT approaches
-  are not practicable in large groups subject to churn where people join and
-  leave the network frequently and freely. %  As for space complexity, OT
-  % approaches require an historic of operations $H$, each operation being linked
-  % to their state vector, hence $\mathcal{O}(W.H)$. Such monotonically growing
-  % historic can be cut at the price of consensus which, once again, does not
-  % scale~\cite{mostefaoui2015signature}. Thus, OT approaches are the best in
-  % humble confined environment like local area networks. However, their
-  % performance degrades when the network size grows and becomes unpredictable
-  % like wide area networks.
 
-\item [Conflict-free replicated data types~\cite{shapiro2011comprehensive,
-    shapiro2011conflict}] (CRDTs) for sequences constitute the latter approaches
-  which solve concurrent cases by providing commutative, associative, and
-  idempotent operations. As such, and compared to OT, the causality tracking
-  cost is drastically reduced since it only requires tracking semantically
-  related operations. For instance, the removal of a particular element must
-  follow its insertion. The commutative property of operations ensures the
-  consistency of the system. CRDTs provide commutativity by associating a unique
-  and immutable identifier to each element. Defining a total order among the
-  identifiers allows retrieving the sequence of characters.
+Operational transformation (OT) allows building both centralized and
+decentralized real-time editors. At generation, the processing time of
+operations is constant. At integration, OT transforms the received operations
+according to concurrent ones which were generated on the same state. An
+integration algorithm such as COT~\cite{sun2009contextbased} or
+SOCT2~\cite{vidot2000copies} along with transformation functions (ensuring
+transformation properties) guarantee a consistent model. The integration time
+depends on concurrency and differs among the algorithms.  For instance, COT's
+integration time complexity is exponential. It can be reduce to linear at the
+expense of space complexity. SOCT2's integration time complexity is quadratic in
+terms of number of concurrent operations.  Whatever the tradeoff, OT's
+integration algorithms rely on concurrency detection which costs, at least, a
+state vector~\cite{charronbost1991concerning} the size of which grows linearly
+compared to the number of members $W$ who ever participated in the
+authoring. Since each message carries such a vector, decentralized OT approaches
+are not practicable in large groups subject to churn where people join and leave
+the network frequently and freely. % As for space complexity, OT
+% approaches require an historic of operations $H$, each operation being linked
+% to their state vector, hence $\mathcal{O}(W.H)$. Such monotonically growing
+% historic can be cut at the price of consensus which, once again, does not
+% scale~\cite{mostefaoui2015signature}. Thus, OT approaches are the best in
+% humble confined environment like local area networks. However, their
+% performance degrades when the network size grows and becomes unpredictable
+% like wide area networks.
 
-  CRDTs propose interesting tradeoff since they can balance complexities
-  depending on the type of structure that represents the document.  In
-  particular, increasing the generation time of operations to decrease the
-  integration time is profitable since an operation generated once is
-  re-executed many times. Nevertheless, the identifiers consume space which, in
-  turns, impacts the communication complexity.
+Conflict-free replicated data types (CRDTs) for
+sequences~\cite{shapiro2011comprehensive, shapiro2011conflict}] constitute the
+latter approaches which solve concurrent cases by providing commutative,
+associative, and idempotent operations. As such, and compared to OT, the
+causality tracking cost is drastically reduced since it only requires tracking
+semantically related operations. For instance, the removal of a particular
+element must follow its insertion. The commutative property of operations
+ensures the consistency of the system. CRDTs provide commutativity by
+associating a unique and immutable identifier to each element. Defining a total
+order among the identifiers allows retrieving the sequence of characters.
+
+\noindent CRDTs propose an interesting tradeoff since they can balance complexities
+depending on the type of structure that represents the document.  In particular,
+increasing the generation time of operations to decrease the integration time is
+profitable since an operation generated once is re-executed many
+times. Nevertheless, the identifiers consume space which, in turns, impacts the
+communication complexity.
 
 % WOOT, WOOT, WOOTH, RGA, SW, PPS, DiCE
-\item [Tombstone-based~\cite{ahmed2011evaluating, conway2014language,
-    grishchenko2010deep, oster2006data, roh2011replicated, weiss2007wooki,
-    wu2010partial, yu2012stringwise}] CRDTs such as WOOT~\cite{oster2006data}
-  associate a constant size identifier $\mathcal{O}(1)$ to each element but
-  removals of elements only hide them to the users. Therefore, removed elements
-  keep consuming space leading to a monotonically growing document, hence
-  $\Theta(I)$ where $I$ are the insertions performed on the document.  Destroying
-  removed elements requires running consensus algorithms to determine if
-  everyone received the removal and agree on definitely throw out the
-  element. Such algorithms are prohibitively costly and do not scale in number
-  of members, especially in network subject to
-  churn~\cite{mostefaoui2015signature}. Since the structure contains the full
-  history of the document, such approach does not require further information to
-  track causally related operations.
+Tombstone-based CRDTs~\cite{ahmed2011evaluating, conway2014language,
+  grishchenko2010deep, oster2006data, roh2011replicated, weiss2007wooki,
+  wu2010partial, yu2012stringwise} such as WOOT~\cite{oster2006data} associate a
+constant size identifier $\mathcal{O}(1)$ to each element but removals of
+elements only hide them to the users. Therefore, removed elements keep consuming
+space leading to a monotonically growing document, hence $\Theta(I)$ where $I$
+is the number of insertions performed on the document.  Destroying removed
+elements requires running consensus algorithms to determine if everyone received
+the removal and agree on definitely throw out the element. Such algorithms are
+prohibitively costly and do not scale in terms of number of members, especially
+in networks subject to churn~\cite{mostefaoui2015signature}. Since the structure
+contains the full history of the document, such an approach does not require
+further information to track causally related operations.
 
-\item [Variable-size identifiers~\cite{nedelec2013lseq, preguica2009commutative,
-    weiss2009logoot}] CRDTs such as Logoot~\cite{weiss2009logoot} truly destroy
-  elements targeted by removals.  Since removals truly erase information from
-  the structure, these approaches require a local state vector compacting their
-  history, hence an additional $\mathcal{O}(W)$ on space complexity. It is worth
-  noting that, contrarily to OT, the vector is kept local. Variable-size
-  identifiers approaches allocate identifiers the size of which is determined at
-  generation. The allocation function becomes crucial to maintain identifiers
-  under acceptable boundaries. Unfortunately, they depend of the insert position
-  of elements. For instance, writing the sequence QWERTY left-to-right allocates
-  the identifiers [1] to Q, [2] to W, [3] to E, \ldots, [6] to Y. But with an
-  identical strategy, writing the same sequence right-to-left allocates the
-  identifiers [1] to Y, [1.1] to T, [1.1.1] to R, \ldots We observe a quick
-  growth of identifiers depending on the editing behavior. In both cases, the
-  growth is linear compared to the number of insertions $I$ in the sequence,
-  i.e. $\mathcal{O}(I)$. Both Treedoc~\cite{preguica2009commutative} and
-  Logoot~\cite{weiss2009logoot, weiss2010logootundo} suffer from this
-  identifiers' growth which in turns impacts traffic.
-  % If the structure stores each identifier in a flat array, it grants fast
-  % access
-  % at the price of quadratic space complexity $\mathcal{O}(I^2)$. If it
-  % factorizes common parts of identifiers as a tree structure, it achieves a
-  % linear space complexity.
-  To provide small identifiers, these approaches eventually require balancing
-  the structure, i.e., relocating identifiers. It requires a global agreement
-  which is akin to run a distributed consensus
-  protocol~\cite{zawirski2011asynchronous}. Unfortunately, these protocols do
-  not scale.
+Variable-size identifiers CRDTs~\cite{nedelec2013lseq, preguica2009commutative,
+  weiss2009logoot} such as Logoot~\cite{weiss2009logoot} truly destroy elements
+targeted by removals.  Since removals truly erase information from the
+structure, these approaches require a local state vector compacting their
+history, hence an additional $\mathcal{O}(W)$ on space complexity. It is worth
+noting that, contrarily to OT, the vector is only stored locally. Variable-size
+identifiers approaches allocate identifiers the size of which is determined at
+generation. The allocation function becomes crucial to maintain identifiers
+under acceptable boundaries. Unfortunately, they depend on the insert position
+of elements. For instance, writing the sequence QWERTY left-to-right allocates
+the identifiers [1] to Q, [2] to W, [3] to E, \ldots, [6] to Y. But with an
+identical strategy, writing the same sequence right-to-left allocates the
+identifiers [1] to Y, [1.1] to T, [1.1.1] to R, \ldots We observe a quick growth
+of identifiers depending on the editing behavior. In both cases, the growth is
+linear compared to the number of insertions $I$ in the sequence,
+i.e. $\mathcal{O}(I)$. Both Treedoc~\cite{preguica2009commutative} and
+Logoot~\cite{weiss2009logoot, weiss2010logootundo} suffer from the growth of the
+identifiers which, in turn, impacts the generated traffic.
+% If the structure stores each identifier in a flat array, it grants fast
+% access
+% at the price of quadratic space complexity $\mathcal{O}(I^2)$. If it
+% factorizes common parts of identifiers as a tree structure, it achieves a
+% linear space complexity.
+To provide small identifiers, these approaches eventually require balancing the
+structure, i.e., relocating identifiers. This requires a global agreement which is
+akin to run a distributed consensus
+protocol~\cite{zawirski2011asynchronous}. Unfortunately, these protocols do not
+scale.
 
-  Algorithm \LSEQ~\cite{nedelec2013lseq} aims to avoid such consensus by
-  sublinearly upper-bounding the space complexity of variable-size
-  identifiers. It conjectured a polylogarithmic progression of its identifiers
-  size $\mathcal{O}((\log I)^2)$ compared to the number of insertions in the
-  document. This paper proves the complexity upper bounds and states the
-  conditions under which it applies.
-\end{asparadesc}
+\noindent The algorithm \LSEQ~\cite{nedelec2013lseq} aims to avoid such
+consensus by sublinearly upper-bounding the space complexity of variable-size
+identifiers. It is conjectured to have a polylogarithmic progression of its
+identifiers size $\mathcal{O}((\log I)^2)$ compared to the number of insertions
+in the document. This paper proves the complexity upper bounds and states the
+conditions under which it applies.
+
 
 %%% Local Variables: 
 %%% mode: latex

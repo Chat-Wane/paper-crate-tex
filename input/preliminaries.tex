@@ -2,18 +2,6 @@
 \section{Preliminaries}
 \label{sec:preliminaries}
 
-% Sequence data structures considered in this paper (for collaborative editing)
-% belong to the optimistic class of replication~\cite{saito2005optimistic}. Each
-% replica owner (a collaborator) directly performs operations on its local copy
-% and informs the other owners by broadcasting these operations. The consistency
-% criteria ensured by such optimistic replication is called strong eventual
-% consistency~\cite{shapiro2011comprehensive} upon the assumption of the eventual
-% delivery of operations, i.e., they guarantee that all replicas will eventually
-% converge to an identical state when the system becomes quiescent. This
-% consistency criterion is weaker than sequential consistency and linearisability
-% and is not comparable with causal consistency, yet strong enough for
-% collaborative edition~\cite{shapiro2011comprehensive}.
-
 Sequence replicated data structures (\emph{sequence} for short) are the closest
 structures that can implement a shared document. A sequence provides two
 commutative operations: insert and delete. Operations can be integrated in any
@@ -28,16 +16,16 @@ sequence. The projection of a sequence on the elements builds the document.
 When a collaborator performs an insert operation, it first allocates the
 identifier of the element to insert. For instance, let us consider a sequence
 QWTY with the unique, immutable, and totally ordered integer identifiers $1$,
-$2$, $4$, $8$ respectively. A collaborator inserts the element E between W
-and T. The natural identifier that comes to mind is $3$. The resulting
-sequence is QWETY. However, R cannot be inserted between E and T since
-$3$ and $4$ are contiguous. The space of identifiers must be enlarged to handle
-the new insertion. If we consider identifiers as decimal numbers, $3.1$ can be
-associated with the character R. If a new character has to be inserted
-between E and R, a new identifier will be allocated between $3$ and
-$3.1$. Again, the space will be extended resulting in a new identifier $3.0$
-suffixed by any non null integer. Let $X$ be the suffix, the order is preserved
-since $(3 < 3.0.X < 3.1)$.
+$2$, $4$, $8$ respectively. A collaborator inserts the element E between W and
+T. The natural identifier that comes to mind is $3$. The resulting sequence is
+QWETY. However, R cannot be inserted between E and T since $3$ and $4$ are
+contiguous. The space of identifiers must be enlarged to handle the new
+insertion. If we consider identifiers as decimal numbers, $3.1$ can be
+associated with the character R. If a new character has to be inserted between E
+and R, a new identifier will be allocated between $3$ and $3.1$. Again, the
+space will be extended resulting in a new identifier $3.0$ suffixed by any non
+null integer. Let $X$ be this suffix, the order of the elements of the sequence
+is preserved since $(3 < 3.0.X < 3.1)$.
 
 Such growing identifiers are called variable-size identifiers. The main
 objective is to keep the growth of the size of the identifiers under a sublinear
@@ -56,7 +44,7 @@ of the edges labeled $3$ then $1$. More formally, a sequence is a tree where
 each node contains a value i.e. an element of the sequence (over an alphabet
 $\mathcal{A}$). The tree is a set of pairs
 $\langle\mathcal{P}\subset\{\mathbb{N}\}^*,\, \mathcal{A} \rangle$, i.e., each
-element has a path. Additionally, a total order
+element is associated with a path. Additionally, a total order
 ($\mathcal{P}$,$<_{\mathcal{P}}$) provides an ordering among the paths which
 allows to retrieve the order of the elements in the sequence. Notation: a path
 composed of $e$ edges labeled $\ell_1,\ell_2,\ldots,\ell_e$ will be noted
@@ -82,13 +70,13 @@ $[\ell_1.\ell_2\ldots\ell_e]$.
 
 
 Figure~\ref{fig:treemodelexample} shows the underlying 10-ary tree representing
-a sequences. Like in the previous scenario, the initial sequence is QWTY with
+a sequence. Like in the previous scenario, the initial sequence is QWTY with
 the respective paths $[1]$, $[2]$, $[4]$ and $[8]$. The insertion of the
 character E between the pairs $\langle [2],\, \text{W}\rangle$ and
 $\langle [4],\, \text{T}\rangle$ results in the following pair:
 $\langle [3],\, \text{E} \rangle$. Then the insertion of Character R needs to
 start a new level since there is no room at the first level of the tree for a
-new path between E and T. The resulting path may be $[3.1]$ if label one is
+new path between E and T. The resulting path may be $[3.1]$ if label $1$ is
 chosen for the element R at the second level. This would increase the depth of
 the tree in case there is an insertion between the elements E and R. The new
 path would be $[3.0.X]$ where $0<X<10$ (recall that we assume a 10-ary
@@ -112,15 +100,15 @@ concurrent insertions. These markers usually comprise unique site identifiers
 along with Lamport clocks~\cite{lamport1978time}. Each pair of
 $\langle element,\,path\rangle$ is associated with a disambiguator.
 
-Let the identifiers $\mathcal{I}$ be the set of unique triples
+Let the set of identifiers $\mathcal{I}$ be the set of unique triples
 $\mathcal{I}:\mathcal{P}\times \mathcal{A}\times \mathcal{D}$. The composition
 of the partial order ($\mathcal{P}$, $<_{\mathcal{P}}$) and the total order of
-disambiguators ($\mathcal{D}$, $<_{\mathcal{D}}$) allows ordering the elements
-of the sequence identically at any replica.
+disambiguators ($\mathcal{D}$, $<_{\mathcal{D}}$) orders the elements of the
+sequence identically at any replica.
 
 Figure~\ref{fig:disexample} depicts a tree containing 6 elements with only 5
-distinct paths. First, Collaborator $c_1$ inserts QW.  Then, at a same time, the
-collaborators $c_1$ and $c_2$ insert respectively E and T which happens to
+distinct paths. First, Collaborator $c_1$ inserts QW.  Then, the collaborators
+$c_1$ and $c_2$ concurrently insert respectively E and T which happens to
 generate an identical path: [$3$]. To solve the order ambiguity, the
 disambiguator $\langle c_1,\, 3\rangle$ is associated with E; the disambiguator
 $\langle c_2,\, 1\rangle$ is associated with T. Retrieving the order of elements
@@ -185,7 +173,7 @@ following the order of identifiers ($\mathcal{I}, \, <_\mathcal{I}$).
 
 Function \textsc{allocPath} chooses a path in the tree between two other paths
 $p$ and $q$ where $p$ precedes $q$: $p<_{\mathcal{P}}q$. The new path $n$ must
-fall inbetween $p$ and $q$: $p<_\mathcal{P}n<_\mathcal{P}q$. 
+fall between $p$ and $q$: $p<_\mathcal{P}n<_\mathcal{P}q$.
 % However, the number of paths between two paths is infinite, for the order is
 % dense, and so is the number of \textsc{allocPath} strategies. Nevertheless,
 Function \textsc{allocPath} should choose the smallest available path among all
@@ -225,7 +213,7 @@ shifting Character Y to position 1, etc.
 \begin{itemize}[noitemsep, leftmargin=*]
 \item Figure~\ref{fig:allocpathexampleA}: In this case, the insertion order
   exactly follows the expectations of the allocation function. The depth of the
-  tree never grows. Operations remain efficient.
+  tree never grows. The execution of operations remain efficient.
 
 \item Figure~\ref{fig:allocpathexampleB}: In this case, the insertion order goes
   against the expectations of the allocation function. The depth of the tree
@@ -239,14 +227,14 @@ This example shows how the insertion order impacts the length of the allocated
 paths. Unfortunately, the insertion order cannot be predicted, nor the size of
 the final sequence. Prior work on sequences often made the assumption of a
 left-to-right editing due to observations made on
-corpus~\cite{preguica2009commutative, weiss2009logoot}. However, there exist
+corpora~\cite{preguica2009commutative, weiss2009logoot}. However, there exist
 human edited documents that do not correspond to this kind of
 editing~\cite{nedelec2013lseq}.
 %% Indeed, the editing depends on the type of the document and to the activity
 %% for example when correcting a document the editing in mainly random as the
 %% insertions and deletions corresponds to errors distributed in the document.
-We are looking for an allocation function which provides identifiers with a
-sublinear space complexity compared to the number of insertions whatever the
+Hence the need of an allocation function which provides identifiers with a
+sublinear space complexity compared to the number of insertions whatever is the
 editing sequence. Such allocation function would avoid the need for consensus
 algorithm~\cite{mostefaoui2015signature} and would make CRDT-based editors a
 practicable alternative to the current mainstream editors.

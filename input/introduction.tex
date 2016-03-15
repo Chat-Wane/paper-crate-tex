@@ -11,7 +11,7 @@ online lectures, TV shows, conferences gather larger
 groups~\cite{breslow2013studying}.  Google Docs supports large groups but only
 the first fifty users can edit, next users have their rights limited to document
 reading, not even in real-time.  We think that real-time editors should allow
-editing at anytime and anywhere, whatever the number of participants. Even if
+editing at anytime and anywhere, whatever is the number of participants. Even if
 only a small subset among millions of participants are writing, all participants
 of the editing session should be able to read and write in real-time whenever
 they want.
@@ -50,7 +50,7 @@ approach. Two classes of CRDTs designed for sequences exist:
   identifier which is optimal. However, it requires to keep tombstones, i.e., it
   marks elements as removed and hide them from the users. An empty document may
   store thousands of deleted elements. Tombstones degrade integration time of
-  operations. This integration time blocks the user and eventually make the
+  operations. This integration time blocks the user and eventually makes the
   real-time editor unusable. Removing tombstones requires garbage collecting
   algorithms that do not scale~\cite{abdullahi1998garbage}.
 \item CRDTs such as Logoot~\cite{weiss2010logootundo} do not require tombstones
@@ -63,17 +63,17 @@ approach. Two classes of CRDTs designed for sequences exist:
   In previous works, we proposed an identifier allocation strategy called
   \LSEQ~\cite{nedelec2013concurrency, nedelec2013lseq}. It aims to avoid such
   balancing mechanism by sublinearly upper-bounding the space complexity of its
-  identifiers. It is conjectured to have a polylogarithmic growth of the
-  identifiers size $\mathcal{O}((\log I)^2)$ where $I$ is the number of
+  identifiers. It is conjectured to have a polylogarithmic growth of the size of
+  the identifiers $\mathcal{O}((\log I)^2)$ where $I$ is the number of
   insertions performed on the document.
 \end{itemize}
 
 \noindent The contributions of this paper are threefold:
 \begin{itemize}[noitemsep, leftmargin=*]
-\item Compared to previous work~\cite{nedelec2013concurrency, nedelec2013lseq},
-  it proves the upper bounds on space and time complexities of \LSEQ and the
-  conditions upon which they apply. This result opens the way for building
-  decentralized and scalable real-time editors.
+\item To improve our previous works~\cite{nedelec2013concurrency,
+    nedelec2013lseq}, we prove the upper bounds on space and time complexities
+  of \LSEQ and the conditions upon which they apply. This result opens the way
+  for building decentralized and scalable real-time editors.
 \item To measure the overall performance of a real working system, we built
   \CRATE: a real-time decentralized editor running in web
   browsers~\cite{nedelec2016crate}. Compared to Google Docs, \CRATE enables
@@ -82,14 +82,14 @@ approach. Two classes of CRDTs designed for sequences exist:
   browsers participating to the editing session. In this paper, we describe the
   complete architecture of \CRATE and review the contribution of each component
   to the scalability of the system. %% analyse the complexity of each component.
-\item It provides experiments characterizing \LSEQ's behavior that validate our
-  analysis and compare it to state-of-the-art approaches. Results show that
-  \LSEQ achieves an original tradeoff between time and space complexities. In
-  the Grid'5000 testbed, we launched \CRATE editing sessions involving up till
-  600 connected web browsers. The generated traffic inherits from the
-  scalability of both \LSEQ and messages dissemination. The resulting documents
-  reach millions of characters. It validates the scalability of a full working
-  editor built on top of \LSEQ.
+\item To validate our complexity analysis, we provide experiments characterizing
+  \LSEQ's behavior and we compare it to state-of-the-art approaches. Results
+  show that \LSEQ achieves an original tradeoff between time and space
+  complexities. In the Grid'5000 testbed, we launched \CRATE editing sessions
+  involving up till 600 connected web browsers. The generated traffic inherits
+  from the scalability of both \LSEQ and messages dissemination. The resulting
+  documents reach millions of characters. It validates the scalability of a full
+  working editor built on top of \LSEQ.
 \end{itemize}
 
 The remainder of this paper is organized as follows:
@@ -100,7 +100,7 @@ the principle and functioning of \LSEQ. In particular, it provides its
 complexity. Section~\ref{sec:editor} describes the architecture of decentralized
 real-time editors. The experiments of Section~\ref{sec:experiments} highlight
 its scalability while validating the complexity analysis.
-Section~\ref{sec:conclusion} concludes.
+Section~\ref{sec:conclusion} concludes the paper.
 
 %%% Local Variables: 
 %%% mode: latex
