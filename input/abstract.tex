@@ -2,43 +2,43 @@
 \begin{abstract}
 
   Distributed real-time editors made real-time editing easy for
-  millions of users. However, main stream editors relies on cloud
+  millions of users. However, main stream editors rely on Cloud
   services to mediate sessions raising privacy and scalability
-  issues. Decentralized editors tackles privacy issues but scalability
+  issues. Decentralized editors tackle privacy issues but scalability
   issues remains. We aim to build a decentralized editor that allow
   real-time editing anytime, anywhere, whatever the number of
   participants. In this paper, we propose an approach based on a
   massively replicated sequence structure that represent the shared
   document. We establish an original tradeoff on communication, time
   and space complexity to maintain this sequence over a network of
-  browsers. We prove a sublinear upper-bound on communication
+  browsers. We prove a sublinear upper bound on communication
   complexity while preserving an affordable time and space
-  complexity. In order to validate this trade-off, we built a full
-  working editor and measure its performance on a large scale
-  experiments involving up till 600 participants. The results show a
-  traffic increasing as $\mathcal{O}((\log I)^2\ln R)$ where $I$ is
-  the number of insertions in the document, and $R$ the number of
-  participants. 
+  complexity. In order to validate this tradeoff, we built a full
+  working editor and measured its performance on large scale
+  experiments involving up till 600 participants. As expected, the
+  results show a traffic increasing as $\mathcal{O}((\log I)^2\ln R)$ 
+  where $I$ is the number of insertions in the document, and $R$ the 
+  number of participants. 
 
 
----8<----
+% ---8<----
 
-  Distributed real-time editors such as Google Docs, or Etherpad allow users
-  distributed in space and organizations to collaborate easily with only web
-  browsers. Yet, main stream editors rely on central servers with issues in
-  privacy, single point of failure and scalability.  Decentralized editors
-  settle privacy problems but scalability issues remain.  None of existing
-  algorithms provide a satisfying complexity in both communication and space.
-  In this paper, we provide the complexity analysis of \LSEQ, an algorithm
-  generating identifiers enjoying a polylogarithmic upper bound on space
-  complexity which in turns directly impacts traffic. We provide the outline to
-  build a decentralized real-time editor. We build an editor following these
-  guidelines and evaluate it on large scale experiments involving up till 600
-  participants. The results show a traffic increasing as
-  $\mathcal{O}((\log I)^2\ln R)$ where $I$ is the number of insertions in the
-  document, and $R$ the number of participants. As such, the editor scales well
-  in both these dimensions and does not require running consensus protocols
-  known to be overly expensive in distributed systems.
+%   Distributed real-time editors such as Google Docs, or Etherpad allow users
+%   distributed in space and organizations to collaborate easily with only web
+%   browsers. Yet, main stream editors rely on central servers with issues in
+%   privacy, single point of failure and scalability.  Decentralized editors
+%   settle privacy problems but scalability issues remain.  None of existing
+%   algorithms provide a satisfying complexity in both communication and space.
+%   In this paper, we provide the complexity analysis of \LSEQ, an algorithm
+%   generating identifiers enjoying a polylogarithmic upper bound on space
+%   complexity which in turns directly impacts traffic. We provide the outline to
+%   build a decentralized real-time editor. We build an editor following these
+%   guidelines and evaluate it on large scale experiments involving up till 600
+%   participants. The results show a traffic increasing as
+%   $\mathcal{O}((\log I)^2\ln R)$ where $I$ is the number of insertions in the
+%   document, and $R$ the number of participants. As such, the editor scales well
+%   in both these dimensions and does not require running consensus protocols
+%   known to be overly expensive in distributed systems.
 
   % In this paper, we propose \CRATE; a working decentralized real-time editor
   % that supports large number of users working on large documents. In particular,
