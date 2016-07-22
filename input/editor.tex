@@ -27,9 +27,10 @@ that comprises 4 layers where each can constitute an obstacle to scalability:
 \begin{inparaenum}[(i)]
 \item the communication layer includes the editing session membership mechanism
   and the information dissemination protocols;
-\item the causality layer includes the causality tracking structure that
-  guarantees a delivery order of operations reflecting a form of causality,
-  e.g. it ensures that the removal of an element always follows its insertion;
+\item the causality layer includes the causality tracking structure and the
+  catch up mechanism; %that
+%  guarantees a delivery order of operations reflecting a form of causality,
+%  e.g. it ensures that the removal of an element always follows its insertion;
 \item the sequence layer includes a convergent replicated structure representing
   the document;
 \item the user interface layer includes the editor as a graphical entity that
