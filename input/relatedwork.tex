@@ -105,15 +105,16 @@ noting that, contrarily to OT, the vector is only stored locally. Variable-size
 identifiers approaches allocate identifiers the size of which is determined at
 generation. The allocation function becomes crucial to maintain identifiers
 under acceptable boundaries. Unfortunately, they depend on the insert position
-of elements. For instance, writing the sequence QWERTY left-to-right allocates
-the identifiers [1] to Q, [2] to W, [3] to E, \ldots, [6] to Y. But with an
-identical strategy, writing the same sequence right-to-left allocates the
-identifiers [1] to Y, [1.1] to T, [1.1.1] to R, \ldots We observe a quick growth
-of identifiers depending on the editing behavior. In both cases, the growth is
+of elements. For instance, writing the sequence \texttt{QWERTY} left-to-right
+allocates the identifiers [1] to \texttt{Q}, [2] to \texttt{W}, [3] to
+\texttt{E}, \ldots, [6] to \texttt{Y}. But with an identical strategy, writing
+the same sequence right-to-left allocates the identifiers [1] to \texttt{Y},
+[1.1] to \texttt{T}, [1.1.1] to \texttt{R}, \ldots We observe a quick growth of
+identifiers depending on the editing behavior. In both cases, the growth is
 linear compared to the number of insertions $I$ in the sequence,
 i.e. $\mathcal{O}(I)$. Both Treedoc~\cite{preguica2009commutative} and
 Logoot~\cite{weiss2009logoot, weiss2010logootundo} suffer from the growth of the
-identifiers which, in turn, impacts the generated traffic.
+identifiers which negatively impacts the generated traffic.
 % If the structure stores each identifier in a flat array, it grants fast
 % access
 % at the price of quadratic space complexity $\mathcal{O}(I^2)$. If it

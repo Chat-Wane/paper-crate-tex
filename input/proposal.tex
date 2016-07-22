@@ -81,50 +81,6 @@ does not manage to provide small-sized paths, the other quickly takes the lead. 
 such case, \LSEQ must be efficient enough to compensate the loss due to its
 unsuitable choice of sub-allocation function.
 
-
-% These sub-allocation functions work similarly:
-% \begin{inparaenum}[(i)]
-% \item Get the depth and the interval of the new path to allocate.
-% \item Limit the range within the level for the allocation of the new path. A
-%   small number of paths are left available inbetween elements to provide more
-%   flexibility in regards to spellchecking.
-% \item However, while \textsc{left-to-right} uses the previous path and adds a
-%   random value within the processed range, \textsc{right-to-left} uses the next
-%   path and subtracts a random value within the processed range. In turns,
-%   \textsc{left-to-right} allocates a branch closer to the previous path while
-%   \textsc{right-to-left} does the opposite, respectively leaving more space for
-%   future insertions in queue and in front of the newly inserted element.
-% \end{inparaenum}
-
-%%%%%%%%%%
-
-% The function \textsc{allocPath} chooses the path associated with each element in
-% order to encode its relative position with regard to its adjacent elements in
-% the sequence. For the sake of performance, it aims to keep the underlying tree
-% with a small depth. 
-
-
-% It comprises 3 components. Each of these components fails to provide an
-% efficient allocation function. Nevertheless, their composition allows to get the
-% best of each by canceling their respective deficiency.
-
-
-
-% Combining the three components provides identifiers with a sub-linear average
-% size compared to the number of insertions performed which makes it well-suited
-% for text editing, and consequently, for distributed collaborative editing.
-
-% The total order $<_{\mathcal{P}}$ is similar to the lexicographic order. We
-% define it as $\forall p_j,\,p_k\in\mathcal{P}$ with $|p_j|=j$, $|p_k|=k$. There
-% exists an index $0\leq l\leq min(|p_j|,|p_k|)$ such that $p_j = X.Y$ and
-% $p_k = X.Z$ with $X\subset \{\mathbb{N}\}^l$, $Y \subset \{\mathbb{N}\}^{j-l}$,
-% $Z \subset \{\mathbb{N}\}^{k-l}$. Finally, $p_j<_{\mathcal{P}}p_k$ iff
-% $Y[1]<Z[1]$.
-
-
-%% The unexplicit function $subPath$ returns a truncated path from the root to the
-%% depth passed as argument.
-
 \begin{figure}
   \centering
   \subfloat[Left-to-right case with \LSEQ.]
@@ -135,19 +91,20 @@ unsuitable choice of sub-allocation function.
   {\input{input/lseqtreeexampleB.tex}}
   \caption{\label{fig:lseqtreeexample} Example of \LSEQ's exponential trees with
     two antagonist editing behaviors to create the sequence of characters
-    QWERTY. Contrarily to the example of Figure~\ref{fig:allocpathexample}, the
-    depth of trees does not grow linearly.}
+    \texttt{QWERTY}. Contrarily to the example of
+    Figure~\ref{fig:allocpathexample}, the depth of trees does not grow
+    linearly.}
 \end{figure}
 
 
 Similarly to the example of Figure~\ref{fig:allocpathexample} the example given
 in Figure~\ref{fig:lseqtreeexample} depicts the resulting trees after two
-antagonist scenarios creating the sequence QWERTY
+antagonist scenarios creating the sequence \texttt{QWERTY}
 \begin{inparaenum}[(i)]
-\item the left-to-right insertions sequence [($\text{Q},\,0$), ($\text{W},\,1$),
+\item the left-to-right insertions sequence [($\texttt{Q},\,0$), ($\texttt{W},\,1$),
   \ldots] and
-\item the right-to-left insertions sequence [($\text{Y},\,0$), ($\text{T},\,0$),
-  \ldots].
+\item the right-to-left insertions sequence [($\texttt{Y},\,0$),
+  ($\texttt{T},\,0$), \ldots].
 \end{inparaenum}
 In both cases, the exponential tree of \LSEQ starts with a maximum arity $2^5$
 and doubles it at each level. Also, it uses the left-to-right and right-to-left
@@ -161,77 +118,6 @@ antagonist scenario only leads to a tree of depth 2. Indeed, the identifiers of
 designed to handle the right-to-left editing behavior. If such editing behavior
 continues, the new allocated paths will compensate the loss of the first level.
 
-% \begin{asparadesc}
-% \item [The function allocDis] creates the di\-sam\-bi\-gua\-tors which have two
-%   goals.  It ensures the uniqueness of the triples, even in presence of
-%   concurrency and it guarantees that triples can always be inserted between two
-%   other triples even when the paths of the latter are identical. The example of
-%   Figure~\ref{fig:allocpathexample} illustrates the need of comparisons that
-%   preserve the order given by the paths and also examines the
-%   disambiguators. During the editing session, the insertion between the
-%   elements $W$ and $T$ resulted in an identical path [$29$]. Therefore, without
-%   $allocDis$, the order among $W$ and $T$ is ambiguous, and inserting between
-%   them becomes impossible. Indeed, if any path [$29.X$] is greater than [$29$],
-%   the newly inserted elements will always end up after the $W$ and $T$ in the
-%   sequence. Consequently, the disambiguators are necessary to build an
-%   allocation function for sequences.
-% \end{asparadesc}
-
-% A disambiguator is a list of pairs
-% $\langle source,\, clock\rangle$. Similarly
-% to the tree of paths, the set of all disambiguators can be represented as a
-% tree equipped with a lexicographic total order
-% $(\mathcal{D},\, <_{\mathcal{D}})$. While the total order $<_{\mathcal{P}}$
-% ultimately compares two numbers, the total order $<_{\mathcal{D}}$ compares two
-% pairs. With the same notation than $allocPath$, let $\langle s_1,\, c_1\rangle$
-% and $\langle s_2,\,c_2\rangle$ be the $l+1$ couples of the disambiguators $d_j$
-% and $d_k$ respectively. $d_j <_{\mathcal{D}}d_k$ iff $s_1 < s_2$, or if
-% $s_1=s_2$, $c_1 < c_2$.
-
-% \begin{algorithm}
-%   \input{input/allocdesalgo.tex}
-%   \caption{\label{algo:allocdis}The function $allocDis$ of \LSEQ}
-% \end{algorithm}
-
-% Algorithm~\ref{algo:allocdis} describes the allocation of a disambiguator which
-% preserves the intention of the peer that performed the insertion. Identically
-% to Lamport timestamps, it uses a unique site identifier and a monotonically
-% increasing counter. Basically, it copies the disambiguator of its neighbours at
-% the depth where they are equal, and, if none is equal, it copies its own site
-% and counter. The latter case happens at least once per insertion which
-% guarantees the uniqueness of each identifier. The space complexity of
-% disambiguator is upper-bounded by the length of the new path. Furthermore,
-% depending on the scenario, it can be drastically compressed.
-
-% Let us go back to the example in Figure~\ref{fig:treemodelexample}. In this
-% tree, collaborator $p_1$ inserts the character $R$ between the two pairs
-% $\langle [3],\, E\rangle$ and $\langle [4],\, T\rangle$. The resulting path is
-% $[3.1]$. Now, we add the disambiguators $\delta_E = [\langle 2,\,1\rangle]$
-% meaning that it is the first insertion of collaborator $p_2$, and
-% $\delta_T = [\langle 3,\,1\rangle]$ meaning that it is the first insertion of
-% collaborator $p_3$. The resulting path associated with $R$ is $[3.1]$. Since the
-% first integer of the path of $R$ is similar to the path of the character $E$,
-% the algorithm copies the first part of $\delta_E$. Then, since none of the
-% adjacent pairs have a length of $2$, the algorithm copies the values of $p_1$,
-% i.e. $\langle 1,\,1\rangle$. The resulting disambiguator is
-% $[\langle 2,\,1\rangle,\, \langle 1,\,1\rangle]$. This way, $p_1$ inserts a new
-% character between $E$ and $R$. As we get the path $[3.0.X]$, the resulting
-% disambiguator is
-% $[\langle 2,\,1\rangle,\,\langle 1,\,2\rangle,\,\langle 1,\,2\rangle]$.
-
-% \begin{asparadesc}
-% \item [The global total order] $(\mathcal{I}, <_{\mathcal{I}})$ is a composition of the
-% aforementioned sets $\mathcal{P}$ and $\mathcal{D}$, and their respective total
-% orders $(\mathcal{P},\, <_{\mathcal{P}})$ and
-% $(\mathcal{D},\, <_{\mathcal{D}})$.
-% \end{asparadesc}
-
-% The global total order is defined as:
-% $\forall p,\,q \in \mathcal{I}, p<q \Leftrightarrow \exists i$ with
-% $\forall_{k=0}^{i-1}, \, p.P(k) = q.P(k) \wedge p.D(k) = q.D(k)$ such that
-% $\exists j=i+1$ with
-% $p.P(j) < q.P(j) \vee (p.P(j) = q.P(j) \wedge p.D(j) < q.D(j))$.
-
 \subsection{Complexity analysis}
 \label{subsec:complexity}
 
@@ -240,16 +126,16 @@ as a composition of two basic editing behaviors.
 \begin{inparaenum}[(i)]
 \item The random editing behavior where the author inserts new elements at what
   appears random positions in the sequence. For instance, this behavior mostly
-  arises when syntactic corrections are performed, e.g. the author writes QWETY
-  and realizes that the R is missing. She adds the missing character in a second
-  time.
+  arises when syntactic corrections are performed, e.g. the author writes
+  \texttt{QWETY} and realizes that the \texttt{R} is missing. She adds the
+  missing character in a second time.
 \item The monotonic editing behavior where the author repeatedly inserts new
   elements between the last inserted element and an adjacent element (after or
-  before exclusively). For instance, when an author writes QWERTY, she generally
-  starts from the first character Q to the last letter of the word Y. On the
-  opposite, insertions in a logfile are usually performed at the beginning for
-  practical reasons. This behavior characterizes both left-to-right and
-  right-to-left editing.
+  before exclusively). For instance, when an author writes \texttt{QWERTY}, she
+  generally starts from the first character \texttt{Q} to the last letter of the
+  word \texttt{Y}. On the opposite, insertions in a logfile are usually
+  performed at the beginning for practical reasons. This behavior characterizes
+  both left-to-right and right-to-left editing.
 \end{inparaenum}
 
 As a consequence, we focus on the space complexity analysis of \LSEQ to random
@@ -262,11 +148,6 @@ balanced and operations become more efficient proportionally. Also, the
 analysis does not include an average case since it requires to know the average
 distribution of the position of edits performed by a human collaborator which is
 obviously very complex.
-
-%% Also, since the space complexity of disambiguators provided by $allocDis$ is
-%% upper bounded by the paths allocated by $allocPath$, the space complexity
-%% analysis of the path is reduced to the space complexity of the identifiers of
-%% \LSEQ.
 
 \subsubsection{Space complexity}
 
@@ -449,20 +330,6 @@ of increased memory usage~\cite{weiss2009logoot}.  Section~\ref{sec:experiments}
 validates our complexity analysis on experiments. The next section describes the
 other components necessary to build a decentralized collaborative editor that
 scales.
-
-
-% The space complexity analysis reveals that the allocation function \LSEQ
-% sacrifices on the worst-case space complexity to improve the space complexity of
-% the monotonic editing behaviours. Nevertheless, in text editing, the worst-case
-% happens with a very low probability compared the other cases. Furthermore, it is
-% worth noting that usually, the authors do not write a document in a single
-% round, starting from the beginning to go straight up to the end (as the
-% monotonic analysis could suggest). On the contrary, the authors write sections,
-% structure the documents, perform corrections, rewrite parts of the document,
-% reorganize, etc. This behavior (between random and monotonic behavior) tends to
-% even up the branches of the underlying tree of \LSEQ. In the case of random
-% editing, the space complexity is asymptotically optimal $O(log\,n)$ while it is
-% very interesting in a ``normal setting'' $O((log\,n)^2)$.
 
 %%% Local Variables: 
 %%% mode: latex

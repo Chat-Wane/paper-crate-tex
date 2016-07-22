@@ -41,18 +41,20 @@ sequence. The projection of a sequence on the elements builds the document.
 
 When a collaborator performs an insert operation, it first allocates the
 identifier of the element to insert. For instance, let us consider a sequence
-QWTY with the unique, immutable, and totally ordered integer identifiers $1$,
-$2$, $4$, $8$ respectively. A collaborator inserts the element E between W and
-T. The natural identifier that comes to mind is $3$. The resulting sequence is
-QWETY. However, R cannot be inserted between E and T since $3$ and $4$ are
+\texttt{QWTY} with the unique, immutable, and totally ordered integer
+identifiers $1$, $2$, $4$, $8$ respectively. A collaborator inserts the element
+\texttt{E} between \texttt{W} and \texttt{T}. The natural identifier that comes
+to mind is $3$. The resulting sequence is \texttt{QWETY}. However, \texttt{R}
+cannot be inserted between \texttt{E} and \texttt{T} since $3$ and $4$ are
 contiguous. The space of identifiers must be enlarged to handle the new
 insertion. If we consider identifiers as decimal numbers, $3.1$ can be
-associated with the character R. If a new character has to be inserted between E
-and R, a new identifier will be allocated between $3$ and $3.1$. Again, the
-space will be extended resulting in a new identifier $3.0$ suffixed by any non
-null integer. Let $X$ be this suffix, the order of the elements of the sequence
-is preserved since $(3 < 3.0.X < 3.1)$.
+associated with the character \texttt{R}. If a new character has to be inserted
+between \texttt{E} and \texttt{R}, a new identifier will be allocated between
+$3$ and $3.1$. Again, the space will be extended resulting in a new identifier
+$3.0$ suffixed by any non null integer. Let $X$ be this suffix, the order of the
+elements of the sequence is preserved since $(3 < 3.0.X < 3.1)$.
 
+%% (TODO) are the paths of variable-size identifiers ?
 Such growing identifiers are called variable-size identifiers. The main
 objective is to keep the growth of the size of the identifiers under a sublinear
 boundary.
@@ -87,27 +89,27 @@ $[\ell_1.\ell_2\ldots\ell_e]$.
   \subfloat[Disambiguators operate when same paths have been allocated.]
   [\label{fig:disexample}The tree uses disambiguators to maintain an
   equivalent state, even in presence of concurrent insertions resulting
-  in same paths. For simplicity sake, only the disambiguators of E, R, and T 
-  are displayed.]
+  in same paths. For simplicity sake, only the disambiguators of
+  \texttt{E}, \texttt{R}, and \texttt{T} are displayed.]
   {\input{input/desexample.tex}}
   \caption{Examples of 10-ary trees containing the sequence of characters
-    QWERTY.}
+    \texttt{QWERTY}.}
 \end{figure*}
 
 
 Figure~\ref{fig:treemodelexample} shows the underlying 10-ary tree representing
-a sequence. Like in the previous scenario, the initial sequence is QWTY with
-the respective paths $[1]$, $[2]$, $[4]$ and $[8]$. The insertion of the
-character E between the pairs $\langle [2],\, \text{W}\rangle$ and
-$\langle [4],\, \text{T}\rangle$ results in the following pair:
-$\langle [3],\, \text{E} \rangle$. Then the insertion of Character R needs to
-start a new level since there is no room at the first level of the tree for a
-new path between E and T. The resulting path may be $[3.1]$ if label $1$ is
-chosen for the element R at the second level. This would increase the depth of
-the tree in case there is an insertion between the elements E and R. The new
-path would be $[3.0.X]$ where $0<X<10$ (recall that we assume a 10-ary
-tree). The total order $(\mathcal{P},\,<_\mathcal{P})$ allows retrieving the
-sequence QWERTY.
+a sequence. Like in the previous scenario, the initial sequence is \texttt{QWTY}
+with the respective paths $[1]$, $[2]$, $[4]$ and $[8]$. The insertion of the
+character \texttt{E} between the pairs $\langle [2],\, \texttt{W}\rangle$ and
+$\langle [4],\, \texttt{T}\rangle$ results in the following pair:
+$\langle [3],\, \texttt{E} \rangle$. Then the insertion of Character \texttt{R}
+needs to start a new level since there is no room at the first level of the tree
+for a new path between \texttt{E} and \texttt{T}. The resulting path may be
+$[3.1]$ if label $1$ is chosen for the element \texttt{R} at the second
+level. This would increase the depth of the tree in case there is an insertion
+between the elements \texttt{E} and \texttt{R}. The new path would be $[3.0.X]$
+where $0<X<10$ (recall that we assume a 10-ary tree). The total order
+$(\mathcal{P},\,<_\mathcal{P})$ allows retrieving the sequence \texttt{QWERTY}.
 
 \subsection{Disambiguation of concurrent cases}
 \label{subsec:disambiguation}
@@ -133,40 +135,26 @@ disambiguators ($\mathcal{D}$, $<_{\mathcal{D}}$) orders the elements of the
 sequence identically at any replica.
 
 Figure~\ref{fig:disexample} depicts a tree containing 6 elements with only 5
-distinct paths. First, Collaborator $c_1$ inserts QW.  Then, the collaborators
-$c_1$ and $c_2$ concurrently insert respectively E and T which happens to
-generate an identical path: [$3$]. To solve the order ambiguity, the
-disambiguator $\langle c_1,\, 3\rangle$ is associated with E; the disambiguator
-$\langle c_2,\, 1\rangle$ is associated with T. Retrieving the order of elements
-simply consists in comparing at each level the paths, then the site identifiers,
-then the clocks. In this example, the character E precedes the character T
-because $c_1 < c_2$. Then, Collaborator $c_1$ inserts Y at the end of the
-sequence. Finally, she inserts R between E and T. Since E and T have an
-identical path, there is not enough room for new insertions at this level. The
-allocation function chooses a path [$3.X$] where $0<X<10$. By copying the
-disambiguator of E at the first level, it ensures that the new identifier will
-follow the character E and precede the character T.  Collaborators cannot
-influence the final position of the character in the sequence using
-disambiguators, for disambiguators are automatically computed without concerns
-about positions. The sequence of the example could have ended in QWTREY and it
-would have needed a correction. It is worth noting that the space complexity of
-disambiguators is upper-bounded by their respective path. Therefore, we focus on
-paths in the rest of the paper.
-
-
-% Similarly to the previous example, the initial sequence was QWTY, however, in
-% this example, the two elements E and R are inserted between the pairs
-% $\langle [2],\, \text{W}\rangle$ and $\langle [4],\, \text{T}\rangle$ by two
-% different collaborators concurrently. For both elements, the resulting path is
-% $[3]$. After the two elements are inserted, the sequence becomes either QWERTY
-% or QWRETY. Nevertheless, let the identifiers
-% $\langle [3],\, \text{R},\, \delta_\text{R}\rangle$ and
-% $\langle [3],\, \text{T},\, \delta_\text{T} \rangle$. The use of disambiguators
-% $\delta_{\text{R}}$ and $\delta_{\text{T}}$ allows retrieving the sequence
-% QWERTY. It is worth noting that disambiguators are usually computed using a
-% monotonically increasing variable and a unique collaborator identifier just like
-% Lamport timestamps~\cite{lamport1978time}.
-
+distinct paths. First, Collaborator $c_1$ inserts \texttt{QW}.  Then, the
+collaborators $c_1$ and $c_2$ concurrently insert respectively \texttt{E} and
+\texttt{T} which happens to generate an identical path: [$3$]. To solve the
+order ambiguity, the disambiguator $\langle c_1,\, 3\rangle$ is associated with
+\texttt{E}; the disambiguator $\langle c_2,\, 1\rangle$ is associated with
+\texttt{T}. Retrieving the order of elements simply consists in comparing at
+each level the paths, then the site identifiers, then the clocks. In this
+example, \texttt{E} precedes \texttt{T} because $c_1 < c_2$. Then, Collaborator
+$c_1$ inserts \texttt{Y} at the end of the sequence. Finally, she inserts
+\texttt{R} between \texttt{E} and \texttt{T}. Since \texttt{E} and \texttt{T}
+have an identical path, there is not enough room for new insertions at this
+level. The allocation function chooses a path [$3.X$] where $0<X<10$. By copying
+the disambiguator of \texttt{E} at the first level, it ensures that the new
+identifier will follow the character \texttt{E} and precede the character
+\texttt{T}.  Collaborators cannot influence the final position of the character
+in the sequence using disambiguators, for disambiguators are automatically
+computed without concerns about positions. The sequence of the example could
+have ended in \texttt{QWTREY} and it would have needed a correction. It is worth
+noting that the space complexity of disambiguators is upper-bounded by their
+respective path. Therefore, we focus on paths in the rest of the paper.
 
 \subsection{Choosing the rightful path}
 \label{subsec:choosing}
@@ -183,13 +171,14 @@ only. Without evidence of concurrency, it simply returns the paths contained in
 the identifiers. Otherwise, it translates the identifiers into paths that
 maintain the order following the order of paths
 ($\mathcal{P},\, <_{\mathcal{P}}$). For instance in Figure~\ref{fig:disexample},
-the result of \textsc{convert2Path} with the identifiers of the character E and
-the character T is the pair $\langle [3.0],\, [3.9]\rangle$. The function
-\textsc{allocPath} allocates a new path between these bounds.  \textsc{allocDis}
-decorates the path in order to guarantee that the new identifier -- as the
-composition of a path, an element, and a disambiguator -- consistently fall
-between the adjacent identifiers that served to create it following the order of
-identifiers ($\mathcal{I}, \, <_\mathcal{I}$).
+the result of \textsc{convert2Path} with the identifiers of the character
+\texttt{E} and the character \texttt{T} is the pair
+$\langle [3.0],\, [3.9]\rangle$. The function \textsc{allocPath} allocates a new
+path between these bounds.  \textsc{allocDis} decorates the path in order to
+guarantee that the new identifier -- as the composition of a path, an element,
+and a disambiguator -- consistently fall between the adjacent identifiers that
+served to create it following the order of identifiers
+($\mathcal{I}, \, <_\mathcal{I}$).
 
 \begin{algorithm}[h]
   \input{input/crdtabstractalgo.tex}
@@ -218,22 +207,23 @@ the possible paths for performance sake.
   {\input{input/allocpathexampleB.tex}}
   \caption{\label{fig:allocpathexample} Two trees filled with the resulting
     identifiers of two different permutations resulting in an identical sequence
-    QWERTY. The function \textsc{allocPath} allocates the leftmost branch in the
-    tree. All paths of the optimal case have a length of 1 while the tree of the
-    worst case grows up to a depth of 6.}
+    \texttt{QWERTY}. The function \textsc{allocPath} allocates the leftmost
+    branch in the tree. All paths of the optimal case have a length of 1 while
+    the tree of the worst case grows up to a depth of 6.}
 \end{figure*}
 
 As illustrated in Figure~\ref{fig:allocpathexample}, the allocation of paths
 without an \emph{a priori} knowledge of the final sequence is a non-trivial
 problem.  Suppose that \textsc{allocPath} allocates the leftmost branch
 available at the lowest depth possible. Suppose two insertion orders resulting
-in an identical sequence of characters QWERTY.  In the first case, Q is inserted
-first at position 0, followed by W at position 1 (after Q) then E is inserted at
-position 3 (after W), etc.  In the second case, Y is inserted first at position
-0 as the sequence is initially empty. Then T is inserted. However as the final
-intended word is QWERTY, T has to be inserted at a position before Y that
-represents the current state of the sequence. T is thus inserted at position 0
-shifting Character Y to position 1, etc.
+in an identical sequence of characters \texttt{QWERTY}.  In the first case,
+\texttt{Q} is inserted first at position 0, followed by \texttt{W} at position 1
+(after \texttt{Q}) then \texttt{E} is inserted at position 3 (after \texttt{W}),
+etc.  In the second case, \texttt{Y} is inserted first at position 0 as the
+sequence is initially empty. Then \texttt{T} is inserted. However as the final
+intended word is \texttt{QWERTY}, \texttt{T} has to be inserted at a position
+before \texttt{Y} that represents the current state of the sequence. \texttt{T}
+is thus inserted at position 0 shifting \texttt{Y} to position 1, etc.
 
 
 \begin{itemize}[noitemsep, leftmargin=*]
