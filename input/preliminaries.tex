@@ -7,6 +7,32 @@ structures that can implement a shared document. A sequence provides two
 commutative operations: insert and delete. Operations can be integrated in any
 order as soon as the deletion of an element follows its insertion.
 
+
+\begin{definition}[Document]
+  A document is a serie of $k$ characters
+  $d(H) = \alpha_1.\alpha_2\ldots \alpha_k$ produced by a serie of operations
+  $H$.
+\end{definition}
+
+\begin{definition}[Replicated sequence]
+  Let $d(H)$ the document produced by the serie of operations $H$. A replicated
+  sequence of $d(H)$ is a structure $r(H)$ with a projection $\pi$ such that
+  $\pi(r(H)) \rightarrow d(H)$.
+\end{definition}
+
+\begin{definition}[Path]
+  A path is a serie of integers noted $[\ell_1.\ell_2\ldots \ell_e]$ chosen in a
+  set $\mathcal{P}$ paired with a dense order $(\mathcal{P},\, <_\mathcal{P})$.
+  Each integer $\ell_i$ composing the path is chosen in a set
+  $\mathbb{N}_{<X_i}$. The binary representation of the path requires
+  $\textstyle \sum\nolimits_{i=1}^e \lceil \log_2 X_i\rceil$ bits.
+\end{definition}
+
+\begin{definition}[Disambiguator]
+  A disambiguator is a marker chosen in a set $\mathcal{D}$ paired with a total
+  order $(\mathcal{D},\, <_\mathcal{D})$.
+\end{definition}
+
 The sequence is composed of elements and a unique and immutable identifier is
 associated with each of these elements. The sequence can be seen as a set of
 pairs $\langle element, identifier \rangle$. A total order is assumed on
