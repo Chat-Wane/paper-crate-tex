@@ -3,10 +3,7 @@
 \label{sec:preliminaries}
 
 Sequence replicated data structures (\emph{sequence} for short) are the closest
-structures that can implement a shared document. A sequence provides two
-commutative operations: insert and delete. Operations can be integrated in any
-order as long as the deletion of an element follows its insertion.
-
+structures that can implement a shared document. 
 
 \begin{definition}[Document]
   A document is a serie of $k$ characters
@@ -20,26 +17,35 @@ order as long as the deletion of an element follows its insertion.
   $\pi(r(H)) \rightarrow d(H)$.
 \end{definition}
 
-The sequence is composed of elements and a unique and immutable identifier is
-associated with each of these elements. The sequence can be seen as a set of
-pairs $\langle element, identifier \rangle$. A total order is assumed on
-identifiers and this order relation allows seeing the set of pairs as a
-sequence. The projection of a sequence on the elements builds the document.
+We focus on replicated sequences~\cite{shapiro2011comprehensive,
+  shapiro2011conflict} that provide two commutative operations: \textsc{insert}
+and \textsc{delete}. Operations can be integrated in any order as long as the
+deletion of an element follows its insertion.
 
-When a collaborator performs an insert operation, it first allocates the
-identifier of the element to insert. For instance, let us consider a sequence
-\texttt{QWTY} with the unique, immutable, and totally ordered integer
-identifiers $1$, $2$, $4$, $8$ respectively. A collaborator inserts the element
-\texttt{E} between \texttt{W} and \texttt{T}. The natural identifier that comes
-to mind is $3$. The resulting sequence is \texttt{QWETY}. However, \texttt{R}
-cannot be inserted between \texttt{E} and \texttt{T} since $3$ and $4$ are
-contiguous. The space of identifiers must be enlarged to handle the new
-insertion. If we consider identifiers as decimal numbers, $3.1$ can be
-associated with the character \texttt{R}. If a new character has to be inserted
-between \texttt{E} and \texttt{R}, a new identifier will be allocated between
-$3$ and $3.1$. Again, the space will be extended resulting in a new identifier
-$3.0$ suffixed by any non null integer. Let $X$ be this suffix, the order of the
-elements of the sequence is preserved since $(3 < 3.0.X < 3.1)$.
+\noindent Each element of the sequence is associated to a unique and immutable
+identifier. Using a total order on identifiers, we can project the set of pairs
+$\langle element,\, identifier \rangle$ to a sequence of elements. Assuming that
+the replicas integrated the same set of operations, they converge to an
+identical state, i.e., users see the same document~\cite{shapiro2011conflict}.
+
+Each \textsc{insert} operation generates an identifier for the new element.  For
+instance, let us consider a sequence \texttt{QWTY} with the unique, immutable,
+and totally ordered integer identifiers $1$, $2$, $4$, and $8$ respectively. A
+collaborator inserts \texttt{E} between \texttt{W} and \texttt{T}. The natural
+identifier that comes to mind is $3$. The resulting sequence is
+\texttt{QWETY}. However, \texttt{R} cannot be inserted between \texttt{E} and
+\texttt{T}, for the identifiers $3$ and $4$ are contiguous. The space of
+identifiers must be enlarged to handle the new insertion. If we consider
+identifiers as decimal numbers, we can associate $3.1$ to the character
+\texttt{R}. Since $3 < 3.1 < 4$, the sequence of characters is, as expected,
+\texttt{QWERTY}. Inserting a new character between \texttt{E} and \texttt{R}
+would result in another space extension : $3.0.X$, where $X$ is an integer.
+
+% If a new character has to be inserted between \texttt{E} and
+% \texttt{R}, a new identifier will be allocated between $3$ and $3.1$. Again, the
+% space will be extended resulting in a new identifier $3.0$ suffixed by any non
+% null integer. Let $X$ be this suffix, the order of the elements of the sequence
+% is preserved since $(3 < 3.0.X < 3.1)$.
 
 %% (TODO) are the paths of variable-size identifiers ?
 Such growing identifiers are called variable-size identifiers. The main
@@ -165,15 +171,19 @@ have ended in \texttt{QWTREY} and it would have needed a correction. It is worth
 noting that the space complexity of disambiguators is upper-bounded by their
 respective path. Therefore, we focus on paths in the rest of the paper.
 
-\subsection{Choosing the rightful path}
+\subsection{Choosing the smallest path}
 \label{subsec:choosing}
 
 The most critical part of sequences with variable-size identifiers consists in
-creating the paths. Algorithm~\ref{algo:crdtabstract} shows the general outlines
-of these sequences. It divides the operations -- insert and delete -- into the
-local and remote parts of the optimistic replication scheme. We can see that the
-core of the algorithm and associated complexity lies in the local part of the
-insert operation where it generates a path (cf. Line~\ref{line:allocpath}) and a
+creating the paths. The function that allocates the identifers must provide the
+smallest possible paths without impairing future
+allocations.
+
+Algorithm~\ref{algo:crdtabstract} shows the general outlines of these
+sequences. It divides the operations -- insert and delete -- into the local and
+remote parts of the optimistic replication scheme. We can see that the core of
+the algorithm and associated complexity lies in the local part of the insert
+operation where it generates a path (cf. Line~\ref{line:allocpath}) and a
 disambiguator (cf. Line~\ref{line:allocdes}). The function \textsc{convert2Path}
 gets rid of the disambiguators of the identifiers in argument to keep paths
 only. Without evidence of concurrency, it simply returns the paths contained in
