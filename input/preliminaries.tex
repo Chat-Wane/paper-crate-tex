@@ -6,13 +6,13 @@ Sequence replicated data structures (\emph{sequence} for short) are the closest
 structures that can implement a shared document. 
 
 \begin{definition}[Document]
-  A document is a serie of $k$ characters
-  $d(H) = \alpha_1.\alpha_2\ldots \alpha_k$ produced by a serie of operations
+  A document is a series of $k$ characters
+  $d(H) = \alpha_1.\alpha_2\ldots \alpha_k$ produced by a series of operations
   $H$.
 \end{definition}
 
 \begin{definition}[Replicated sequence]
-  Let $d(H)$ the document produced by the serie of operations $H$. A replicated
+  Let $d(H)$ the document produced by the series of operations $H$. A replicated
   sequence of $d(H)$ is a structure $r(H)$ with a projection $\pi$ such that
   $\pi(r(H)) \rightarrow d(H)$.
 \end{definition}
@@ -55,24 +55,28 @@ boundary.
 \subsection{Variable-size Identifiers}
 \label{subsec:variable}
 
-Variable-size identifiers can be represented as a concatenation of basic
-elements (e.g. integers). The resulting sequence can be represented by a tree
-structure where the elements of the sequence are stored at the nodes and where
-the edges of the tree are labeled such that a path from the root to a node
-represents the identifier of the element stored at this node. For instance, the
-character $R$ in the previous example is accessible following the path composed
-of the edges labeled $3$ then $1$. More formally, a sequence is a tree where
-each node contains a value i.e. an element of the sequence (over an alphabet
-$\mathcal{A}$). The tree is a set of pairs
-$\langle\mathcal{P}\subset\{\mathbb{N}\}^*,\, \mathcal{A} \rangle$, i.e., each
-element is associated with a path. Additionally, a total order
-($\mathcal{P}$,$<_{\mathcal{P}}$) provides an ordering among the paths which
-allows to retrieve the order of the elements in the sequence. Notation: a path
-composed of $e$ edges labeled $\ell_1,\ell_2,\ldots,\ell_e$ will be noted
-$[\ell_1.\ell_2\ldots\ell_e]$.
+Concatenations of elements (e.g. integers) constitutes a mean to represent
+variable-size identifiers.
+% can be represented as a concatenation of basic elements (e.g. integers).
+A tree structure can represent the resulting sequence. Its nodes store the
+elements of the sequence and its edges are labeled such that a path from the
+root to a node containing an element represents the main part of the latter's
+identifier. For instance, the character $R$ in the previous example is
+accessible following the path composed of the edges labeled $3$ then $1$.  This
+represents the \emph{path} of an identifier.
+
+
+% More formally, a sequence is a tree where each node contains a value i.e. an
+% element of the sequence (over an alphabet $\mathcal{A}$). The tree is a set of
+% pairs $\langle\mathcal{P}\subset\{\mathbb{N}\}^*,\, \mathcal{A} \rangle$, i.e.,
+% each element is associated with a path. Additionally, a total order
+% ($\mathcal{P}$,$<_{\mathcal{P}}$) provides an ordering among the paths which
+% allows to retrieve the order of the elements in the sequence. Notation: a path
+% composed of $e$ edges labeled $\ell_1,\ell_2,\ldots,\ell_e$ will be noted
+% $[\ell_1.\ell_2\ldots\ell_e]$.
 
 \begin{definition}[Path]
-  A path is a serie of integers noted $[\ell_1.\ell_2\ldots \ell_e]$ chosen in a
+  A path is a series of integers noted $[\ell_1.\ell_2\ldots \ell_e]$ chosen in a
   set $\mathcal{P}$ paired with a dense order $(\mathcal{P},\, <_\mathcal{P})$.
   Each integer $\ell_i$ composing the path is chosen in a set
   $\mathbb{N}_{<X_i}$. The binary representation of a path of size $e$ requires
@@ -104,14 +108,21 @@ a sequence. Like in the previous scenario, the initial sequence is \texttt{QWTY}
 with the respective paths $[1]$, $[2]$, $[4]$ and $[8]$. The insertion of the
 character \texttt{E} between the pairs $\langle [2],\, \texttt{W}\rangle$ and
 $\langle [4],\, \texttt{T}\rangle$ results in the following pair:
-$\langle [3],\, \texttt{E} \rangle$. Then the insertion of Character \texttt{R}
-needs to start a new level since there is no room at the first level of the tree
-for a new path between \texttt{E} and \texttt{T}. The resulting path may be
-$[3.1]$ if label $1$ is chosen for the element \texttt{R} at the second
-level. This would increase the depth of the tree in case there is an insertion
-between the elements \texttt{E} and \texttt{R}. The new path would be $[3.0.X]$
-where $0<X<10$ (recall that we assume a 10-ary tree). The total order
-$(\mathcal{P},\,<_\mathcal{P})$ allows retrieving the sequence \texttt{QWERTY}.
+$\langle [3],\, \texttt{E} \rangle$. Then, inserting \texttt{R} between
+\texttt{E} and \texttt{T} forces to start a new level, for there is no room at
+the first level of the tree for any paths between these bounds. In this example,
+the resulting path is $[3.1]$. Using the total order of paths, we retrieve the
+sequence \texttt{QWERTY}.
+% if label $1$ is chosen for the element \texttt{R}
+%at the second level.
+
+\noindent Again, inserting a character between \texttt{E} and \texttt{R} would increase
+the depth of the tree.
+% in case there is an insertion between the elements
+%\texttt{E} and \texttt{R}.
+Assuming a 10-ary tree, the new path would be $[3.0.X]$ where $0<X<10$. 
+
+
 
 \subsection{Disambiguation of concurrent cases}
 \label{subsec:disambiguation}
@@ -121,25 +132,31 @@ $(\mathcal{P},\,<_\mathcal{P})$ allows retrieving the sequence \texttt{QWERTY}.
 % operations. Indeed,
 The order among paths $(\mathcal{P},\,<_\mathcal{P})$ is a total order when a
 single collaborator edits. However, it becomes a partial order when the editing
-session involves several collaborators. For instance, two collaborators
-inserting a character at a same position in the sequence and at a same time may
-end up with the same path. In such case the order of characters is not strictly
-defined and may break the convergence property. Disambiguators use globally
-unique markers to provide a total order among elements even in presence of
-concurrent insertions. These markers usually comprise unique site identifiers
-along with Lamport clocks~\cite{lamport1978time}. Each pair of
-$\langle element,\,path\rangle$ is associated with a disambiguator.
+session involves several collaborators and concurrent operations exist. For
+instance, two collaborators inserting a character at a same position in the
+sequence at a same time may end up with the same allocated path. In such case
+the order of characters is not strictly defined and may break the convergence
+property. We need a disambiguator in each identifier to preserve a dense total
+order among identifiers. This ensures convergent replicas.
+
+%Disambiguators use globally unique markers to provide a total order
+%among elements even in presence of concurrent insertions. 
+
+%Each pair of $\langle element,\,path\rangle$ is
+%associated with a disambiguator.
 
 \begin{definition}[Disambiguator]
-  A disambiguator is a marker chosen in a set $\mathcal{D}$ paired with a total
-  order $(\mathcal{D},\, <_\mathcal{D})$.
+  A disambiguator is a globally unique marker chosen in a set $\mathcal{D}$
+  paired with a total order $(\mathcal{D},\, <_\mathcal{D})$. Disambiguators
+  usually comprise unique site identifiers along with Lamport
+  clocks~\cite{lamport1978time}.
 \end{definition}
 
-Let the set of identifiers $\mathcal{I}$ be the set of unique triples
-$\mathcal{I}:\mathcal{P}\times \mathcal{A}\times \mathcal{D}$. The composition
-of the partial order ($\mathcal{P}$, $<_{\mathcal{P}}$) and the total order of
-disambiguators ($\mathcal{D}$, $<_{\mathcal{D}}$) orders the elements of the
-sequence identically at any replica.
+% Let the set of identifiers $\mathcal{I}$ be the set of unique triples
+% $\mathcal{I}:\mathcal{P}\times \mathcal{A}\times \mathcal{D}$. The composition
+% of the partial order ($\mathcal{P}$, $<_{\mathcal{P}}$) and the total order of
+% disambiguators ($\mathcal{D}$, $<_{\mathcal{D}}$) orders the elements of the
+% sequence identically at any replica.
 
 \begin{definition}[Variable-size identifier]
   A variable-size identifier is a triple $\langle p,\, \alpha,\, d \rangle$
@@ -150,26 +167,45 @@ sequence identically at any replica.
 \end{definition}
 
 Figure~\ref{fig:disexample} depicts a tree containing 6 elements with only 5
-distinct paths. First, Collaborator $c_1$ inserts \texttt{QW}.  Then, the
-collaborators $c_1$ and $c_2$ concurrently insert respectively \texttt{E} and
-\texttt{T} which happens to generate an identical path: [$3$]. To solve the
-order ambiguity, the disambiguator $\langle c_1,\, 3\rangle$ is associated with
-\texttt{E}; the disambiguator $\langle c_2,\, 1\rangle$ is associated with
-\texttt{T}. Retrieving the order of elements simply consists in comparing at
-each level the paths, then the site identifiers, then the clocks. In this
-example, \texttt{E} precedes \texttt{T} because $c_1 < c_2$. Then, Collaborator
-$c_1$ inserts \texttt{Y} at the end of the sequence. Finally, she inserts
+distinct paths. First, the collaborator $u_1$ inserts \texttt{QW}.  Then, the
+collaborators $u_1$ and $u_2$ concurrently insert \texttt{E} and \texttt{T}
+respectively. This happens to generate an identical path: [$3$]. To solve any
+ambiguity about the order of characters, each identifier includes a
+disambiguator.  Let a disambiguator be a series of pairs of unique site
+identifiers and counters:
+$[\langle s_1,\, c_1 \rangle.\langle s_2,\, c_2 \rangle \ldots \langle s_e,\,
+c_e \rangle]$
+where $e$ is the size of the path.  The disambiguator
+$[\langle u_1,\, 6\rangle]$ is associated with \texttt{E}; the disambiguator
+$[\langle u_2,\, 1\rangle]$ is associated with \texttt{T}. The dense total order
+is a lexicographic one: at each level we compare the paths, then the site
+identifiers, then the counters. It is defined as :
+\begin{align*}
+  t_i < t_j \iff & (p_i < p_j) \vee \\
+                 & ((p_i = p_j) \wedge (s_i<s_j)) \vee \\
+                 & ((p_i = p_j) \wedge (s_i = s_j) \wedge (c_i < c_j)) \\
+  t_i = t_j \iff & \neg (t_i < t_j) \wedge \neg (t_j < t_i) \\
+  id_i <_\mathcal{I} id_j \iff & \exists (m > 0)(\forall n < m),\, (t^i_n = t^j_n) \wedge                             (t^i_m < t^j_m) \\
+  id_i =_\mathcal{I} id_j \iff & \forall m,\, t^i_m = t^j_m
+\end{align*}
+% Retrieving the order of elements simply consists in comparing 
+In this example, \texttt{E} precedes \texttt{T} because
+$p^\texttt{E}_1=p^\texttt{T}_1$ and $s^\texttt{E}_1 < s^\texttt{T}_1$. Then,
+$u_1$ inserts \texttt{Y} at the end of the sequence. Finally, $u_1$ inserts
 \texttt{R} between \texttt{E} and \texttt{T}. Since \texttt{E} and \texttt{T}
 have an identical path, there is not enough room for new insertions at this
-level. The allocation function chooses a path [$3.X$] where $0<X<10$. By copying
+level. The allocation function chooses a path $[3.X]$ where $0<X<10$. By copying
 the disambiguator of \texttt{E} at the first level, it ensures that the new
 identifier will follow the character \texttt{E} and precede the character
-\texttt{T}.  Collaborators cannot influence the final position of the character
-in the sequence using disambiguators, for disambiguators are automatically
-computed without concerns about positions. The sequence of the example could
-have ended in \texttt{QWTREY} and it would have needed a correction. It is worth
-noting that the space complexity of disambiguators is upper-bounded by their
-respective path. Therefore, we focus on paths in the rest of the paper.
+\texttt{T}.
+
+% Collaborators cannot influence the final position of the character in the
+% sequence using disambiguators, for disambiguators are automatically computed
+% without concerns about positions. The sequence of the example could have ended
+% in \texttt{QWTREY} and it would have needed a correction.
+%It is worth noting that 
+The space complexity of disambiguators is upper-bounded by their respective
+path. Therefore, we focus on paths in the rest of the paper.
 
 \subsection{Choosing the smallest path}
 \label{subsec:choosing}
