@@ -27,9 +27,12 @@ To provide availability of documents and responsiveness, real-time editors use
 optimistic replication~\cite{saito2005optimistic} of sequences, text documents
 being sequences of characters. As such, each user hosts a local copy of the
 document and directly performs her modifications on it. Changes are broadcast to
-all replica owners where they are integrated. The system is correct if and only
-if the replicas integrating an identical set of operations converge to an
-equivalent state, i.e. users read a same document~\cite{shapiro2011conflict}.
+all replica owners where they are integrated. Historically, the system is said
+correct if it ensures convergence, causality, and intention
+preservation~\cite{sun1998achieving}.
+% the
+%replicas integrating an identical set of operations converge to an equivalent
+%state, i.e. users read a same document~\cite{shapiro2011conflict}.
 
 Decentralized algorithms of Operational
 Transformation~\cite{sun2009contextbased} (OT) piggyback a state or a context
