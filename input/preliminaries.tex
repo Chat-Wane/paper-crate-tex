@@ -20,19 +20,6 @@ order as long as the deletion of an element follows its insertion.
   $\pi(r(H)) \rightarrow d(H)$.
 \end{definition}
 
-\begin{definition}[Path]
-  A path is a serie of integers noted $[\ell_1.\ell_2\ldots \ell_e]$ chosen in a
-  set $\mathcal{P}$ paired with a dense order $(\mathcal{P},\, <_\mathcal{P})$.
-  Each integer $\ell_i$ composing the path is chosen in a set
-  $\mathbb{N}_{<X_i}$. The binary representation of the path requires
-  $\textstyle \sum\nolimits_{i=1}^e \lceil \log_2 X_i\rceil$ bits.
-\end{definition}
-
-\begin{definition}[Disambiguator]
-  A disambiguator is a marker chosen in a set $\mathcal{D}$ paired with a total
-  order $(\mathcal{D},\, <_\mathcal{D})$.
-\end{definition}
-
 The sequence is composed of elements and a unique and immutable identifier is
 associated with each of these elements. The sequence can be seen as a set of
 pairs $\langle element, identifier \rangle$. A total order is assumed on
@@ -77,6 +64,15 @@ element is associated with a path. Additionally, a total order
 allows to retrieve the order of the elements in the sequence. Notation: a path
 composed of $e$ edges labeled $\ell_1,\ell_2,\ldots,\ell_e$ will be noted
 $[\ell_1.\ell_2\ldots\ell_e]$.
+
+\begin{definition}[Path]
+  A path is a serie of integers noted $[\ell_1.\ell_2\ldots \ell_e]$ chosen in a
+  set $\mathcal{P}$ paired with a dense order $(\mathcal{P},\, <_\mathcal{P})$.
+  Each integer $\ell_i$ composing the path is chosen in a set
+  $\mathbb{N}_{<X_i}$. The binary representation of a path of size $e$ requires
+  $\textstyle \sum\nolimits_{i=1}^e \lceil \log_2 X_i\rceil$ bits.
+\end{definition}
+
 
 \begin{figure*}
   \centering
@@ -128,11 +124,24 @@ concurrent insertions. These markers usually comprise unique site identifiers
 along with Lamport clocks~\cite{lamport1978time}. Each pair of
 $\langle element,\,path\rangle$ is associated with a disambiguator.
 
+\begin{definition}[Disambiguator]
+  A disambiguator is a marker chosen in a set $\mathcal{D}$ paired with a total
+  order $(\mathcal{D},\, <_\mathcal{D})$.
+\end{definition}
+
 Let the set of identifiers $\mathcal{I}$ be the set of unique triples
 $\mathcal{I}:\mathcal{P}\times \mathcal{A}\times \mathcal{D}$. The composition
 of the partial order ($\mathcal{P}$, $<_{\mathcal{P}}$) and the total order of
 disambiguators ($\mathcal{D}$, $<_{\mathcal{D}}$) orders the elements of the
 sequence identically at any replica.
+
+\begin{definition}[Variable-size identifier]
+  A variable-size identifier is a triple $\langle p,\, \alpha,\, d \rangle$
+  chosen in $\mathcal{I}$ where $p$ is a path chosen in $\mathcal{P}$, $\alpha$
+  is an element chosen in an alphabet $\mathcal{A}$, and $d$ is a disambiguator
+  chosen in $\mathcal{D}$. The set $\mathcal{I}$ is paired with a dense total
+  order $(\mathcal{I},\,<_\mathcal{I})$.
+\end{definition}
 
 Figure~\ref{fig:disexample} depicts a tree containing 6 elements with only 5
 distinct paths. First, Collaborator $c_1$ inserts \texttt{QW}.  Then, the
