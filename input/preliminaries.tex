@@ -52,7 +52,7 @@ Such growing identifiers are called variable-size identifiers. The main
 objective is to keep the growth of the size of the identifiers under a sublinear
 boundary.
 
-\subsection{Variable-size Identifiers}
+\subsection{Encoding a position in the sequence}
 \label{subsec:variable}
 
 Concatenations of elements (e.g. integers) constitutes a mean to represent
@@ -309,6 +309,18 @@ sublinear space complexity compared to the number of insertions whatever is the
 editing sequence. Such allocation function would avoid the need for consensus
 algorithm~\cite{mostefaoui2015signature} and would make CRDT-based editors a
 practicable alternative to the current mainstream editors.
+
+\begin{problem}
+  Let $s(I)= id_1.id_2\ldots id_I$ be the sequence of identifiers, and
+  $s(I+1) = s(I) \cup \textsc{insert}(p,\, \_,\, n)$, with $p,q \in s(I)$ and
+  $p<_\mathcal{I}q$. Let $|s(I)|$ be the size of the binary representation of
+  the sequence. The function \textsc{insert} must allocate identifiers such
+  that:
+  \begin{equation}
+    |s(I+1)| - |s(I)| < \mathcal{O}(I)
+  \end{equation}
+\end{problem}
+
  
 %%% Local Variables:
 %%% mode: latex
