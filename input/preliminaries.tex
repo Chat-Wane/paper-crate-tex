@@ -55,15 +55,16 @@ boundary.
 \subsection{Encoding a position in the sequence}
 \label{subsec:variable}
 
-Concatenations of elements (e.g. integers) constitutes a mean to represent
-variable-size identifiers.
+Each \textsc{insert} operation generates an identifier that encodes the position
+of the new character in the sequence using a dense order. Concatenations of
+comparable elements constitute a mean to represent such dense order.
 % can be represented as a concatenation of basic elements (e.g. integers).
-A tree structure can represent the resulting sequence. Its nodes store the
-elements of the sequence and its edges are labeled such that a path from the
-root to a node containing an element represents the main part of the latter's
-identifier. For instance, the character $R$ in the previous example is
-accessible following the path composed of the edges labeled $3$ then $1$.  This
-represents the \emph{path} of an identifier.
+The union of these identifiers creates a tree. Its nodes store the elements of
+the sequence and its edges are labeled such that a path from the root to a node
+containing an element represents the main part of the latter's identifier. For
+instance, the character \texttt{R} in the previous example is accessible
+following the path composed of the edges labeled $3$ then $1$.  This represents
+the \emph{path} of an identifier.
 
 
 % More formally, a sequence is a tree where each node contains a value i.e. an
@@ -102,7 +103,6 @@ represents the \emph{path} of an identifier.
     \texttt{QWERTY}.}
 \end{figure*}
 
-
 Figure~\ref{fig:treemodelexample} shows the underlying 10-ary tree representing
 a sequence. Like in the previous scenario, the initial sequence is \texttt{QWTY}
 with the respective paths $[1]$, $[2]$, $[4]$ and $[8]$. The insertion of the
@@ -113,57 +113,33 @@ $\langle [3],\, \texttt{E} \rangle$. Then, inserting \texttt{R} between
 the first level of the tree for any paths between these bounds. In this example,
 the resulting path is $[3.1]$. Using the total order of paths, we retrieve the
 sequence \texttt{QWERTY}.
-% if label $1$ is chosen for the element \texttt{R}
-%at the second level.
 
-\noindent Again, inserting a character between \texttt{E} and \texttt{R} would increase
-the depth of the tree.
-% in case there is an insertion between the elements
-%\texttt{E} and \texttt{R}.
-Assuming a 10-ary tree, the new path would be $[3.0.X]$ where $0<X<10$. 
+% if label $1$ is chosen for the element \texttt{R} at the second level.
+%% \noindent Again, inserting a character between \texttt{E} and \texttt{R}
+%% would increase the depth of the tree.
+% in case there is an insertion between the elements \texttt{E} and \texttt{R}.
+% Assuming a 10-ary tree, the new path would be $[3.0.X]$ where $0<X<10$.
 
 
 
 \subsection{Disambiguation of concurrent cases}
 \label{subsec:disambiguation}
 
-% Two collaborators concurrently performing an operation on their respective
-% replica may get different results after the integration of both
-% operations. Indeed,
 The order among paths $(\mathcal{P},\,<_\mathcal{P})$ is a total order when a
 single collaborator edits. However, it becomes a partial order when the editing
 session involves several collaborators and concurrent operations exist. For
 instance, two collaborators inserting a character at a same position in the
 sequence at a same time may end up with the same allocated path. In such case
 the order of characters is not strictly defined and may break the convergence
-property. We need a disambiguator in each identifier to preserve a dense total
-order among identifiers. This ensures convergent replicas.
-
-%Disambiguators use globally unique markers to provide a total order
-%among elements even in presence of concurrent insertions. 
-
-%Each pair of $\langle element,\,path\rangle$ is
-%associated with a disambiguator.
+property. We need a disambiguator in each identifier to preserve their
+uniqueness. This guarantees a total order among identifiers, hence convergent
+replicas.
 
 \begin{definition}[Disambiguator]
   A disambiguator is a globally unique marker chosen in a set $\mathcal{D}$
   paired with a total order $(\mathcal{D},\, <_\mathcal{D})$. Disambiguators
   usually comprise unique site identifiers along with Lamport
   clocks~\cite{lamport1978time}.
-\end{definition}
-
-% Let the set of identifiers $\mathcal{I}$ be the set of unique triples
-% $\mathcal{I}:\mathcal{P}\times \mathcal{A}\times \mathcal{D}$. The composition
-% of the partial order ($\mathcal{P}$, $<_{\mathcal{P}}$) and the total order of
-% disambiguators ($\mathcal{D}$, $<_{\mathcal{D}}$) orders the elements of the
-% sequence identically at any replica.
-
-\begin{definition}[Variable-size identifier]
-  A variable-size identifier is a triple $\langle p,\, \alpha,\, d \rangle$
-  chosen in $\mathcal{I}$ where $p$ is a path chosen in $\mathcal{P}$, $\alpha$
-  is an element chosen in an alphabet $\mathcal{A}$, and $d$ is a disambiguator
-  chosen in $\mathcal{D}$. The set $\mathcal{I}$ is paired with a dense total
-  order $(\mathcal{I},\,<_\mathcal{I})$.
 \end{definition}
 
 Figure~\ref{fig:disexample} depicts a tree containing 6 elements with only 5
@@ -177,63 +153,51 @@ $[\langle s_1,\, c_1 \rangle.\langle s_2,\, c_2 \rangle \ldots \langle s_e,\,
 c_e \rangle]$
 where $e$ is the size of the path.  The disambiguator
 $[\langle u_1,\, 6\rangle]$ is associated with \texttt{E}; the disambiguator
-$[\langle u_2,\, 1\rangle]$ is associated with \texttt{T}. The dense total order
-is a lexicographic one: at each level we compare the paths, then the site
-identifiers, then the counters. It is defined as :
+$[\langle u_2,\, 1\rangle]$ is associated with \texttt{T}. The disambiguator of
+the character \texttt{R} inserted between \texttt{E} and \texttt{T} is
+$[\langle u_1,\, 6\rangle.\langle u_1,\, 7\rangle]$.
+
+\subsection{Allocating variable-size identifiers}
+
+Unique and immutable identifiers comprise both a path and a disambiguator in
+order to preserve a dense total order, even in presence of concurrent
+operations.
+
+\begin{definition}[Variable-size identifier]
+  A variable-size identifier is a triple $\langle p,\, \alpha,\, d \rangle$
+  chosen in $\mathcal{I}$ where $p$ is a path chosen in $\mathcal{P}$, $\alpha$
+  is an element chosen in an alphabet $\mathcal{A}$, and $d$ is a disambiguator
+  chosen in $\mathcal{D}$. The set $\mathcal{I}$ is paired with a dense total
+  order $(\mathcal{I},\,<_\mathcal{I})$.
+\end{definition}
+
+In Figure~\ref{fig:disexample}, the dense total order is also lexicographic: at
+each level we compare the paths, then the site identifiers, then the
+counters. It is defined as :
 \begin{align*}
-  t_i < t_j \iff & (p_i < p_j) \vee \\
-                 & ((p_i = p_j) \wedge (s_i<s_j)) \vee \\
-                 & ((p_i = p_j) \wedge (s_i = s_j) \wedge (c_i < c_j)) \\
+  t_i < t_j \iff & (p_i < p_j) \vee  %\\
+                  ((p_i = p_j) \wedge (s_i<s_j)) \vee %\\
+                  ((p_i = p_j) \wedge (s_i = s_j) \wedge (c_i < c_j)) \\
   t_i = t_j \iff & \neg (t_i < t_j) \wedge \neg (t_j < t_i) \\
   id_i <_\mathcal{I} id_j \iff & \exists (m > 0)(\forall n < m),\, (t^i_n = t^j_n) \wedge                             (t^i_m < t^j_m) \\
   id_i =_\mathcal{I} id_j \iff & \forall m,\, t^i_m = t^j_m
 \end{align*}
 % Retrieving the order of elements simply consists in comparing 
-In this example, \texttt{E} precedes \texttt{T} because
-$p^\texttt{E}_1=p^\texttt{T}_1$ and $s^\texttt{E}_1 < s^\texttt{T}_1$. Then,
-$u_1$ inserts \texttt{Y} at the end of the sequence. Finally, $u_1$ inserts
-\texttt{R} between \texttt{E} and \texttt{T}. Since \texttt{E} and \texttt{T}
-have an identical path, there is not enough room for new insertions at this
-level. The allocation function chooses a path $[3.X]$ where $0<X<10$. By copying
-the disambiguator of \texttt{E} at the first level, it ensures that the new
-identifier will follow the character \texttt{E} and precede the character
-\texttt{T}.
+In this example, the paths order most of characters. Nevertheless, \texttt{E}
+precedes \texttt{T} because $p^\texttt{E}_1=p^\texttt{T}_1$ and
+$s^\texttt{E}_1 < s^\texttt{T}_1$. Then, $u_1$ inserts \texttt{Y} at the end of
+the sequence. Finally, $u_1$ inserts \texttt{R} between \texttt{E} and
+\texttt{T}. Since \texttt{E} and \texttt{T} have an identical path, there is not
+enough room for new insertions at this level. The allocation function chooses a
+path $[3.X]$ where $0<X<10$. By copying the disambiguator of \texttt{E} at the
+first level, it ensures that the new identifier will follow \texttt{E} and
+precede \texttt{T}.
 
 % Collaborators cannot influence the final position of the character in the
 % sequence using disambiguators, for disambiguators are automatically computed
 % without concerns about positions. The sequence of the example could have ended
 % in \texttt{QWTREY} and it would have needed a correction.
 %It is worth noting that 
-The space complexity of disambiguators is upper-bounded by their respective
-path. Therefore, we focus on paths in the rest of the paper.
-
-\subsection{Choosing the smallest path}
-\label{subsec:choosing}
-
-The most critical part of sequences with variable-size identifiers consists in
-creating the paths. The function that allocates the identifers must provide the
-smallest possible paths without impairing future
-allocations.
-
-Algorithm~\ref{algo:crdtabstract} shows the general outlines of these
-sequences. It divides the operations -- insert and delete -- into the local and
-remote parts of the optimistic replication scheme. We can see that the core of
-the algorithm and associated complexity lies in the local part of the insert
-operation where it generates a path (cf. Line~\ref{line:allocpath}) and a
-disambiguator (cf. Line~\ref{line:allocdes}). The function \textsc{convert2Path}
-gets rid of the disambiguators of the identifiers in argument to keep paths
-only. Without evidence of concurrency, it simply returns the paths contained in
-the identifiers. Otherwise, it translates the identifiers into paths that
-maintain the order following the order of paths
-($\mathcal{P},\, <_{\mathcal{P}}$). For instance in Figure~\ref{fig:disexample},
-the result of \textsc{convert2Path} with the identifiers of the character
-\texttt{E} and the character \texttt{T} is the pair
-$\langle [3.0],\, [3.9]\rangle$. The function \textsc{allocPath} allocates a new
-path between these bounds.  \textsc{allocDis} decorates the path in order to
-guarantee that the new identifier -- as the composition of a path, an element,
-and a disambiguator -- consistently fall between the adjacent identifiers that
-served to create it following the order of identifiers
-($\mathcal{I}, \, <_\mathcal{I}$).
 
 \begin{algorithm}[h]
   \input{input/crdtabstractalgo.tex}
@@ -241,13 +205,76 @@ served to create it following the order of identifiers
     variable-size identifiers.}
 \end{algorithm}
 
-The function \textsc{allocPath} chooses a path in the tree between two other paths
-$p$ and $q$ where $p$ precedes $q$: $p<_{\mathcal{P}}q$. The new path $n$ must
-fall between $p$ and $q$: $p<_\mathcal{P}n<_\mathcal{P}q$.
+
+Algorithm~\ref{algo:crdtabstract} shows the general outlines of these
+sequences. It divides the operations into the local and remote parts of the
+optimistic replication scheme. When a user types (resp. removes) a character,
+the editor immediately executes the local part of the \textsc{insert}
+(resp. \textsc{delete}) operation. The editor executes the remote part of
+operations as soon as it receives it and that its precondition is checked.
+
+\noindent Algorithm~\ref{algo:crdtabstract}'s core lies in the local part of the
+insertion where it generates a path and a disambiguator. Firstly, to simplify
+readability in the rest of this paper, \textsc{convert2Path} immediately gets
+rid of the disambiguator contained in each identifier to keep paths only.
+% Without evidence of concurrency, it simply returns the paths contained in
+%the identifiers.
+% Otherwise, 
+It translates the identifiers into the closest paths that maintain their order
+using only the order among paths, i.e.,
+$(\mathcal{I},\, <_\mathcal{I}) \rightarrow (\mathcal{P},\, <_{\mathcal{P}})$.
+For instance, considering 2 elements with the following identifiers
+$id_1 = \langle [4.2],\, e_1, \, [\langle u_1,\,1 \rangle.\langle u_1,\,2
+\rangle] \rangle$
+and
+$id_2 = \langle [4.1],\, e_2, \, [\langle u_2,\,1 \rangle.\langle u_2,\,2
+\rangle] \rangle$.
+Comparing these identifiers results in $id_1<_\mathcal{I} id_2$; but using only
+paths results in $id_2 <_\mathcal{P} id_1$. Implicitely, $id_2$ is the path
+[$5$], for its first triple $t_1^{id_1} = \langle p_1,\, s_1,\, c_1 \rangle$ is
+greater than the $id_2$'s one; and any path allocated between [$4.2$] and [$5$]
+builds an identifier between $id_1$ and $id_2$.
+
+
+% in Figure~\ref{fig:disexample}, the result of \textsc{convert2Path} with the
+% identifiers of the character \texttt{E} and the character \texttt{T} is the pair
+% $\langle [3.0],\, [3.9]\rangle$. 
+
+\noindent Secondly, \textsc{allocPath} allocates a new path between these
+bounds. It should choose among the paths with the smallest size for performance
+sake. For instance, between [4.2] and [5], the available paths are [4.3], [4.4],
+\ldots, [4.9]. \textsc{allocPath} chooses among these.
+
+
+\noindent Thirdly, \textsc{allocDis} generates the disambiguator to associate
+with the path in order to guarantee that the new identifier consistently fall
+between the adjacent identifiers that served its allocation following the dense
+total order among identifiers. For instance, considering that \textsc{allocPath}
+chose the path [4.3], \textsc{allocDis} copies the $id_1$'s first pair of the
+disambiguator $\langle u_1,\,1 \rangle$ to which it concatenates its own unique
+marker: $\langle u_3,\,1 \rangle$. The resulting identifier is
+$\langle [4.3],\, e_3, \, [\langle u_1,\,1 \rangle .\langle u_3,\, 1\rangle ]
+\rangle$.
+As expected, we obtain $id_1 <_\mathcal{I} id_{new} <_\mathcal{I} id_2$.  
+% The space complexity of disambiguators is upper-bounded by their respective
+% path. Therefore, we focus on paths in the rest of the paper.
+
+\noindent Finally, the editor broadcasts $id_{new}$ to all editors.
+
+
+\subsection{Choosing the smallest path}
+\label{subsec:choosing}
+
+The most critical part of sequences with variable-size identifiers consists in
+creating the paths. The function that allocates the identifers must provide the
+smallest possible paths without impairing future allocations.
+
+% The function \textsc{allocPath} chooses a path in the tree between two other paths
+% $p$ and $q$ where $p$ precedes $q$: $p<_{\mathcal{P}}q$. The new path $n$ must
+% fall between $p$ and $q$: $p<_\mathcal{P}n<_\mathcal{P}q$.
 % However, the number of paths between two paths is infinite, for the order is
 % dense, and so is the number of \textsc{allocPath} strategies. Nevertheless,
-The function \textsc{allocPath} should choose the smallest available path among all
-the possible paths for performance sake.
+
 % This observation reduces considerably the number of possible allocation
 % strategies.
 
@@ -295,23 +322,17 @@ is thus inserted at position 0 shifting \texttt{Y} to position 1, etc.
 \end{itemize}
 
 This example shows how the insertion order impacts the length of the allocated
-paths. Unfortunately, the insertion order cannot be predicted, nor the size of
+paths. Unfortunately, the insertion order cannot be predicted nor the size of
 the final sequence. Prior work on sequences often made the assumption of a
 left-to-right editing due to observations made on
 corpora~\cite{preguica2009commutative, weiss2009logoot}. However, there exist
 human edited documents that do not correspond to this kind of
-editing~\cite{nedelec2013lseq}.
+editing~\cite{nedelec2013lseq}. The problem is the following:
 %% Indeed, the editing depends on the type of the document and to the activity
 %% for example when correcting a document the editing in mainly random as the
 %% insertions and deletions corresponds to errors distributed in the document.
-Hence the need of an allocation function which provides identifiers with a
-sublinear space complexity compared to the number of insertions whatever is the
-editing sequence. Such allocation function would avoid the need for consensus
-algorithm~\cite{mostefaoui2015signature} and would make CRDT-based editors a
-practicable alternative to the current mainstream editors.
-
-\begin{problem}
-  Let $s(I)= id_1.id_2\ldots id_I$ be the sequence of identifiers, and
+\begin{problem}[Size of allocated identifiers]
+  Let $s(I)= id_1.id_2\ldots id_I$ be a sequence of identifiers, and
   $s(I+1) = s(I) \cup \textsc{insert}(p,\, \_,\, n)$, with $p,q \in s(I)$ and
   $p<_\mathcal{I}q$. Let $|s(I)|$ be the size of the binary representation of
   the sequence. The function \textsc{insert} must allocate identifiers such
@@ -320,6 +341,13 @@ practicable alternative to the current mainstream editors.
     |s(I+1)| - |s(I)| < \mathcal{O}(I)
   \end{equation}
 \end{problem}
+
+\noindent Large scale collaborative editors need of an allocation function that
+provides identifiers with a sublinear space complexity compared to the number of
+insertions whatever is the editing sequence that produced the document. Such
+allocation function would avoid the need for consensus
+algorithm~\cite{mostefaoui2015signature} and would make CRDT-based editors a
+practicable alternative to the current mainstream editors.
 
  
 %%% Local Variables:
