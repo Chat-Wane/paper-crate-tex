@@ -192,26 +192,32 @@ generation of the operation and its integration~\cite{sun1998achieving}. Often,
 the behavior of an operation depends of others previously integrated. For
 instance, the generation of a removal operation requires the targeted element to
 exist, hence, its insert operation to be integrated. These \emph{happens before}
-relationships~\cite{lamport1978time} constrains the integration order.
-Unfortunately, the more the order is constrained, the more costly it becomes. For
-instance, accurately tracking causal relations of one operation with all others
+relationships~\cite{lamport1978time} constrain the integration order.
+Unfortunately, the more the order is constrained, the costlier it
+becomes. Accurately tracking causal relations of one operation with all others
 requires at least $\mathcal{O}(W)$ both locally and in communication overhead,
 where $W$ is the number of participants that ever wrote in the
 document~\cite{charronbost1991concerning}. Such communication overhead confines
-its usage to small controlled editing session.
+its usage to small editing sessions.
 
 \CRATE tracks only the semantically related pairs of operations: the removal of
 an element with its insertion. If the operations arrives to an editor out of
-order, the removal will wait for the corresponding insertion. On the opposite,
-it immediately integrates received insertions. The structure is a version vector
-with exceptions~\cite{malkhi2007concise, mukund2014optimized}. The vector
-allocates for each member
+order, the removal waits for the corresponding insertion. On the opposite, it
+immediately integrates received insertions. \CRATE uses a version vector with
+exceptions~\cite{malkhi2007concise, mukund2014optimized}: for each editor,
 \begin{inparaenum}[(i)]
-\item an integer denoting the maximum counter of operations originated from
-  this site and
-\item a list of integers denoting the exceptions, i.e., the operations known
-  as not received yet.
+\item an integer denotes the maximal counter of received operations that
+  originated from this editor and
+\item a set of integers denotes the exceptions, i.e., the operations known as
+  not yet received from this editor.
 \end{inparaenum}
+For instance, in Figure~\ref{fig:timeline}, the vectors are represented as a
+list of triples
+$\langle unique\,site\,identifier,\, maximal\,counter,\, exceptions \rangle$.
+The second editor happens to obtain the vector $[\langle u_1,\,2,\ \{1\}]$.  It
+states that $u_2$ received 1 operation from $u_1$ with the counter 2 but another
+operation exists -- the first one of $u_1$ -- that $u_2$ did not yet received.
+
 While the local overhead implied by such structure remains upper-bounded by
 $\mathcal{O}(W)$, the communication overhead is constant $\mathcal{O}(1)$.
 
@@ -257,24 +263,26 @@ some collaborators worked offline.
 \begin{figure}
   \centering
   \input{./input/timelineexample.tex}
-  \caption{\label{fig:timeline} Causality tracking example. Triples in vectors
-    are $\langle origin,\,max,\, exceptions \rangle$.}
+  \caption{\label{fig:timeline} Causality tracking example involving 3
+    editors. The version vectors with exceptions are vectors of triples
+    $\langle unique\,site\,identifier,\, maximal\,counter,\, exceptions
+    \rangle$.}
 \end{figure}
 
-Figure~\ref{fig:timeline} depicts an editing session involving 3
-collaborators. The version vector with exceptions starts empty. Collaborator
-$c_1$ inserts two characters in its document and broadcasts the corresponding
-messages. Collaborator $c_3$ quickly receives both operations. Since it did not
-receive these operations before, and since they do not depend of any other
-operation, it integrates the operation identifiers to its causality
-structure. It also delivers the operation to the shared sequence structure. In
-the meantime, Collaborator $c_2$ only receives the second
-operation. Consequently, it marks the first operation of $c_1$ as exception and
-still integrates the received operation. Then, $c_3$ removes the first character
-inserted by $c_1$ and broadcasts it. While $c_1$ delivers the removal
-immediately, $c_2$ waits since the targeted operation belongs to the
-exceptions. Once it receives the missing first operation of $c_1$, the exception
-disappears and the delete operation is performed.
+Figure~\ref{fig:timeline} depicts an editing session involving 3 editors. The
+version vectors with exceptions start empty. The editor $u_1$ inserts two
+characters in its replica and broadcasts the corresponding messages. The editor
+$u_3$ quickly receives both operations. Since it did not receive these
+operations before, and since they do not depend of any other operation, the
+editor integrates the received counters to its vector. It also delivers the
+operation to the shared sequence structure. In the meantime, the editor $u_2$
+only received the second operation. Consequently, it stores this maximal
+counter, marks the first operation of $u_1$ as exception, and delivers the
+received operation. Then, $u_3$ removes the first character inserted by $u_1$
+and broadcasts the corresponding message. While $u_1$ delivers the removal
+immediately, $u_2$ waits, for the targeted operation belongs to its
+exceptions. Once it receives the missing operation of $u_1$, the exception
+disappears and the delete operation is delivered.
 
 % The local upper-bound on space complexity is:
 % \begin{equation}

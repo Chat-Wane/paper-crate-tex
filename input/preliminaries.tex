@@ -267,7 +267,10 @@ As expected, we obtain $id_1 <_\mathcal{I} id_{new} <_\mathcal{I} id_2$.
 
 The most critical part of sequences with variable-size identifiers consists in
 creating the paths. The function that allocates the identifiers must provide the
-smallest possible paths without impairing future allocations.
+smallest possible paths without impairing future allocations. As shown in
+Algorithm~\ref{algo:crdtabstract}, each identifier is broadcast to all
+editors. As consequence, their size directly impacts the communication
+complexity of the editor.
 
 % The function \textsc{allocPath} chooses a path in the tree between two other paths
 % $p$ and $q$ where $p$ precedes $q$: $p<_{\mathcal{P}}q$. The new path $n$ must

@@ -43,7 +43,7 @@ using a dense space. For the sake of performance, it aims to keep the paths
 small.
 
 \noindent The general idea behind \LSEQ is that it agrees to be temporarily
-unefficient in order to reach a state where it will be efficient enough to
+inefficient in order to reach a state where it will be efficient enough to
 compensate previous losses.
 
 
@@ -101,7 +101,7 @@ instance, if the boundary is set to $5$, the function only considers 5 among the
 it chooses among the paths in the processed range starting from one of the
 adjacent paths. The function \textsc{subPath} truncates or prolongs the path in
 argument to reach the desired size. For instance, \textsc{right-to-left} starts
-from the next path [$5$] prolongated by \textsc{subPath} to [$5.0$] and
+from the next path [$5$] prolonged by \textsc{subPath} to [$5.0$] and
 considers the 5 preceding paths : [$4.5$], [$4.6$], \ldots [$4.9$].
 
 \noindent Finally, it chooses randomly among these possible paths. For instance,
@@ -127,42 +127,10 @@ $[5.0]- 4 = [4.60]$.
 \noindent The binary size of a path becomes
 $\textstyle\sum\nolimits_{i=1}^{e}\log_2{2^i}=\sum\nolimits_{i=1}^{e}i=
 {e^2-e\over{2}}$.
-Such quadratic growth forbids the existence of obvious editing behaviors leading
-to the worst case allocation (e.g. Figure~\ref{fig:allocpathexample}). This
-emphasizes the need of two sub-allocation functions.
-
-% uses an \emph{exponential
-%   tree}~\cite{andersson1996faster,andersson2007dynamic}. Such tree allows each
-% node to have twice as much children as its parent. Regarding the formalization
-% of Section~\ref{sec:preliminaries}, it means a restriction over
-% $\mathcal{P}$. The path is no longer a sequence of natural numbers but a
-% sequence of numbers chosen among a subset of $\mathbb{N}$, the size of which is
-% doubled at each concatenation. For instance, let us consider the path
-% [$\ell_1.\ell_2\ldots\ell_e$] with $\ell_1\in\mathbb{N}_{<2}$, then
-% $\ell_2\in \mathbb{N}_{<4}$, and $\ell_{e}\in\mathbb{N}_{<2^e}$.
-
-% Compared to constant arity trees, paths require an additional bit per
-% concatenation, for the subset are growing over depths. The binary size of a path
-% is
-% $\textstyle\sum\nolimits_{i=1}^{e}\log_2{2^i}=\sum\nolimits_{i=1}^{e}i=
-% {e^2-e\over{2}}$.
-% Such growth forbids the existence of trivial editing behaviors leading to the
-% worst case allocation (e.g. Figure~\ref{fig:allocpathexample}).
-
-% Since one allocation function is not enough to characterize efficiently any
-% editing behavior, \LSEQ uses two functions with antagonist designs in order to
-% settle each other's weaknesses. Line~\ref{line:lefttoright} shows the
-% sub-allocation function that targets left-to-right editing behaviors such as the
-% one used in Figure~\ref{fig:allocpathexample}. Line~\ref{line:righttoleft} shows
-% the other one that targets the right-to-left editing behaviors. These
-% sub-allocation functions operate very similarly. The former chooses the
-% path starting from the preceding path and adds a small random value while the
-% latter chooses a path starting from the following path and subtracts a small
-% random value. They aim to leave more space for future insertions in queue and in
-% front of the new path, respectively.  When one of these sub-allocation functions
-% does not manage to provide small-sized paths, the other quickly takes the lead. In
-% such case, \LSEQ must be efficient enough to compensate the loss due to its
-% unsuitable choice of sub-allocation function.
+For instance [$4.60$] requires $5 + 6 = 11$ bits.  Such quadratic growth forbids
+the existence of obvious editing behaviors leading to the worst case allocation
+(e.g. Figure~\ref{fig:allocpathexample}). This emphasizes the need of two
+sub-allocation functions.
 
 \begin{figure}
   \centering
@@ -204,9 +172,9 @@ continues, the new allocated paths will compensate the loss of the first level.
 \subsection{Complexity analysis}
 \label{subsec:complexity}
 
-In text editing, most of the editing behaviors can be empirically summarized
-as a composition of two basic editing behaviors.
-\begin{inparaenum}[(i)]
+In text editing, most of the editing behaviors can be empirically summarized as
+a composition of two basic editing behaviors:
+\begin{itemize}[noitemsep, leftmargin=*]
 \item The random editing behavior where the author inserts new elements at what
   appears random positions in the sequence. For instance, this behavior mostly
   arises when syntactic corrections are performed, e.g. the author writes
@@ -216,21 +184,21 @@ as a composition of two basic editing behaviors.
   elements between the last inserted element and an adjacent element (after or
   before exclusively). For instance, when an author writes \texttt{QWERTY}, she
   generally starts from the first character \texttt{Q} to the last letter of the
-  word \texttt{Y}. On the opposite, insertions in a logfile are usually
-  performed at the beginning for practical reasons. This behavior characterizes
-  both left-to-right and right-to-left editing.
-\end{inparaenum}
+  word \texttt{Y}. On the opposite, there exist documents mainly edited at the
+  beginning\footnote{e.g. \url{http://en.wikipedia.org/wiki/Template_talk:Did_you_know}~\cite{nedelec2013lseq}}. This
+  behavior characterizes both left-to-right and right-to-left editing.
+\end{itemize}
 
-As a consequence, we focus on the space complexity analysis of \LSEQ to random
-and monotonic editing behaviors to which we add a worst case complexity
-analysis. It is worth noting that monotonic editing behavior represents an
-unfavorable case since it tends to unbalance the underlying tree storing the
-replicated sequence. As soon as the participants start to edit at different
-positions -- which is closer from a real-life use case -- the tree becomes more
-balanced and operations become more efficient proportionally. Also, the
-analysis does not include an average case since it requires to know the average
-distribution of the position of edits performed by a human collaborator which is
-obviously very complex.
+\noindent As a consequence, we focus on the space complexity analysis of \LSEQ
+to random and monotonic editing behaviors to which we add a worst case
+complexity analysis. It is worth noting that monotonic editing behavior
+represents an unfavorable case since it tends to unbalance the underlying tree
+storing the replicated sequence. As soon as the participants start to edit at
+different positions -- which is closer from a real-life use case -- the tree
+becomes more balanced and operations become more efficient proportionally. Also,
+the analysis does not include an average case since it requires to know the
+average distribution of the position of edits performed by a human collaborator
+which is obviously very complex.
 
 \subsubsection{Space complexity}
 
