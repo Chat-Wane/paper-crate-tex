@@ -3,42 +3,69 @@
 \section{LSeq: a polylogarithmic path allocator}
 \label{sec:proposal}
 
-\LSEQ (polyLogarithmic SEQuence) is the name of the proposed allocation
-function. Any sequence data structure using variable-size identifiers can use
-it. Our prior works~\cite{nedelec2013concurrency, nedelec2013lseq} empirically
-showed that \LSEQ provides a sublinear upper bound on its identifiers' space
-complexity. Nevertheless, we did not provide any complexity analysis to support
-these observations. In this section we prove the polylogarithmic growth of
-\LSEQ's identifiers and state the conditions upon which it applies. The
-complexity analysis also includes the space complexity of the replicated
-structure, and the time complexity of operations provided by this structure.
+\LSEQ (poly\textsc{L}ogarithmic \textsc{SEQ}uence) is the name of the proposed
+allocation function.
+%Any sequence data structure using
+%variable-size identifiers~\cite{preguica2009commutative, weiss2009logoot} can
+%use \LSEQ.  
+Our prior works~\cite{nedelec2013concurrency, nedelec2013lseq} empirically
+showed that \LSEQ allocates identifiers with a sublinear upper bound on space
+complexity.  However, we did not provide any complexity analysis to support
+these observations.
 
-\LSEQ improves the identifiers' space complexity by degrading its worst case
-complexity. However, the worst case is made non-trivial. If a malicious user
-tries to produce the worst case scenario, other editors can detect her easily,
-for there is a large difference between the expected space complexity and the
-worst case space complexity.
+% \LSEQ improves the space complexity of identifiers by degrading its worst case
+% complexity. However, the worst case is made non-trivial. If a malicious user
+% tries to produce the worst case scenario, other editors can detect her easily,
+% for there is a large difference between the expected space complexity and the
+% worst case space complexity.
 
-This section starts by describing the allocation strategy. Then, it provides its
-complexity analysis.
+This section starts by describing the allocation strategy. Then, it provides the
+proof of the polylogarithmic growth of \LSEQ's identifiers and states the
+conditions upon which this applies. The complexity analysis also includes the
+space complexity of a replicated structure, and the time complexity of
+operations provided by such structure.
+
+\noindent As for the communication complexity, the following section describes
+an \LSEQ-based editor that benefits from these identifiers.
 
 \subsection{Allocation of paths}
 \label{subsec:lseqallocation}
 
-Function \textsc{allocPath} chooses the path associated with each element in
-order to encode its relative position with regard to its adjacent elements in
-the sequence. For the sake of performance, it aims to keep the underlying tree
-with a small depth.
+When a user types a character, the editor executes the local part of the
+\textsc{insert} operation (see Line~\ref{line:insert} of
+Algorithm~\ref{algo:crdtabstract}). This function allocates an identifier
+comprising a path, the element, and a disambiguator. The most important choice
+concerns the path (see Line~\ref{line:allocpath} of
+Algorithm~\ref{algo:crdtabstract}).
+\noindent The function \textsc{allocPath} chooses the path that encodes the
+position of the new element regarding its adjacent elements in the sequence
+using a dense space. For the sake of performance, it aims to keep the paths
+small.
+
+\noindent The general idea behind \LSEQ is that it agrees to be temporarily
+unefficient in order to reach a state where it will be efficient enough to
+compensate previous losses.
+
 
 \begin{algorithm}
 \input{input/allocpathalgo.tex}
 \caption{\label{algo:allocpath}Allocation of paths}
 \end{algorithm}
 
-Algorithm~\ref{algo:allocpath} shows the instructions of \LSEQ. First,
-\textsc{allocPath} processes the distance between the two paths in order to
-retrieve the smallest level of the tree that contains enough room for the new
-element.
+Algorithm~\ref{algo:allocpath} shows the instructions of \LSEQ, i.e.,
+\textsc{allocPath}. Firstly, it processes the size of the new path by
+progressively exploring the available paths between the adjacent paths. For
+instance, between the paths [$4.2$] and [$5$], there is not enough room for a
+new path between [$4$] and [$5$], but there are 7 available paths between
+[$4.2$] and [$5.0$]. Thus, the new path will comprise 2 concatenations: [$4.X$]
+where $X$ is yet to determine.
+
+\noindent Secondly, a hash function $h$ delegates the choice to a sub-allocation
+function. \TODO{Here.}
+
+% First, \textsc{allocPath} processes the distance between the two paths in order
+% to retrieve the smallest level of the tree that contains enough room for the new
+% element.
 
 Then, a \emph{hash function} $h$ defers the path allocation to a \emph{sub-allocation
 function} depending on the depth found for the new path. The hash function of
