@@ -197,44 +197,73 @@ storing the replicated sequence. As soon as the participants start to edit at
 different positions -- which is closer from a real-life use case -- the tree
 becomes more balanced and operations become more efficient proportionally. Also,
 the analysis does not include an average case since it requires to know the
-average distribution of the position of edits performed by a human collaborator
-which is obviously very complex.
+average distribution of the position of edits performed by humans which is
+obviously very complex.
+
+The complexity analysis depends of the chosen structure to represent the
+replica. In this section, we focus on a tree structure but other structures
+(e.g. lists~\cite{weiss2009logoot}) exposing different tradeoffs could be
+used. Nevertheless, the space complexity of identifiers -- the main contribution
+of \LSEQ -- stays the same regardless of the chosen structure.
+
+\begin{figure}
+  \centering
+  \subfloat[\LSEQ tree filled using random editing.]
+  [\label{fig:randomlseq} \LSEQ tree filled using random editing]
+  {\input{input/figrandomlseqtree.tex}}
+  \hspace{5pt}
+  \subfloat[\LSEQ tree filled using monotonic editing.]
+  [\label{fig:monotoniclseq} \LSEQ tree filled using monotonic editing.]
+  {\input{input/figmonotoniclseqtree.tex}}
+  \hspace{5pt}
+  \subfloat[Worst case \LSEQ tree.]
+  [\label{fig:worstlseq} Worst case \LSEQ tree.]
+  {\input{input/figworstlseqtree.tex}}
+  \caption{\label{fig:complexity} \LSEQ tree filled with the studied editing
+    behaviors and in the worst case.}
+\end{figure}
+
 
 \subsubsection{Space complexity}
 
 We distinguish the space complexity of each identifier from the space complexity
-of the tree. The former being important since it directly impacts the
-communication complexity, for that each identifier is broadcast to all
-participants; The latter being important since it represents the replicated
-document stored locally by each participant.
+of the tree. The former is important since it directly impacts the communication
+complexity, for that each identifier is broadcast to all editors; The latter is
+important since it represents the replicated document stored locally by each
+editor.
 
-As stated in Section~\ref{subsec:lseqallocation}, paths require 1 additional bit
-per concatenation. In turn, paths require $\mathcal{O}(e^2)$ bits to be encoded,
+As stated in Section~\ref{subsec:lseqallocation}, paths
+% require 1 additional bit per concatenation. In turn, paths
+require $\mathcal{O}(e^2)$ bits to be encoded,
 where $e$ is the depth of the element in the tree. Fortunately, the depth is
 upper-bounded depending on the editing behavior that filled the exponential
 tree.
 
-The random editing behavior fills the tree at random. As a consequence, the tree
-becomes balanced. Being exponential, the tree stores
+The random editing behavior fills the tree at random. The repeated insertions
+progressively fill the gaps in the tree without favoring any position in the
+document. Over insertions, the lowest branchs of the tree become filled of
+elements and the depth of the tree grows slowly (see
+Figure~\ref{fig:randomlseq}). Thus, the random editing behavior balances the
+tree. Being exponential, the tree stores
 $\textstyle\sum\nolimits_{i=1}^{k}{2^{(i^2-i)/2}}$ elements, where $k$ is the
-depth of the tree. Thus, the depth of paths is upper-bounded by
+depth of the tree. The depth of paths is upper-bounded by
 $\mathcal{O}(\sqrt{\log I})$ concatenations, where $I$ is the number of
 insertions. Since paths require $\mathcal{O}(e^2)$ bits to encode, paths have an
 optimal logarithmic space complexity $\mathcal{O}(\log I)$. This result applies
 to all variable-size identifier allocators~\cite{preguica2009commutative,
-  weiss2009logoot}. However, since \LSEQ uses a tree structure factorizing
-common parts of identifiers, the overall space complexity is not the sum of
-identifiers but only $\mathcal{O}(I\log I)$.
+  weiss2009logoot}. A tree structure factorizes common parts of
+identifiers. Hence, the overall space complexity is not the sum of identifiers
+but only $\mathcal{O}(I\log I)$.
 
-The monotonic editing behavior fills only one branch of the tree. Yet, since the
-maximum arity grows over depths, the tree tends to slow down its growth over
-insertions. The tree stores up till $2^{e+1}-1$ elements, where $e$ is the depth
-of the tree. Hence, the number of concatenation composing a path is
-$\mathcal{O}(\log I)$, where $I$ is the number of insertions. Once again, since
-the binary representation of paths increases quadratically, the space complexity
-of paths taken individually is upper-bounded by $\mathcal{O}((\log I)^2)$.
-Overall, the space complexity of the tree remains upper-bounded by
-$\mathcal{O}(I\log I)$.
+The monotonic editing behavior fills only one branch of the tree (see
+Figure~\ref{fig:monotonic}). Yet, since the maximum arity grows over depths, the
+growth of the tree tends decelerate over insertions. \TODO{HERE} The tree stores
+up till $2^{e+1}-1$ elements, where $e$ is the depth of the tree. Hence, the
+number of concatenation composing a path is $\mathcal{O}(\log I)$, where $I$ is
+the number of insertions. Once again, since the binary representation of paths
+increases quadratically, the space complexity of paths taken individually is
+upper-bounded by $\mathcal{O}((\log I)^2)$.  Overall, the space complexity of
+the tree remains upper-bounded by $\mathcal{O}(I\log I)$.
 
 In the worst case, each insertion increases the depth of the tree. Thus, after
 $I$ insertions, the tree comprises $e$ elements, where $e$ is the depth of the
