@@ -56,57 +56,113 @@ Algorithm~\ref{algo:allocpath} shows the instructions of \LSEQ, i.e.,
 \textsc{allocPath}. Firstly, it processes the size of the new path by
 progressively exploring the available paths between the adjacent paths. For
 instance, between the paths [$4.2$] and [$5$], there is not enough room for a
-new path between [$4$] and [$5$], but there are 7 available paths between
-[$4.2$] and [$5.0$]. Thus, the new path will comprise 2 concatenations: [$4.X$]
-where $X$ is yet to determine.
+new path between [$4$] and [$5$], but there are 7 available paths\footnote{For
+  now, we assume that there are only 10 possible values for each concatenation
+  of the path.} between [$4.2$] and [$5.0$]. Thus, the new path will comprise 2
+concatenations: [$4.X$] where $X$ is yet to determine.
 
-\noindent Secondly, a hash function $h$ delegates the choice to a sub-allocation
-function. \TODO{Here.}
+\noindent Secondly, a hash function $h$ delegates the choice of path to a
+sub-allocation function. The hash function returns a result depending on the
+size of the new path. For instance, the sub-allocation function of paths of size
+1 is \textsc{left-to-right} and the sub-allocation function of paths of size 2
+is \textsc{right-to-left}, etc. The results of this hash function must be
+identical regardless of the editor~\cite{nedelec2013concurrency}. For instance,
+all editors of an editing session use the sub-allocation function
+\textsc{left-to-right} to choose the paths of size 1. In addition, the choices
+between the sub-allocation functions must follow a uniform distribution, for we
+do not know the future editing behaviors, and we do not want to favor any.
 
 % First, \textsc{allocPath} processes the distance between the two paths in order
 % to retrieve the smallest level of the tree that contains enough room for the new
 % element.
 
-Then, a \emph{hash function} $h$ defers the path allocation to a \emph{sub-allocation
-function} depending on the depth found for the new path. The hash function of
-every participant must give identical results~\cite{nedelec2013concurrency}.
+% Then, a \emph{hash function} $h$ defers the path allocation to a \emph{sub-allocation
+% function} depending on the depth found for the new path. The hash function of
+% every participant must give identical results~\cite{nedelec2013concurrency}.
 % A hidden seed within the replicated document initializes it, for that all
 % participants must make identical choices~\cite{nedelec2013concurrency}.
-The choices between the sub-allocation functions must follow a uniform
-distribution, for we have no knowledge about the future editing behaviors, and
-we do not want to favor any.
 
-\LSEQ uses two sub-allocation functions. Indeed, contrarily to state-of-the-art
-approaches, \LSEQ uses an \emph{exponential
-  tree}~\cite{andersson1996faster,andersson2007dynamic}. Such tree allows each
-node to have twice as much children as its parents. Regarding the formalization
-of Section~\ref{sec:preliminaries}, it means a restriction over
-$\mathcal{P}$. The path is no longer a sequence of natural numbers but a
-sequence of numbers chosen among a subset of $\mathbb{N}$, the size of which is
-doubled at each concatenation. For instance, let us consider the path
-[$\ell_1.\ell_2\ldots\ell_e$] with $\ell_1\in\mathbb{N}_{<2}$, then
-$\ell_2\in \mathbb{N}_{<4}$, and $\ell_{e}\in\mathbb{N}_{<2^e}$. Compared to
-constant arity trees, paths require an additional bit per concatenation, for the
-subset are growing over depths. The binary size of a path is
+
+\noindent Thirdly, \LSEQ uses one of its two sub-allocation functions. One is
+designed to handle left-to-right editing (Line~\ref{line:lefttoright}), i.e.,
+repeated insertions at the right of the newest inserted element (see
+Figure~\ref{fig:allocpathexampleA}); while the other is designed to handle
+right-to-left editing (Line~\ref{line:righttoleft}), i.e., repeated insertions
+in front of the newest inserted element (see
+Figure~\ref{fig:allocpathexampleB}). To achieve this design, the idea behind
+these functions consists in leaving more available paths at the right (resp. at
+the left) of the new path for the future insertions assumed at the right
+(resp. at the left) of the new element. Each sub-allocation function has 3
+instructions. It starts by processing the number of available paths between the
+adjacent paths. For instance, there are 7 available paths between [$4.2$] and
+[$5.0$]. Then, it shrinks the range of allocation with a $boundary$ value. For
+instance, if the boundary is set to $5$, the function only considers 5 among the
+7 available paths. Then, depending on the design of the sub-allocation function,
+it chooses among the paths in the processed range starting from one of the
+adjacent paths. The function \textsc{subPath} truncates or prolongs the path in
+argument to reach the desired size. For instance, \textsc{right-to-left} starts
+from the next path [$5$] prolongated by \textsc{subPath} to [$5.0$] and
+considers the 5 preceding paths : [$4.5$], [$4.6$], \ldots [$4.9$].
+
+\noindent Finally, it chooses randomly among these possible paths. For instance,
+if the random value is 3, the resulting path is [$4.7$]. The randomness aims to
+leave a small gap between paths -- to handle users' minor corrections -- even in
+presence of concurrent insertions.
+
+There exists a major difference between \LSEQ and the
+state-of-the-art~\cite{preguica2009commutative, weiss2009logoot}: the set of
+possible paths in \LSEQ can be represented as an exponential
+tree~\cite{andersson1996faster,andersson2007dynamic} instead of a tree of
+constant arity. An exponential tree allows each node to have twice as many
+children as its parent. For instance, if the root of the tree can have up to 32
+children, each of these children can have up to 64 children, etc. Thus, the
+results of \textsc{getDepthInterval} change slightly: the paths are series of
+integers [$\ell_1.\ell_2\ldots\ell_e$] with, for example,
+$\ell_1\in\mathbb{N}_{<2^5}$, then $\ell_2\in \mathbb{N}_{<2^6}$, and
+$\ell_{e}\in\mathbb{N}_{<2^{e+4}}$. Thus, the number of available paths between
+[$4.2$] and [$5.0$] is 61: from [$4.3$] up till [$4.63$]. The behavior of the
+plus operator and the minus operator follow this change, e.g.,
+$[5.0]- 4 = [4.60]$.
+
+\noindent The binary size of a path becomes
 $\textstyle\sum\nolimits_{i=1}^{e}\log_2{2^i}=\sum\nolimits_{i=1}^{e}i=
 {e^2-e\over{2}}$.
-Such growth forbids the existence of trivial editing behaviors leading to the
-worst case allocation (e.g. Figure~\ref{fig:allocpathexample}).
+Such quadratic growth forbids the existence of obvious editing behaviors leading
+to the worst case allocation (e.g. Figure~\ref{fig:allocpathexample}). This
+emphasizes the need of two sub-allocation functions.
 
-Since one allocation function is not enough to characterize efficiently any
-editing behavior, \LSEQ uses two functions with antagonist designs in order to
-settle each other's weaknesses. Line~\ref{line:lefttoright} shows the
-sub-allocation function that targets left-to-right editing behaviors such as the
-one used in Figure~\ref{fig:allocpathexample}. Line~\ref{line:righttoleft} shows
-the other one that targets the right-to-left editing behaviors. These
-sub-allocation functions operate very similarly. The former chooses the
-path starting from the preceding path and adds a small random value while the
-latter chooses a path starting from the following path and subtracts a small
-random value. They aim to leave more space for future insertions in queue and in
-front of the new path, respectively.  When one of these sub-allocation functions
-does not manage to provide small-sized paths, the other quickly takes the lead. In
-such case, \LSEQ must be efficient enough to compensate the loss due to its
-unsuitable choice of sub-allocation function.
+% uses an \emph{exponential
+%   tree}~\cite{andersson1996faster,andersson2007dynamic}. Such tree allows each
+% node to have twice as much children as its parent. Regarding the formalization
+% of Section~\ref{sec:preliminaries}, it means a restriction over
+% $\mathcal{P}$. The path is no longer a sequence of natural numbers but a
+% sequence of numbers chosen among a subset of $\mathbb{N}$, the size of which is
+% doubled at each concatenation. For instance, let us consider the path
+% [$\ell_1.\ell_2\ldots\ell_e$] with $\ell_1\in\mathbb{N}_{<2}$, then
+% $\ell_2\in \mathbb{N}_{<4}$, and $\ell_{e}\in\mathbb{N}_{<2^e}$.
+
+% Compared to constant arity trees, paths require an additional bit per
+% concatenation, for the subset are growing over depths. The binary size of a path
+% is
+% $\textstyle\sum\nolimits_{i=1}^{e}\log_2{2^i}=\sum\nolimits_{i=1}^{e}i=
+% {e^2-e\over{2}}$.
+% Such growth forbids the existence of trivial editing behaviors leading to the
+% worst case allocation (e.g. Figure~\ref{fig:allocpathexample}).
+
+% Since one allocation function is not enough to characterize efficiently any
+% editing behavior, \LSEQ uses two functions with antagonist designs in order to
+% settle each other's weaknesses. Line~\ref{line:lefttoright} shows the
+% sub-allocation function that targets left-to-right editing behaviors such as the
+% one used in Figure~\ref{fig:allocpathexample}. Line~\ref{line:righttoleft} shows
+% the other one that targets the right-to-left editing behaviors. These
+% sub-allocation functions operate very similarly. The former chooses the
+% path starting from the preceding path and adds a small random value while the
+% latter chooses a path starting from the following path and subtracts a small
+% random value. They aim to leave more space for future insertions in queue and in
+% front of the new path, respectively.  When one of these sub-allocation functions
+% does not manage to provide small-sized paths, the other quickly takes the lead. In
+% such case, \LSEQ must be efficient enough to compensate the loss due to its
+% unsuitable choice of sub-allocation function.
 
 \begin{figure}
   \centering
