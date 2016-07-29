@@ -328,16 +328,17 @@ Algorithm~\ref{algo:crdtabstract}, each identifier is broadcast to all editors.
 Time complexity provides insights about the performance evolution of each
 operation over insertions. They are divided between their local execution and
 their remote integration.  Similarly to the space complexity, the analysis
-focuses on three editing behaviors that filled the tree structure: random,
-monotonic, and worst case.
+focuses on two editing behaviors (random and monotonic) to which we add the
+worst case.
 
 The local insert operation simply consists in building a new path according to
 two adjacent paths. Therefore, it depends of the depths of the latter which grow
-depending on the editing behavior. Since the random, the monotonic, and the
-worst case editing behaviors respectively lead to a depth growth upper-bounded
-by $\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and $\mathcal{O}(I)$, the
-time complexity of the local part of the insert operation follows:
-$\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and $\mathcal{O}(I)$.
+depending on the editing behavior. Since the random editing behavior, the
+monotonic editing behavior, and the worst case respectively lead to a depth
+growth upper-bounded by $\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and
+$\mathcal{O}(I)$, the time complexity of the local part of the insert operation
+follows: $\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and
+$\mathcal{O}(I)$.
 
 The local delete operation simply broadcasts the identifier of the element to
 remove to all participants. Hence, the time complexity is constant
