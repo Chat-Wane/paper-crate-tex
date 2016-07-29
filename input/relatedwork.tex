@@ -6,17 +6,58 @@ hosting a copy -- or replica -- of a shared sequence of characters. The
 participants can update their copy by inserting or deleting characters at any
 time. Then, the editor eventually delivers the change to all
 participants. Finally, each editor integrates the received
-operations~\cite{saito2005optimistic}. To ensure that participants read
-identical documents, strong eventual consistency~\cite{bailis2013eventual,
-  shapiro2011comprehensive, sun1998achieving} states that a system is correct if
-and only if editors integrating a same set of operations converge to an
-equivalent state. Furthermore, operations must preserve the intention of users,
-i.e. effects observed at generation time must be re-observed at integration time
-regardless of concurrent operations. Finally, the integration order of
-operations must follow the \emph{happen before}
-relationship~\cite{lamport1978time} stated at generation.
+operations~\cite{saito2005optimistic}.
 
-\noindent Four complexities characterize editors:
+\begin{definition}[Document]
+  A document is a series of $k$ characters
+  $d(H) = \alpha_1.\alpha_2\ldots \alpha_k$ produced by a series of operations
+  $H$.
+\end{definition}
+
+\begin{definition}[Replicated sequence]
+  Let $d(H)$ the document produced by the series of operations $H$. A replicated
+  sequence of $d(H)$ is a structure $r(H)$ with a projection $\pi$ such that
+  $\pi(r(H)) \rightarrow d(H)$.
+\end{definition}
+
+\noindent According to~\cite{sun1998achieving}, collaborative editing requires
+to ensure the CCI properties:
+\begin{itemize}[noitemsep, leftmargin=*]
+\item Convergence: replicas integrating a same set of operations converge to an
+  equivalent state~\cite{bailis2013eventual, shapiro2011conflict}, i.e., users
+  see an identical document;
+\item Causality: if an operation precedes~\cite{lamport1978time} another
+  operation, the integration of the former always precedes the integration of
+  the later;
+\item Intention preservation: effects observed at generation time must be
+  re-observed at integration time regardless of concurrent operations. Intention
+  of operations should follow their sequential
+  specification~\cite{bieniusa2012brief}.
+\end{itemize}
+
+\begin{definition}[Intention of operations of sequences]
+  A sequence is a set of elements paired with a dense order, i.e., elements are
+  ordered and inserting between two elements is always possible.
+  \begin{itemize}[noitemsep]
+  \item Inserting the element $e$ at position $i$ in the sequence becomes
+    inserting the element $e$ between the element at position $i-1$ and the
+    element at position $i$;
+  \item Deletion an element at position $i$ in the sequence removes the element
+    from the set without impairing the order of other elements.
+  \end{itemize}
+\end{definition}
+
+% To ensure that participants read
+% identical documents, strong eventual consistency~\cite{bailis2013eventual,
+%   shapiro2011comprehensive, sun1998achieving} states that a system is correct if
+% and only if editors integrating a same set of operations converge to an
+% equivalent state. Furthermore, operations must preserve the intention of users,
+% i.e. effects observed at generation time must be re-observed at integration time
+% regardless of concurrent operations. Finally, the integration order of
+% operations must follow the \emph{happen before}
+% relationship~\cite{lamport1978time} stated at generation.
+
+\noindent Four complexities characterize collaborative editors:
 \begin{itemize}[noitemsep, leftmargin=*]
 \item Generation time: complexity to generate locally an operation.
 \item Integration time: complexity to execute remotely an operation.
@@ -53,11 +94,12 @@ integration algorithms rely on concurrency detection which costs, at least, a
 state vector~\cite{charronbost1991concerning} the size of which grows linearly
 compared to the number of members $W$ who ever participated in the
 authoring. Since each message carries such a vector, decentralized OT approaches
-are not practicable in large groups subject to churn where people join and leave
-the network frequently and freely. % As for space complexity, OT
-% approaches require an historic of operations $H$, each operation being linked
-% to their state vector, hence $\mathcal{O}(W.H)$. Such monotonically growing
-% historic can be cut at the price of consensus which, once again, does not
+are not practicable in large and dynamic groups where people join and leave the
+network frequently and freely. 
+% As for space complexity, OT approaches require an historic of operations $H$,
+% each operation being linked to their state vector, hence
+% $\mathcal{O}(W.H)$. Such monotonically growing historic can be cut at the
+% price of consensus which, once again, does not
 % scale~\cite{mostefaoui2015signature}. Thus, OT approaches are the best in
 % humble confined environment like local area networks. However, their
 % performance degrades when the network size grows and becomes unpredictable
