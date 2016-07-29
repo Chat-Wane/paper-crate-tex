@@ -53,9 +53,9 @@
     \State \textbf{let} 
     $newDis \leftarrow \textsc{allocDis}(p,\, newPath,\, q)$; \label{line:allocdes}
     \State $\textsc{broadcast}(\text{'insert'},\,
-    \langle newPath,\, \alpha,\, newDis \rangle)$;
+    \langle newPath,\, \alpha,\, newDis \rangle)$; \label{line:broadcastinsert}
     \endOnLocal
-    \INDSTATE $\textsc{broadcast}(\text{'delete'},\,i)$;
+    \INDSTATE $\textsc{broadcast}(\text{'delete'},\,i)$; \label{line:broadcastdelete}
   \endLocal
   
   \received

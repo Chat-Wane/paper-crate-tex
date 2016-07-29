@@ -316,8 +316,9 @@ to produce the worst case, the difference in complexity makes it easy to detect,
 hence, to handle. Table~\ref{table:lseqspace} also shows that compared to
 state-of-the-art, \LSEQ significantly improves the identifiers size but exposes
 a small overhead on the full structure, i.e. from $\mathcal{O}(I)$ to
-$\mathcal{O}(I\log I)$. The tradeoff is beneficial since communications inherit
-from the improvement.
+$\mathcal{O}(I\log I)$. The tradeoff is beneficial since the communication
+complexity of editors inherits from the improvement: as shown in
+Algorithm~\ref{algo:crdtabstract}, each identifier is broadcast to all editors.
 
 \subsubsection{Time complexity}
 \label{subsubsec:time}
