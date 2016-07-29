@@ -7,26 +7,29 @@ structures that can implement a shared document.  We focus on replicated
 sequences~\cite{shapiro2011comprehensive, shapiro2011conflict} that provide two
 commutative operations: \textsc{insert} and \textsc{delete}. Operations can be
 integrated in any order as long as the deletion of an element follows its
-insertion.
+insertion. Assuming that the replicas integrated the same set of operations,
+they converge to an identical state, i.e., users see the same
+document~\cite{shapiro2011conflict}.
 
 \noindent Each element of the sequence is associated to a unique and immutable
-identifier. Using a total order on identifiers, we can project the set of pairs
-$\langle element,\, identifier \rangle$ to a sequence of elements. Assuming that
-the replicas integrated the same set of operations, they converge to an
-identical state, i.e., users see the same document~\cite{shapiro2011conflict}.
+identifier. Using a dense total order on identifiers, we project the set of
+pairs $\langle identifier,\, element \rangle$ to a sequence of elements. Since
+elements are not explicitely assigned to an offset, a function \textsc{lookup}
+retrieves the identifier at a targeted position in the sequence, and converse.
 
-Each \textsc{insert} operation generates an identifier for the new element.  For
-instance, let us consider a sequence \texttt{QWTY} with the unique, immutable,
-and totally ordered integer identifiers $1$, $2$, $4$, and $8$ respectively. A
-collaborator inserts \texttt{E} between \texttt{W} and \texttt{T}. The natural
-identifier that comes to mind is $3$. The resulting sequence is
-\texttt{QWETY}. However, \texttt{R} cannot be inserted between \texttt{E} and
-\texttt{T}, for the identifiers $3$ and $4$ are contiguous. The space of
-identifiers must be enlarged to handle the new insertion. If we consider
-identifiers as decimal numbers, we can associate $3.1$ to the character
-\texttt{R}. Since $3 < 3.1 < 4$, the sequence of characters is, as expected,
-\texttt{QWERTY}. Inserting a new character between \texttt{E} and \texttt{R}
-would result in another space extension : $3.0.X$, where $X$ is an integer.
+Each time a user types a character, the \textsc{insert} operation generates an
+identifier for the new element.  For instance, let us consider a sequence
+\texttt{QWTY} with the unique, immutable, and totally ordered integer
+identifiers $1$, $2$, $4$, and $8$ respectively. A collaborator inserts
+\texttt{E} between \texttt{W} and \texttt{T}. The natural identifier that comes
+to mind is $3$. The resulting sequence is \texttt{QWETY}. However, \texttt{R}
+cannot be inserted between \texttt{E} and \texttt{T}, for the identifiers $3$
+and $4$ are contiguous. The space of identifiers must be enlarged to handle the
+new insertion. If we consider identifiers as decimal numbers, we can associate
+$3.1$ to the character \texttt{R}. Since $3 < 3.1 < 4$, the sequence of
+characters is, as expected, \texttt{QWERTY}. Inserting a new character between
+\texttt{E} and \texttt{R} would result in another space extension : $3.0.X$,
+where $X$ is an integer.
 
 % If a new character has to be inserted between \texttt{E} and
 % \texttt{R}, a new identifier will be allocated between $3$ and $3.1$. Again, the
@@ -166,8 +169,8 @@ counters. It is defined as :
                   ((p_i = p_j) \wedge (s_i<s_j)) \vee %\\
                   ((p_i = p_j) \wedge (s_i = s_j) \wedge (c_i < c_j)) \\
   t_i = t_j \iff & \neg (t_i < t_j) \wedge \neg (t_j < t_i) \\
-  id_i <_\mathcal{I} id_j \iff & \exists (m > 0)(\forall n < m),\, (t^i_n = t^j_n) \wedge                             (t^i_m < t^j_m) \\
-  id_i =_\mathcal{I} id_j \iff & \forall m,\, t^i_m = t^j_m
+  id_i <_\mathcal{I} id_j \iff & \exists (m > 0)(\forall n < m),\, (t^i_n = t^j_n) \wedge                             (t^i_m < t^j_m) %\\
+ % id_i =_\mathcal{I} id_j \iff & \forall m,\, t^i_m = t^j_m
 \end{align*}
 % Retrieving the order of elements simply consists in comparing 
 In this example, the paths order most of characters. Nevertheless, \texttt{E}
@@ -210,17 +213,18 @@ rid of the disambiguator contained in each identifier to keep paths only.
 It translates the identifiers into the closest paths that maintain their order
 using only the order among paths, i.e.,
 $(\mathcal{I},\, <_\mathcal{I}) \rightarrow (\mathcal{P},\, <_{\mathcal{P}})$.
-For instance, considering 2 elements with the following identifiers
-$id_1 = \langle [4.2],\, e_1, \, [\langle u_1,\,1 \rangle.\langle u_1,\,2
-\rangle] \rangle$
+For instance, considering the identifiers of Figure~\ref{fig:disexample}
+$id_\texttt{R} = \langle [3.1],\, \texttt{R}, \, [\langle u_1,\,6
+\rangle.\langle u_1,\,7 \rangle] \rangle$
 and
-$id_2 = \langle [4.1],\, e_2, \, [\langle u_2,\,1 \rangle.\langle u_2,\,2
-\rangle] \rangle$.
-Comparing these identifiers results in $id_1<_\mathcal{I} id_2$; but using only
-paths results in $id_2 <_\mathcal{P} id_1$. Implicitly, $id_2$ is the path
-[$5$], for its first triple $t_1^{id_1} = \langle p_1,\, s_1,\, c_1 \rangle$ is
-greater than the $id_2$'s one; and any path allocated between [$4.2$] and [$5$]
-builds an identifier between $id_1$ and $id_2$.
+$id_\texttt{T} = \langle [3],\, \texttt{T}, \, [\langle u_2,\,1 \rangle]
+\rangle$,
+comparing these identifiers results in
+$id_\texttt{R}<_\mathcal{I} id_\texttt{T}$; but using only paths results in
+$id_\texttt{T} <_\mathcal{P} id_\texttt{R}$. Implicitly, $id_\texttt{T}$ is the
+path [$4$], for its first triple $t_1^{\texttt{T}}$ is greater than the
+$id_\texttt{R}$'s one; and any path allocated between [$3.1$] and [$4$] builds
+an identifier between $id_\texttt{R}$ and $id_\texttt{T}$.
 
 
 % in Figure~\ref{fig:disexample}, the result of \textsc{convert2Path} with the
@@ -229,34 +233,36 @@ builds an identifier between $id_1$ and $id_2$.
 
 \noindent Secondly, \textsc{allocPath} allocates a new path between these
 bounds. It should choose among the paths with the smallest size for performance
-sake. For instance, between [4.2] and [5], the available paths are [4.3], [4.4],
-\ldots, [4.9]. \textsc{allocPath} chooses among these.
+sake. For instance, between [$3.1$] and [$4$], the available paths are [$3.2$],
+[$3.3$], \ldots, [$3.9$]. \textsc{allocPath} chooses among these.
 
 
 \noindent Thirdly, \textsc{allocDis} generates the disambiguator to associate
 with the path in order to guarantee that the new identifier consistently fall
 between the adjacent identifiers that served its allocation following the dense
 total order among identifiers. For instance, considering that \textsc{allocPath}
-chose the path [4.3], \textsc{allocDis} copies the $id_1$'s first pair of the
-disambiguator $\langle u_1,\,1 \rangle$ to which it concatenates its own unique
-marker: $\langle u_3,\,1 \rangle$. The resulting identifier is
-$\langle [4.3],\, e_3, \, [\langle u_1,\,1 \rangle .\langle u_3,\, 1\rangle ]
+chose the path [$3.2$], \textsc{allocDis} copies the $id_\texttt{R}$'s first
+pair of the disambiguator $\langle u_1,\,6 \rangle$ to which it concatenates its
+own unique marker: $\langle u_3,\,1 \rangle$. The resulting identifier is
+$id_e = \langle [3.2],\, e, \, [\langle u_1,\,6 \rangle .\langle u_3,\, 1\rangle ]
 \rangle$.
-As expected, we obtain $id_1 <_\mathcal{I} id_{new} <_\mathcal{I} id_2$.  
+As expected, we obtain
+$id_\texttt{R} <_\mathcal{I} id_{e} <_\mathcal{I} id_\texttt{T}$.
 % The space complexity of disambiguators is upper-bounded by their respective
 % path. Therefore, we focus on paths in the rest of the paper.
 
-\noindent Finally, the editor broadcasts $id_{new}$ to all editors.
+\noindent Finally, the editor broadcasts $id_{e}$ to all editors. Minimizing the
+size of $id_e$ is important, for it directly impacts the generated traffic.
 
 
 \subsection{Choosing the smallest path}
 \label{subsec:choosing}
 
 The most critical part of sequences with variable-size identifiers consists in
-creating the paths. The function that allocates the identifiers must provide the
+creating the paths. The function that allocates identifiers must provide the
 smallest possible paths without impairing future allocations. As shown in
 Algorithm~\ref{algo:crdtabstract} at Lines~\ref{line:broadcastinsert}
-and~\ref{line:broadcastdelete} , each identifier is broadcast to all editors. As
+and~\ref{line:broadcastdelete}, each identifier is broadcast to all editors. As
 consequence, their size directly impacts the communication complexity of the
 editor.
 
