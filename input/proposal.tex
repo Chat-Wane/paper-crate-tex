@@ -294,8 +294,10 @@ upper-bounded by $\mathcal{O}(I\log I)$.
 In the worst case, each insertion increases the depth of the tree. Thus, after
 $I$ insertions, the tree comprises $e$ elements, where $e$ is the depth of the
 tree (see Figure~\ref{fig:worstlseq}). The space complexity of paths grows
-quadratically and each new allocated path contains the full tree. Thus, the
-overall space complexity of the tree is $\mathcal{O}(I^2)$ too.
+quadratically and each new allocated path contains the full tree. For instance,
+the first allocated path is [$31$], the second one is [$31.63$], the third one
+is [$31.63.127$], etc. 
+Overaal, the space complexity of the tree is $\mathcal{O}(I^2)$ too.
 
 \begin{table}
   \caption{\label{table:lseqspace}
