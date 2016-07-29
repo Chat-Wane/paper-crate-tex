@@ -190,15 +190,41 @@ a composition of two basic editing behaviors:
 \end{itemize}
 
 \noindent As a consequence, we focus on the space complexity analysis of \LSEQ
-to random and monotonic editing behaviors to which we add a worst case
-complexity analysis. It is worth noting that monotonic editing behavior
-represents an unfavorable case since it tends to unbalance the underlying tree
-storing the replicated sequence. As soon as the participants start to edit at
-different positions -- which is closer from a real-life use case -- the tree
-becomes more balanced and operations become more efficient proportionally. Also,
-the analysis does not include an average case since it requires to know the
-average distribution of the position of edits performed by humans which is
-obviously very complex.
+to random and monotonic editing behaviors. It is worth noting that monotonic
+editing behavior represents an unfavorable case since it tends to unbalance the
+underlying tree storing the replicated sequence. As soon as the participants
+start to edit at different positions -- which is closer from a real-life use
+case -- the tree becomes more balanced and operations become more efficient
+proportionally. Also, the analysis does not include an average case since it
+requires to know the average distribution of the position of edits performed by
+humans which is obviously very complex.
+
+\noindent The complexity analysis also includes a worst case analysis. In the
+worst case, each new identifier is bigger than the previous one. To produce such
+worst case in \LSEQ, the insertions must saturate the small gap left between
+identifiers (see Lines~\ref{line:plus} and~\ref{line:minus} of
+Algorithm~\ref{algo:allocpath}). The editing behavior that produces such worst
+case with \LSEQ is the following:
+\begin{enumerate}[noitemsep]
+\item The user types \texttt{A} followed by \texttt{B}. The gap left between
+  \texttt{A} and \texttt{B} corresponds to the $boundary$ (see
+  Line~\ref{line:boundary} of Algorithm~\ref{algo:allocpath});
+\item The user types $boundary$ characters between the two lastly inserted
+  characters. At least the last identifier has grown;
+\item Repeat the second step.
+\end{enumerate}
+The editing behavior that produces such worst case with the
+state-of-the-art~\cite{preguica2009commutative, weiss2009logoot} is the
+following:
+\begin{enumerate}[noitemsep]
+\item The user types a character at the beginning of the document;
+\item Repeat.
+\end{enumerate}
+
+
+% Such editing behavior remains unlikely in collaborative editing and can be
+% easily detected, for the difference between the expected growth and the actual
+% growth is large.
 
 The complexity analysis depends of the chosen structure to represent the
 replica. In this section, we focus on a tree structure but other structures
@@ -252,24 +278,24 @@ insertions. Since paths require $\mathcal{O}(e^2)$ bits to encode, paths have an
 optimal logarithmic space complexity $\mathcal{O}(\log I)$. This result applies
 to all variable-size identifier allocators~\cite{preguica2009commutative,
   weiss2009logoot}. A tree structure factorizes common parts of
-identifiers. Hence, the overall space complexity is not the sum of identifiers
-but only $\mathcal{O}(I\log I)$.
+identifiers. Overall, the space complexity is not the sum of identifiers but
+$\mathcal{O}(I\log I)$.
 
 The monotonic editing behavior fills only one branch of the tree (see
-Figure~\ref{fig:monotonic}). Yet, since the maximum arity grows over depths, the
-growth of the tree tends decelerate over insertions. \TODO{HERE} The tree stores
-up till $2^{e+1}-1$ elements, where $e$ is the depth of the tree. Hence, the
-number of concatenation composing a path is $\mathcal{O}(\log I)$, where $I$ is
-the number of insertions. Once again, since the binary representation of paths
-increases quadratically, the space complexity of paths taken individually is
-upper-bounded by $\mathcal{O}((\log I)^2)$.  Overall, the space complexity of
-the tree remains upper-bounded by $\mathcal{O}(I\log I)$.
+Figure~\ref{fig:monotoniclseq}). Yet, since the maximum arity grows over depths, the
+growth of the tree tends decelerate over insertions. The tree stores up till
+$2^{e+1}-1$ elements, where $e$ is the depth of the tree. Hence, the number of
+concatenation composing a path is $\mathcal{O}(\log I)$, where $I$ is the number
+of insertions. Since the binary representation of paths increases quadratically,
+the space complexity of paths taken individually is upper-bounded by
+$\mathcal{O}((\log I)^2)$.  Overall, the space complexity of the tree remains
+upper-bounded by $\mathcal{O}(I\log I)$.
 
 In the worst case, each insertion increases the depth of the tree. Thus, after
 $I$ insertions, the tree comprises $e$ elements, where $e$ is the depth of the
-tree. The space complexity of paths grows quadratically and each new allocated
-path contains the full tree. Thus, the overall space complexity of the tree is
-$\mathcal{O}(I^2)$ too.
+tree (see Figure~\ref{fig:worstlseq}). The space complexity of paths grows
+quadratically and each new allocated path contains the full tree. Thus, the
+overall space complexity of the tree is $\mathcal{O}(I^2)$ too.
 
 \begin{table}
   \caption{\label{table:lseqspace}
