@@ -340,26 +340,30 @@ time complexity of the local part of the insert operation follows:
 $\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and $\mathcal{O}(I)$.
 
 The local delete operation simply broadcasts the identifier of the element to
-remove to all participants. Hence, whatever the editing behavior, the time
-complexity is constant $\mathcal{O}(1)$.
+remove to all participants. Hence, the time complexity is constant
+$\mathcal{O}(1)$ regardless of the editing behavior.
 
 Both the remote insert and delete operations perform the same instructions to
 integrate the received result. Consequently, they have an identical time
 complexity. Random, monotonic, and worst case editing behaviors respectively
 lead to $\mathcal{O}(\sqrt{\log I})$, $\mathcal{O}(\log I)$ and $\mathcal{O}(I)$
-levels in the exponential tree structure. Since children of each node are
-ordered by path, we perform binary searches recursively until the right leaf is
-found -- the delete operation removes the nodes it explores if and only if the
-latter does not have at least another element inside its children. The
-complexity of one binary search depends of the level $l$ at which it is
-performed: $\mathcal{O}(\log 2^l)$. The repeated binary searches lead to an
-upper bound of $\mathcal{O}(\textstyle\sum\nolimits_{i=1}^{e}(\log 2^i))$, where
-$e$ is the depth of the tree. Replacing the depth $e$, upper bounds on time
-complexity are $\mathcal{O}(\log I + \sqrt{log I})$,
-$\mathcal{O}((\log I)^2+\log I)$, and $\mathcal{O}(I)$ for random, monotonic,
-and worst case editing behaviors respectively. In the worst case, the algorithms
-perform one comparison per element, i.e. per level, in the tree until they reach
-the deepest leaf.
+levels in the exponential tree structure. Since the children of each node are
+ordered by path, we perform binary searches recursively until we find the
+leaf. During binary searches, the delete operation removes the nodes it explores
+if they, or their children, do not contain at least another element. For
+instance, considering two elements associated to the following paths: [$4.2$]
+and [$4.2.1$]. If one deletes the first element, the path is kept since the path
+labeled by 4 then 2 is still required for the second element. Then, if one
+deletes the second element and the node containing it has no children, the path
+and nodes are truely removed. The complexity of a binary search depends of the
+level $l$ at which it is performed: $\mathcal{O}(\log 2^l)$. The repeated binary
+searches lead to an upper bound of
+$\mathcal{O}(\textstyle\sum\nolimits_{i=1}^{e}(\log 2^i))$, where $e$ is the
+depth of the tree. Replacing the depth $e$, upper bounds on time complexity are
+$\mathcal{O}(\log I + \sqrt{log I})$, $\mathcal{O}((\log I)^2+\log I)$, and
+$\mathcal{O}(I)$ for random, monotonic, and worst case editing behaviors
+respectively. In the worst case, the algorithms perform one comparison per
+element, i.e. per level, in the tree until they reach the deepest leaf.
 
 
 \begin{table}
