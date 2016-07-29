@@ -58,7 +58,7 @@ operations. However, they piggyback unique and immutable identifiers on every
 operation broadcast on the network. The size of this identifier is the key for
 the communication complexity and consequently the scalability of the
 approach. Two classes of CRDTs designed for sequences exist:
-\begin{itemize}[noitemsep, leftmargin=*]
+\begin{itemize}
 \item  CRDTs such as WOOT~\cite{oster2006data} piggyback a constant-size
   identifier which is optimal. However, it requires to keep tombstones, i.e., it
   marks elements as removed and hide them from the users. An empty document may
@@ -82,7 +82,7 @@ approach. Two classes of CRDTs designed for sequences exist:
 \end{itemize}
 
 \noindent The contributions of this paper are threefold:
-\begin{itemize}[noitemsep, leftmargin=*]
+\begin{itemize}
 \item To improve our previous works~\cite{nedelec2013concurrency,
     nedelec2013lseq}, we prove the upper bounds on space and time complexities
   of \LSEQ and the conditions upon which they apply. This result opens the way
