@@ -44,7 +44,7 @@ small.
 
 \noindent The general idea behind \LSEQ is that it agrees to be temporarily
 inefficient in order to reach a state where it will be efficient enough to
-compensate previous losses.
+compensate its past temporary inefficiency.
 
 
 \begin{algorithm}
@@ -55,11 +55,11 @@ compensate previous losses.
 Algorithm~\ref{algo:allocpath} shows the instructions of \LSEQ, i.e.,
 \textsc{allocPath}. Firstly, it processes the size of the new path by
 progressively exploring the available paths between the adjacent paths. For
-instance, between the paths [$4.2$] and [$5$], there is not enough room for a
-new path between [$4$] and [$5$], but there are 7 available paths\footnote{For
+instance, between the paths [$3.1$] and [$4$], there is not enough room for a
+new path between [$3$] and [$4$], but there are 8 available paths\footnote{For
   now, we assume that there are only 10 possible values for each concatenation
-  of the path.} between [$4.2$] and [$5.0$]. Thus, the new path will comprise 2
-concatenations: [$4.X$] where $X$ is yet to determine.
+  of the path.} between [$3.1$] and [$4.0$]. Thus, the new path will comprise 2
+concatenations: [$3.X$] where $X$ is yet to determine.
 
 \noindent Secondly, a hash function $h$ delegates the choice of path to a
 sub-allocation function. The hash function returns a result depending on the
@@ -94,18 +94,18 @@ these functions consists in leaving more available paths at the right (resp. at
 the left) of the new path for the future insertions assumed at the right
 (resp. at the left) of the new element. Each sub-allocation function has 3
 instructions. It starts by processing the number of available paths between the
-adjacent paths. For instance, there are 7 available paths between [$4.2$] and
-[$5.0$]. Then, it shrinks the range of allocation with a $boundary$ value. For
+adjacent paths. For instance, there are 8 available paths between [$3.1$] and
+[$4.0$]. Then, it shrinks the range of allocation with a $boundary$ value. For
 instance, if the boundary is set to $5$, the function only considers 5 among the
-7 available paths. Then, depending on the design of the sub-allocation function,
+8 available paths. Then, depending on the design of the sub-allocation function,
 it chooses among the paths in the processed range starting from one of the
 adjacent paths. The function \textsc{subPath} truncates or prolongs the path in
 argument to reach the desired size. For instance, \textsc{right-to-left} starts
-from the next path [$5$] prolonged by \textsc{subPath} to [$5.0$] and
-considers the 5 preceding paths : [$4.5$], [$4.6$], \ldots [$4.9$].
+from the next path [$4$] prolonged by \textsc{subPath} to [$4.0$] and considers
+the 5 preceding paths : [$3.5$], [$3.6$], \ldots [$3.9$].
 
 \noindent Finally, it chooses randomly among these possible paths. For instance,
-if the random value is 3, the resulting path is [$4.7$]. The randomness aims to
+if the random value is 3, the resulting path is [$3.7$]. The randomness aims to
 leave a small gap between paths -- to handle users' minor corrections -- even in
 presence of concurrent insertions.
 
@@ -120,14 +120,14 @@ results of \textsc{getDepthInterval} change slightly: the paths are series of
 integers [$\ell_1.\ell_2\ldots\ell_e$] with, for example,
 $\ell_1\in\mathbb{N}_{<2^5}$, then $\ell_2\in \mathbb{N}_{<2^6}$, and
 $\ell_{e}\in\mathbb{N}_{<2^{e+4}}$. Thus, the number of available paths between
-[$4.2$] and [$5.0$] is 61: from [$4.3$] up till [$4.63$]. The behavior of the
+[$3.1$] and [$4.0$] is 62: from [$3.2$] up till [$3.63$]. The behavior of the
 plus operator and the minus operator follow this change, e.g.,
-$[5.0]- 4 = [4.60]$.
+$[4.0] - 4 = [3.60]$.
 
 \noindent The binary size of a path becomes
 $\textstyle\sum\nolimits_{i=1}^{e}\log_2{2^i}=\sum\nolimits_{i=1}^{e}i=
 {e^2-e\over{2}}$.
-For instance [$4.60$] requires $5 + 6 = 11$ bits.  Such quadratic growth forbids
+For instance [$3.60$] requires $5 + 6 = 11$ bits.  Such quadratic growth forbids
 the existence of obvious editing behaviors leading to the worst case allocation
 (e.g. Figure~\ref{fig:allocpathexample}). This emphasizes the need of two
 sub-allocation functions.
@@ -296,8 +296,8 @@ $I$ insertions, the tree comprises $e$ elements, where $e$ is the depth of the
 tree (see Figure~\ref{fig:worstlseq}). The space complexity of paths grows
 quadratically and each new allocated path contains the full tree. For instance,
 the first allocated path is [$31$], the second one is [$31.63$], the third one
-is [$31.63.127$], etc. 
-Overaal, the space complexity of the tree is $\mathcal{O}(I^2)$ too.
+is [$31.63.127$], etc.  Overall, the space complexity of the tree is
+$\mathcal{O}(I^2)$ too.
 
 \begin{table}
   \caption{\label{table:lseqspace}
@@ -351,9 +351,9 @@ levels in the exponential tree structure. Since the children of each node are
 ordered by path, we perform binary searches recursively until we find the
 leaf. During binary searches, the delete operation removes the nodes it explores
 if they, or their children, do not contain at least another element. For
-instance, considering two elements associated to the following paths: [$4.2$]
-and [$4.2.1$]. If one deletes the first element, the path is kept since the path
-labeled by 4 then 2 is still required for the second element. Then, if one
+instance, considering two elements associated to the following paths: [$3.1$]
+and [$3.1.2$]. If one deletes the first element, the path is kept since the path
+labeled by $3$ then $1$ is still required for the second element. Then, if one
 deletes the second element and the node containing it has no children, the path
 and nodes are truely removed. The complexity of a binary search depends of the
 level $l$ at which it is performed: $\mathcal{O}(\log 2^l)$. Repeated binary
