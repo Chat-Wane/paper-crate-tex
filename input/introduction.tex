@@ -5,15 +5,18 @@
 Google Docs made real-time editing in browsers easy for millions of
 users. However, Google mediates real-time editing sessions with
 central servers raising issues on privacy, censorship, and economic
-intelligence. It also raises scalability issues in terms of the number
-of participants.  Despite that small groups currently constitute the
-main range of users, events such as massive open online courses (MOOC),
-TV shows, conferences gather larger groups~\cite{breslow2013studying}.
-Google Docs supports large groups but only the first 50 users can edit,
-next users have their rights limited to document reading, not even in
-real-time.  We think that real-time editors should allow users to edit 
-at anytime and anywhere, regardless of the number of participants. Even if
-only a small subset among millions of participants are writing, all
+intelligence. Decentralized real-time editors~\cite{oster2006data,
+  sun1998operational, sun2009contextbased} do not require intermediate
+servers and by the same settle privacy issues. However, scalability
+issues in terms of the number of participants, remain.  Despite that
+small groups currently constitute the main range of users, events such
+as massive open online courses (MOOC), TV shows, conferences gather
+larger groups~\cite{breslow2013studying}.  Google Docs supports large
+groups but only the first 50 users can edit, next users have their
+rights limited to document reading, not even in real-time.  We think
+that real-time editors should allow users to edit at anytime and
+anywhere, regardless of the number of participants. Even if only a
+small subset among millions of participants are writing, all
 participants of the editing session should be able to read and write
 in real-time whenever they want. In 2013, Coursera gathered 41000
 participants for a MOOC entitled ``Fundamentals of Online Education:
@@ -26,66 +29,85 @@ clearly demonstrates that collaborative editors should be designed for large
 groups. \cite{chi12} reports a similar issue in a context of massively
 distributed authorship.
 
-Decentralized real-time editors~\cite{oster2006data, sun1998operational,
-  sun2009contextbased} do not require intermediate servers and by the same
-settle privacy issues. However, scalability issues remain.  Addressing
-scalability requires finding a good trade-off between communication, space and
-time complexities. Among others, achieving a sublinear communication complexity
-compared to the number of participants is crucial for supporting large groups.
+In order to be used in a crowdsourcing context such as MOOC, a
+scalable real-time editor should support large groups i.e. it should
+support thousands of users editing or reading in real-time documents
+containing millions of characters. Addressing scalability requires
+finding a good trade-off between communication, space and time
+complexities. Among others, achieving a sublinear communication
+complexity compared to the number of participants is crucial for
+supporting large groups.
 
-To provide availability of documents and responsiveness, real-time editors use
-optimistic replication~\cite{saito2005optimistic} of sequences, text documents
-being sequences of characters. As such, each user hosts a local copy of the
-document and directly performs her modifications on it. Changes are broadcast to
-all replica owners where they are integrated. Historically, the system is said
-correct if it ensures convergence, causality, and intention
-preservation~\cite{sun1998achieving}.
-% the
-%replicas integrating an identical set of operations converge to an equivalent
-%state, i.e. users read a same document~\cite{shapiro2011conflict}.
+We consider variable-size Conflict-Free Replicated Data
+Types~\cite{shapiro2011comprehensive} (CRDTs) for sequences such as
+Logoot~\cite{weiss2010logootundo} and Treedoc~\cite{preguica2009commutative} as the most promising
+approaches to handle large groups. However, as the size of unique and
+immutable allocated identifiers associated to each character of the
+sequence grows linearly, their performance decreases. It eventually
+affects the responsiveness of the editor. A sublinear upper bound on
+the size of identifiers solves the problem and allows real-time
+editors to be used in crowdsourcing context.  In previous works, we
+proposed an identifier allocation strategy called
+\LSEQ~\cite{nedelec2013concurrency, nedelec2013lseq} where a sublinear
+upper-bound is observed on simulations. However, there is no formal
+proof of such property and  conditions upon which it applies.
 
-Decentralized algorithms of Operational
-Transformation~\cite{sun2009contextbased} (OT) piggyback a state or a context
-vector in order to detect concurrent operations. Unfortunately, state vectors
-grow linearly with respect to the number of members that ever participated in
-the authoring. Hence, these approaches are efficient for small groups of users,
-but poorly scale to highly dynamic large groups of users and high network
-latency.
 
-Conflict-Free Replicated Data Types~\cite{shapiro2011comprehensive} (CRDTs) do
-not pay the price of concurrency detection by providing commutative
-operations. However, they piggyback unique and immutable identifiers on every
-operation broadcast on the network. The size of this identifier is the key for
-the communication complexity and consequently the scalability of the
-approach. Two classes of CRDTs designed for sequences exist:
-\begin{itemize}
-\item  CRDTs such as WOOT~\cite{oster2006data} piggyback a constant-size
-  identifier which is optimal. However, it requires to keep tombstones, i.e., it
-  marks elements as removed and hide them from the users. An empty document may
-  store thousands of deleted elements. Tombstones degrade integration time of
-  operations. This integration time blocks the user and eventually makes the
-  real-time editor unusable. Removing tombstones requires garbage collecting
-  algorithms that do not scale~\cite{abdullahi1998garbage}.
-\item CRDTs such as Logoot~\cite{weiss2010logootundo} do not require tombstones
-  but piggyback variable-size identifiers. Depending on the identifier
-  allocation strategy, the size of identifiers may grow linearly with the
-  document size, increasing the communication cost. Balancing the structure
-  requires consensus algorithms that do not
-  scale~\cite{mostefaoui2015signature}.
+% To provide availability of documents and responsiveness, real-time editors use
+% optimistic replication~\cite{saito2005optimistic} of sequences, text documents
+% being sequences of characters. As such, each user hosts a local copy of the
+% document and directly performs her modifications on it. Changes are broadcast to
+% all replica owners where they are integrated. Historically, the system is said
+% correct if it ensures convergence, causality, and intention
+% preservation~\cite{sun1998achieving}.
+% % the
+% %replicas integrating an identical set of operations converge to an equivalent
+% %state, i.e. users read a same document~\cite{shapiro2011conflict}.
 
-  In previous works, we proposed an identifier allocation strategy called
-  \LSEQ~\cite{nedelec2013concurrency, nedelec2013lseq}. It aims to avoid such
-  balancing mechanism by sublinearly upper-bounding the space complexity of its
-  identifiers. It is conjectured to have a polylogarithmic growth of the size of
-  the identifiers $\mathcal{O}((\log I)^2)$ where $I$ is the number of
-  insertions performed on the document.
-\end{itemize}
+% Decentralized algorithms of Operational
+% Transformation~\cite{sun2009contextbased} (OT) piggyback a state or a context
+% vector in order to detect concurrent operations. Unfortunately, state vectors
+% grow linearly with respect to the number of members that ever participated in
+% the authoring. Hence, these approaches are efficient for small groups of users,
+% but poorly scale to highly dynamic large groups of users and high network
+% latency.
+
+% Conflict-Free Replicated Data Types~\cite{shapiro2011comprehensive} (CRDTs) do
+% not pay the price of concurrency detection by providing commutative
+% operations. However, they piggyback unique and immutable identifiers on every
+% operation broadcast on the network. The size of this identifier is the key for
+% the communication complexity and consequently the scalability of the
+% approach. Two classes of CRDTs designed for sequences exist:
+% \begin{itemize}
+% \item  CRDTs such as WOOT~\cite{oster2006data} piggyback a constant-size
+%   identifier which is optimal. However, it requires to keep tombstones, i.e., it
+%   marks elements as removed and hide them from the users. An empty document may
+%   store thousands of deleted elements. Tombstones degrade integration time of
+%   operations. This integration time blocks the user and eventually makes the
+%   real-time editor unusable. Removing tombstones requires garbage collecting
+%   algorithms that do not scale~\cite{abdullahi1998garbage}.
+% \item CRDTs such as Logoot~\cite{weiss2010logootundo} do not require tombstones
+%   but piggyback variable-size identifiers. Depending on the identifier
+%   allocation strategy, the size of identifiers may grow linearly with the
+%   document size, increasing the communication cost. Balancing the structure
+%   requires consensus algorithms that do not
+%   scale~\cite{mostefaoui2015signature}.
+
+%   In previous works, we proposed an identifier allocation strategy called
+%   \LSEQ~\cite{nedelec2013concurrency, nedelec2013lseq}. It aims to avoid such
+%   balancing mechanism by sublinearly upper-bounding the space complexity of its
+%   identifiers. It is conjectured to have a polylogarithmic growth of the size of
+%   the identifiers $\mathcal{O}((\log I)^2)$ where $I$ is the number of
+%   insertions performed on the document.
+% \end{itemize}
 
 \noindent The contributions of this paper are threefold:
 \begin{itemize}
-\item To improve our previous works~\cite{nedelec2013concurrency,
+\item Compared to previous works~\cite{nedelec2013concurrency,
     nedelec2013lseq}, we prove the upper bounds on space and time complexities
-  of \LSEQ and the conditions upon which they apply. This result opens the way
+  of \LSEQ and the conditions upon which they apply. The size of the
+identifiers grows up to $\mathcal{O}((\log I)^2)$ where $I$ is the number of
+insertions performed on the document. This result opens the way
   for building decentralized and scalable real-time editors.
 \item To measure the overall performance of a real working system, we built
   \CRATE: a real-time decentralized editor running in web
