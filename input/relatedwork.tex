@@ -21,21 +21,8 @@ to ensure the CCI properties:
   re-observed at integration time regardless of concurrent operations. 
 \end{itemize}
 
-Intentions for sequence is defined with the help of a dense order
-in~\cite{weiss2010logootundo}. We reuse this approach to define
-precisely intentions of operations on a sequence.
-
-% \begin{definition}[Document]
-%   A document is a series of $k$ characters
-%   $d(H) = \alpha_1.\alpha_2\ldots \alpha_k$ produced by a series of operations
-%   $H$.
-% \end{definition}
-
-% \begin{definition}[Replicated sequence]
-%   Let $d(H)$ the document produced by the series of operations $H$. A replicated
-%   sequence of $d(H)$ is a structure $r(H)$ with a projection $\pi$ such that
-%   $\pi(r(H)) \rightarrow d(H)$.
-% \end{definition}
+For CRDT, Intentions for sequence are defined with the help of a dense
+order~\cite{weiss2010logootundo}. 
 
 \begin{definition}[Intention of operations of sequences]
   A sequence is a set of elements paired with a dense order, i.e., elements are
