@@ -347,10 +347,7 @@ editing~\cite{nedelec2013lseq}. The problem is the following:
   $s(I+1) = s(I) \cup \textsc{insert}(p,\, \_,\, n)$, with $p,q \in s(I)$ and
   $p<_\mathcal{I}q$. Let $|s(I)|$ be the size of the binary representation of
   the sequence. The function \textsc{insert} must allocate identifiers such
-  that:
-  \begin{equation}
-    |s(I+1)| - |s(I)| < \mathcal{O}(I)
-  \end{equation}
+  that: \hspace{30pt} $|s(I+1)| - |s(I)| < \mathcal{O}(I)$ %% ugly spacing
 \end{problem}
 
 \noindent Large scale collaborative editors need of an allocation function that
