@@ -56,7 +56,7 @@ directly within web browsers and available at
 %% None of its internal components prevent its scalability.
 This section describes the model of \CRATE: communication, causality, and
 sequence.  It reviews each component and its contribution to the system. This
-composition provides a tradeoff favorizing communication complexity. The system
+composition provides a tradeoff favoring communication complexity. The system
 scales well in terms of number of participants and document
 size. Section~\ref{sec:experiments} validates this claim through experiments.
 %% Other dimensions such as concurrency rate are not part of 
@@ -200,14 +200,17 @@ where $W$ is the number of participants that ever wrote in the
 document~\cite{charronbost1991concerning}. Such communication overhead confines
 its usage to small editing sessions.
 
-\CRATE uses a version vector with
-exceptions~\cite{malkhi2007concise, mukund2014optimized}: for each editor,
+\CRATE uses a version vector with exceptions~\cite{malkhi2007concise,
+  mukund2014optimized}. Each operation is uniquely identified by a unique site
+identifier along with a counter. Each broadcast message includes such
+identifier. For each editor,
 \begin{inparaenum}[(i)]
 \item an integer denotes the maximal counter of received operations that
   originated from this editor and
 \item a set of integers denotes the exceptions, i.e., the operations known as
   not yet received from this editor.
 \end{inparaenum}
+
 This causality tracking structure tracks only the semantically related pairs of
 operations (e.g. the removal of an element with its insertion). If the
 operations arrives to an editor out of order, the removal waits for the
@@ -256,7 +259,7 @@ anti-entropy~\cite{demers1987epidemic} round ensuring that no operations went
 missing due to an unreliable network or offline writing.
 
 
-While the local overhead implied by such structure remains upper-bounded by
+While the local overhead implied by such structure is upper-bounded by
 $\mathcal{O}(W)$, the communication overhead is constant $\mathcal{O}(1)$.
 
 %% The causality tracking structure is available at
@@ -370,6 +373,8 @@ algorithms that do not scale~\cite{mostefaoui2015signature}.
 
 %% The code of \LSEQ is available at
 %% \url{https://github.com/Chat-Wane/LSEQTree}.
+
+\subsection{Communication complexity}
 
 The logarithmic multiplicative factor of broadcast, the constant cost of
 causality tracking, and the cost of identifiers, lead to a communication
