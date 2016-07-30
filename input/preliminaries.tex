@@ -3,13 +3,27 @@
 \label{sec:preliminaries}
 
 Sequence replicated data structures (\emph{sequence} for short) are the closest
-structures that can implement a shared document.  We focus on replicated
-sequences~\cite{shapiro2011comprehensive, shapiro2011conflict} that provide two
-commutative operations: \textsc{insert} and \textsc{delete}. Operations can be
-integrated in any order as long as the deletion of an element follows its
-insertion. Assuming that the replicas integrated the same set of operations,
-they converge to an identical state, i.e., users see the same
-document~\cite{shapiro2011conflict}.
+structures that can implement a shared document. 
+
+\begin{definition}[Document]
+  A document is a series of $k$ characters
+  $d(H) = \alpha_1.\alpha_2\ldots \alpha_k$ produced by a series of operations
+  $H$.
+\end{definition}
+
+\begin{definition}[Replicated sequence]
+  Let $d(H)$ the document produced by the series of operations $H$. A replicated
+  sequence of $d(H)$ is a structure $r(H)$ with a projection $\pi$ such that
+  $\pi(r(H)) \rightarrow d(H)$.
+\end{definition}
+
+We focus on replicated sequences~\cite{shapiro2011comprehensive,
+  shapiro2011conflict} that provide two commutative operations:
+\textsc{insert} and \textsc{delete}. Operations can be integrated in
+any order as long as the deletion of an element follows its
+insertion. Assuming that the replicas integrated the same set of
+operations, they converge to an identical state, i.e., users see the
+same document~\cite{shapiro2011conflict}.
 
 \noindent Each element of the sequence is associated to a unique and immutable
 identifier. Using a dense total order on identifiers, we project the set of
