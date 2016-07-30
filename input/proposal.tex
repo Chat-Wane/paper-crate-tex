@@ -237,9 +237,9 @@ underlying tree storing the replicated sequence. As soon as the participants
 start to edit at different positions -- which is closer from a real-life use
 case -- the tree becomes more balanced.
 % and operations become more efficient proportionally.
-Also, the analysis does not include an average case since it requires to know
+The analysis does not include an average case, for it requires to know
 the average distribution of the position of edits performed by humans which is
-obviously very complex.
+obviously complex.
 
 \noindent The complexity analysis also includes a worst case analysis. In the
 worst case, each new identifier is bigger than the previous one. To produce such
@@ -260,7 +260,7 @@ state-of-the-art~\cite{preguica2009commutative, weiss2009logoot} is the
 following:
 \begin{enumerate}[noitemsep]
 \item The user types a character at the beginning of the document;
-\item Repeat.
+\item Repeat the first step.
 \end{enumerate}
 
 
@@ -272,7 +272,7 @@ The complexity analysis depends of the chosen structure to represent the
 replica. In this section, we focus on a tree structure but other structures
 (e.g. lists~\cite{weiss2009logoot}) exposing different tradeoffs could be
 used. Nevertheless, the space complexity of identifiers -- the main contribution
-of \LSEQ -- stays the same regardless of the chosen structure.
+of \LSEQ{} -- stays the same regardless of the chosen structure.
 
 \begin{figure}
   \centering
@@ -291,8 +291,8 @@ of \LSEQ -- stays the same regardless of the chosen structure.
     behaviors and in the worst case.}
 \end{figure}
 
-
-\subsubsection{Space complexity}
+\paragraph{Space complexity.}
+%\subsubsection{Space complexity}
 
 We distinguish the space complexity of each identifier from the space complexity
 of the tree. The former is important since it directly impacts the communication
@@ -364,8 +364,9 @@ $\mathcal{O}(I\log I)$. The tradeoff is beneficial since the communication
 complexity of editors inherits from the improvement: as shown in
 Algorithm~\ref{algo:crdtabstract}, each identifier is broadcast to all editors.
 
-\subsubsection{Time complexity}
-\label{subsubsec:time}
+\paragraph{Time complexity.}
+%\subsubsection{Time complexity}
+%\label{subsubsec:time}
 
 Time complexity provides insights about the performance evolution of each
 operation over insertions. They are divided between their local execution and
@@ -455,10 +456,10 @@ $\mathcal{O}(I)$.
   \input{input/lseqlookuptable.tex}
 \end{table}
 
-Table~\ref{table:lseqtime} and Table~\ref{table:lseqlookup} summarize the time
+Tables~\ref{table:lseqtime} and~\ref{table:lseqlookup} summarize the time
 complexity of operations. The exponential tree structure leads to efficient
 update operations. Its drawback lies in the lookup operation making the link
-between the view and the replica. In particular, monotonic editing leads to the
+between the sequence and the tree. In particular, monotonic editing leads to the
 worst case scenario where the access grows linearly. Fortunately,
 \begin{inparaenum}[(i)]
 \item the view should not be updated if the index of the change falls outside
@@ -469,7 +470,8 @@ worst case scenario where the access grows linearly. Fortunately,
   can maintain these fast accesses up-to-date.
 \end{inparaenum}
 
-\subsubsection{Summary}
+\paragraph{Summary.}
+%\subsubsection{Summary}
 
 The complexity analysis reveals the improvements brought by \LSEQ as well as
 their cost.  \LSEQ sacrifices on its worst case complexity to improve on other
