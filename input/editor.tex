@@ -62,9 +62,9 @@ size. Section~\ref{sec:experiments} validates this claim through experiments.
 %% Other dimensions such as concurrency rate are not part of 
 
 
-\subsection{Communication}
-\label{subsec:communication}
-
+\paragraph{Communication.}
+%\subsection{Communication}
+%\label{subsec:communication}
 Editing sessions can gather from small to large groups during their life time,
 e.g., massive open online courses (MOOC) may start with a large number of
 students which can quickly decrease due to a lack of
@@ -184,9 +184,9 @@ replicas connected during the propagation.
 % writers and readers of the shared sequence.
 
 
-\subsection{Causality tracking}
-\label{subsec:causality}
-
+\paragraph{Causality tracking.}
+%\subsection{Causality tracking}
+%\label{subsec:causality}
 To preserve consistent replicas, the same outcome must result from the
 generation of the operation and its integration~\cite{sun1998achieving}. Often,
 the behavior of an operation depends of others previously integrated. For
@@ -348,8 +348,8 @@ $\mathcal{O}(W)$, the communication overhead is constant $\mathcal{O}(1)$.
 % message, and $W+x.o$ the response to this message where $x.o$ are the missing
 % operations.
 
-\subsection{Shared sequence}
-
+\paragraph{Shared sequence.}
+%\subsection{Shared sequence}
 Sun et al. state that collaborative editing requires convergence, causality, and
 intention preservation~\cite{sun1998achieving}.
 % Strong eventual consistency states that a system is correct if replicas
@@ -374,7 +374,8 @@ algorithms that do not scale~\cite{mostefaoui2015signature}.
 %% The code of \LSEQ is available at
 %% \url{https://github.com/Chat-Wane/LSEQTree}.
 
-\subsection{Communication complexity}
+\paragraph{Communication complexity.}
+%\subsection{Communication complexity}
 
 The logarithmic multiplicative factor of broadcast, the constant cost of
 causality tracking, and the cost of identifiers, lead to a communication
