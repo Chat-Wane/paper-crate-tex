@@ -21,20 +21,6 @@ to ensure the CCI properties:
   re-observed at integration time regardless of concurrent operations. 
 \end{itemize}
 
-For CRDT, Intentions for sequence are defined with the help of a dense
-order~\cite{weiss2010logootundo}. 
-
-\begin{definition}[Intention of operations of sequences]
-  A sequence is a set of elements paired with a dense order, i.e., elements are
-  ordered and inserting between two elements is always possible.
-  \begin{itemize}[noitemsep]
-  \item Inserting the element $e$ at position $i$ in the sequence becomes
-    inserting the element $e$ between the element at position $i-1$ and the
-    element at position $i$;
-  \item Deletion an element at position $i$ in the sequence removes the element
-    from the set without impairing the order of other elements.
-  \end{itemize}
-\end{definition}
 
 
 % To ensure that participants read
@@ -99,13 +85,36 @@ leave the editing session.
 Conflict-free replicated data types (CRDTs) for
 sequences~\cite{shapiro2011comprehensive, shapiro2011conflict} constitute the
 latter approaches which solve concurrent cases by providing commutative,
-associative, and idempotent operations. The causality property of CCI that
+associative, and idempotent operations. 
+% Cci
+The causality property of CCI that
 precludes editors to reach large scale can be relaxed. Contrarily to OT, CRDTs
 only require to track semantically related operations. For instance, the removal
 of a particular element must follow its insertion. 
-% The commutative property of operations ensures the consistency of the system.
-CRDTs provide commutative operations by associating a unique and immutable
-identifier to each element of the sequence.
+
+%ccI
+Intentions for sequence are defined with the help of a dense
+order~\cite{weiss2010logootundo}.
+
+\begin{definition}[Intention of operations of sequences]
+  A sequence is a set of elements paired with a dense order, i.e., elements are
+  ordered and inserting between two elements is always possible.
+  \begin{itemize}[noitemsep]
+  \item Inserting the element $e$ at position $i$ in the sequence becomes
+    inserting the element $e$ between the element at position $i-1$ and the
+    element at position $i$;
+  \item Deletion an element at position $i$ in the sequence removes the element
+    from the set without impairing the order of other elements.
+  \end{itemize}
+\end{definition}
+
+CRDTs implements this dense order by associating a unique and
+immutable identifier to each element of the sequence. 
+
+%cCi
+Convergence property is obtained by making insert and delete
+operations commutative.
+
 % To guarantee the properties of convergence and intention preservation, they
 % defines a dense total order among identifiers. Using this order retrieves the
 % sequence of characters.
