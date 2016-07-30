@@ -46,19 +46,19 @@ message, it checks if the operation is causally ready to be delivered. Once the
 condition is verified, it applies the operation to the distributed sequence
 which notifies the graphical user interface of the changes.  The right part of
 the figure corresponds to the catch up strategy where a member may have missed
-operations due to dropped messages, or simply because the user worked on offline
-mode for a while. Therefore, when the editor is online, it regularly asks to its
+operations due to dropped messages, or simply because the user worked offline
+for a while. Therefore, when the editor is online, it regularly asks to its
 neighborhood for the missing operations.
 
 \CRATE~\cite{nedelec2016crate} is a real-time decentralized editor running
 directly within web browsers and available at
 \url{https://github.com/Chat-Wane/CRATE}. 
 %% None of its internal components prevent its scalability.
-This section describes the components of \CRATE present in each layer and it
-reviews their contribution to the scalability of the system. Among others, the
-communication complexity scales well in terms of number of participants and
-document size. Section~\ref{sec:experiments} validates this claim through
-experiments.
+This section describes the model of \CRATE: communication, causality, and
+sequence.  It reviews each component and its contribution to the system. This
+composition provides a tradeoff favorizing communication complexity. The system
+scales well in terms of number of participants and document
+size. Section~\ref{sec:experiments} validates this claim through experiments.
 %% Other dimensions such as concurrency rate are not part of 
 
 
@@ -200,10 +200,7 @@ where $W$ is the number of participants that ever wrote in the
 document~\cite{charronbost1991concerning}. Such communication overhead confines
 its usage to small editing sessions.
 
-\CRATE tracks only the semantically related pairs of operations: the removal of
-an element with its insertion. If the operations arrives to an editor out of
-order, the removal waits for the corresponding insertion. On the opposite, it
-immediately integrates received insertions. \CRATE uses a version vector with
+\CRATE uses a version vector with
 exceptions~\cite{malkhi2007concise, mukund2014optimized}: for each editor,
 \begin{inparaenum}[(i)]
 \item an integer denotes the maximal counter of received operations that
@@ -211,38 +208,53 @@ exceptions~\cite{malkhi2007concise, mukund2014optimized}: for each editor,
 \item a set of integers denotes the exceptions, i.e., the operations known as
   not yet received from this editor.
 \end{inparaenum}
-
-\begin{figure}
-  \centering
-  \input{./input/timelineexample.tex}
-  \caption{\label{fig:timeline} Causality tracking example involving 3
-    editors. The version vectors with exceptions are vectors of triples
-    $\langle unique\,site\,identifier,\, maximal\,counter,\, exceptions
-    \rangle$.}
-\end{figure}
-
-\noindent For instance, in Figure~\ref{fig:timeline}, the vectors are
-represented as a list of triples
-$\langle unique\,site\,identifier,\, maximal\,counter,\, exceptions \rangle$.
-The second editor happens to obtain the vector $[\langle u_1,\,2,\ \{1\}]$.  It
-states that $u_2$ received 1 operation from $u_1$ with the counter 2 but another
-operation exists -- the first one of $u_1$ -- that $u_2$ did not yet received.
+This causality tracking structure tracks only the semantically related pairs of
+operations (e.g. the removal of an element with its insertion). If the
+operations arrives to an editor out of order, the removal waits for the
+corresponding insertion. On the opposite, it immediately integrates received
+insertions.
 
 
-Figure~\ref{fig:timeline} depicts an editing session involving 3 editors. The
-version vectors with exceptions start empty. The editor $u_1$ inserts two
-characters in its replica and broadcasts the corresponding messages. The editor
-$u_3$ quickly receives both operations. Since it did not receive these
-operations before, and since they do not depend of any other operation, the
-editor integrates the received counters to its vector. It also delivers the
-operation to the shared sequence structure. In the meantime, the editor $u_2$
-only received the second operation. Consequently, it stores this maximal
-counter, marks the first operation of $u_1$ as exception, and delivers the
-received operation. Then, $u_3$ removes the first character inserted by $u_1$
-and broadcasts the corresponding message. While $u_1$ delivers the removal
-immediately, $u_2$ waits, for the targeted operation belongs to its
-exceptions. Once it receives the missing operation of $u_1$, the exception
-disappears and the delete operation is delivered.
+
+
+% \begin{figure}
+%   \centering
+%   \input{./input/timelineexample.tex}
+%   \caption{\label{fig:timeline} Causality tracking example involving 3
+%     editors. The version vectors with exceptions are vectors of triples
+%     $\langle unique\,site\,identifier,\, maximal\,counter,\, exceptions
+%     \rangle$.}
+% \end{figure}
+
+% \noindent For instance, in Figure~\ref{fig:timeline}, the vectors are
+% represented as a list of triples
+% $\langle unique\,site\,identifier,\, maximal\,counter,\, exceptions \rangle$.
+% The second editor happens to obtain the vector $[\langle u_1,\,2,\ \{1\}]$.  It
+% states that $u_2$ received 1 operation from $u_1$ with the counter 2 but another
+% operation exists -- the first one of $u_1$ -- that $u_2$ did not yet received.
+
+
+% Figure~\ref{fig:timeline} depicts an editing session involving 3 editors. The
+% version vectors with exceptions start empty. The editor $u_1$ inserts two
+% characters in its replica and broadcasts the corresponding messages. The editor
+% $u_3$ quickly receives both operations. Since it did not receive these
+% operations before, and since they do not depend of any other operation, the
+% editor integrates the received counters to its vector. It also delivers the
+% operation to the shared sequence structure. In the meantime, the editor $u_2$
+% only received the second operation. Consequently, it stores this maximal
+% counter, marks the first operation of $u_1$ as exception, and delivers the
+% received operation. Then, $u_3$ removes the first character inserted by $u_1$
+% and broadcasts the corresponding message. While $u_1$ delivers the removal
+% immediately, $u_2$ waits, for the targeted operation belongs to its
+% exceptions. Once it receives the missing operation of $u_1$, the exception
+% disappears and the delete operation is delivered.
+
+The structure also serves as a tool to identify differences between replicas
+when an editor needs to catch up with the current state of the document in the
+live editing session.  Each editor periodically performs an
+anti-entropy~\cite{demers1987epidemic} round ensuring that no operations went
+missing due to an unreliable network or offline writing.
+
 
 While the local overhead implied by such structure remains upper-bounded by
 $\mathcal{O}(W)$, the communication overhead is constant $\mathcal{O}(1)$.
@@ -250,20 +262,20 @@ $\mathcal{O}(W)$, the communication overhead is constant $\mathcal{O}(1)$.
 %% The causality tracking structure is available at
 %% \url{https://github.com/Chat-Wane/version-vector-with-exceptions}.
 
-The structure also serves as a tool to identify differences between replicas
-when an editor needs to catch up with the current state of the document in the
-live editing session. The anti-entropy protocol~\cite{demers1987epidemic}
-reduces the information differences between the involved members. It selects an
-editor from its neighborhood at random, and sends its local version vector with
-exceptions. The chosen neighbor performs the difference with its own vector,
-searches the missing operations, and sends them back to the requesting
-editor. All editors periodically perform such anti-entropy rounds ensuring that
-no operations went missing -- due to unpredictable network behavior or because
-some collaborators worked offline.
 
-For instance, in Figure~\ref{fig:timeline}, when the editor $u_2$ receives the
-second operation of $u_1$, it notices that the first operation of the latter is
-missing. Thus, it can actively ask to some editors for the missing operation.
+%The anti-entropy
+%protocol~\cite{demers1987epidemic} reduces the information differences between
+%the involved members.
+%It selects an
+%editor from its neighborhood at random, and sends its local version vector with
+%exceptions. The chosen neighbor performs the difference with its own vector,
+%searches the missing operations, and sends them back to the requesting
+%editor.
+
+
+% For instance, in Figure~\ref{fig:timeline}, when the editor $u_2$ receives the
+% second operation of $u_1$, it notices that the first operation of the latter is
+% missing. Thus, it can actively ask to some editors for the missing operation.
 
 
 %% To guarantee the exactly once delivery of operations, and the causal delivery
@@ -351,10 +363,10 @@ types rely on unique and immutable identifiers. \CRATE uses \LSEQ to provide the
 identifiers. Delete operations truly remove the targeted elements from the
 underlying structure. Furthermore, the size of these identifiers are expected to
 be bounded between a logarithmic bound and a polylogarithmic bound compared to
-the number of insertions in the sequence. Being sublinear, the communication
-complexity is practicable. Being sublinear, the structure does not require
-balancing which needs consensus algorithms that do not
-scale~\cite{mostefaoui2015signature}.
+the number of insertions in the sequence.
+% Being sublinear, the communication complexity is practicable. 
+Being sublinear, the structure does not require balancing which needs consensus
+algorithms that do not scale~\cite{mostefaoui2015signature}.
 
 %% The code of \LSEQ is available at
 %% \url{https://github.com/Chat-Wane/LSEQTree}.
@@ -366,36 +378,36 @@ $\mathcal{O}((\log I)^2.(\ln R))$ depending on the editing behavior, where $I$
 is the number of insert operations performed on the sequence, and $R$ the number
 of replicas in the editing session during the message propagation.
 
-\subsection{Graphical user interface}
+% \subsection{Graphical user interface}
 
-Each participant owns a replica of the shared document. Yet the application must
-give the illusion of a single document being accessed by multiple
-participants.
+% Each participant owns a replica of the shared document. Yet the application must
+% give the illusion of a single document being accessed by multiple
+% participants.
 
-\CRATE is a real-time editor -- written in HTML, CSS, and JavaScript -- that
-runs directly within web browsers. It establishes browser-to-browser
-communications using the recent WebRTC technology~\cite{webrtc}. It provides a
-user friendly editor using Ace~\cite{ace}.
+% \CRATE is a real-time editor -- written in HTML, CSS, and JavaScript -- that
+% runs directly within web browsers. It establishes browser-to-browser
+% communications using the recent WebRTC technology~\cite{webrtc}. It provides a
+% user friendly editor using Ace~\cite{ace}.
 
-%% It uses the Ace code editor available at \url{https://ace.c9.io} to create
-%% the view available to users.
+% %% It uses the Ace code editor available at \url{https://ace.c9.io} to create
+% %% the view available to users.
 
-Since CRDTs for sequences provide functions relying on identifiers rather than
-indexes, \CRATE uses a lookup function which gets the identifiers at a
-designated index, and conversely. Recall that the lookup time complexity is
-upper-bounded by $\mathcal{O}(2^{\sqrt{\log I}})$ for random editing and by
-$\mathcal{O}(I)$ for monotonic editing -- the latter being the worst case
-scenario. However, as stated in Section~\ref{subsubsec:time}, it constitutes a
-very pessimistic upper bound, for the efficiency of the operation can be easily
-improved.
+% Since CRDTs for sequences provide functions relying on identifiers rather than
+% indexes, \CRATE uses a lookup function which gets the identifiers at a
+% designated index, and conversely. Recall that the lookup time complexity is
+% upper-bounded by $\mathcal{O}(2^{\sqrt{\log I}})$ for random editing and by
+% $\mathcal{O}(I)$ for monotonic editing -- the latter being the worst case
+% scenario. However, as stated in Section~\ref{subsubsec:time}, it constitutes a
+% very pessimistic upper bound, for the efficiency of the operation can be easily
+% improved.
 
-Users are always able to modify the document whenever they please.  When users
-perform their insertions, \CRATE gets the identifiers at the targeted position
-and generates the new identifier. When it receives an identifier, it firstly
-inserts it into the tree structure and secondly get its index to notify the
-view. As such, users can edit in real-time, i.e. they do not experience any
-freezes during their edition locally, remote insertions are integrated as soon
-as possible.
+% Users are always able to modify the document whenever they please.  When users
+% perform their insertions, \CRATE gets the identifiers at the targeted position
+% and generates the new identifier. When it receives an identifier, it firstly
+% inserts it into the tree structure and secondly get its index to notify the
+% view. As such, users can edit in real-time, i.e. they do not experience any
+% freezes during their edition locally, remote insertions are integrated as soon
+% as possible.
 
 % Each element in the tree keeps track of its number of children. Such information
 % allows quick withdrawing of ranges of elements. Table~\ref{table:lseqlookup}
