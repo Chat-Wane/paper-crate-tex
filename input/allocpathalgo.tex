@@ -27,7 +27,7 @@
     \State \textbf{let} $step \leftarrow min(boundary,\,interval)$;
     \hfill \comment{\#2 Maximal space between two identifiers}
     \State \textbf{return} $\textsc{subPath}(p,\,depth) + rand(0,\,step)$;
-    \hfill \comment{\#3 Create the new path} \label{line:plus}
+    \hfill \comment{\#3 Create the new path}\label{line:plus}
     \EndFunction
     \Statex
     \Function{right-to-left}{$p,\,q \in \mathcal{P}$}\label{line:righttoleft}
@@ -38,7 +38,7 @@
     \State \textbf{let} $step \leftarrow min(boundary,\,interval)$;
     \hfill \comment{\#2}
     \State \textbf{return} $\textsc{subPath}(q,\,depth) - rand(0,\,step)$;
-    \hfill \comment{\#3} \label{line:minus}
+    \hfill \comment{\#3}\label{line:minus}
     \EndFunction
     \Statex 
     \Function{getDepthInterval}{$p,\,q \in \mathcal{P}$} $\rightarrow \mathbb{N} \times \mathbb{N}$ \hfill \comment{Which level has enough space for 1 path}
