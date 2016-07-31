@@ -56,7 +56,7 @@ Such growing identifiers are called variable-size identifiers. The main
 objective is to keep the growth of the size of the identifiers under a sublinear
 boundary.
 
-\paragraph{Encoding a position in the sequence}
+\paragraph{Encoding a position in the sequence.}
 %\subsection{Encoding a position in the sequence}
 %\label{subsec:variable}
 Each \textsc{insert} operation generates an identifier that encodes the position
@@ -125,7 +125,7 @@ sequence \texttt{QWERTY}.
 % Assuming a 10-ary tree, the new path would be $[3.0.X]$ where $0<X<10$.
 
 
-\paragraph{Disambiguation of concurrent cases}
+\paragraph{Disambiguation of concurrent cases.}
 %\subsection{Disambiguation of concurrent cases}
 %\label{subsec:disambiguation}
 The order among paths $(\mathcal{P},\,<_\mathcal{P})$ is a total order when a
@@ -160,9 +160,8 @@ $[\langle u_2,\, 1\rangle]$ is associated with \texttt{T}. The disambiguator of
 the character \texttt{R} inserted between \texttt{E} and \texttt{T} is
 $[\langle u_1,\, 6\rangle.\langle u_1,\, 7\rangle]$.
 
-\paragraph{Allocating variable-size identifiers}
+\paragraph{Allocating variable-size identifiers.}
 %\subsection{Allocating variable-size identifiers}
-
 Unique and immutable identifiers comprise both a path and a disambiguator in
 order to preserve a dense total order, even in presence of concurrent
 operations.
@@ -203,7 +202,7 @@ precede \texttt{T}.
 % in \texttt{QWTREY} and it would have needed a correction.
 %It is worth noting that 
 
-\begin{algorithm}[h]
+\begin{algorithm}
   \input{input/crdtabstractalgo.tex}
   \caption{\label{algo:crdtabstract}General outlines of a sequence with
     variable-size identifiers.}
@@ -268,7 +267,7 @@ $id_\texttt{R} <_\mathcal{I} id_{e} <_\mathcal{I} id_\texttt{T}$.
 \noindent Finally, the editor broadcasts $id_{e}$ to all editors. Minimizing the
 size of $id_e$ is important, for it directly impacts the generated traffic.
 
-\paragraph{Choosing the smallest path}
+\paragraph{Choosing the smallest path.}
 %\subsection{Choosing the smallest path}
 %\label{subsec:choosing}
 
@@ -309,28 +308,27 @@ As illustrated in Figure~\ref{fig:allocpathexample}, the allocation of paths
 without an \emph{a priori} knowledge of the final sequence is a non-trivial
 problem.  Suppose that \textsc{allocPath} allocates the leftmost branch
 available at the lowest depth possible. Suppose two insertion orders resulting
-in an identical sequence of characters \texttt{QWERTY}.  In the first case,
-\texttt{Q} is inserted first at position 0, followed by \texttt{W} at position 1
-(after \texttt{Q}) then \texttt{E} is inserted at position 3 (after \texttt{W}),
-etc.  In the second case, \texttt{Y} is inserted first at position 0 as the
-sequence is initially empty. Then \texttt{T} is inserted. However as the final
-intended word is \texttt{QWERTY}, \texttt{T} has to be inserted at a position
-before \texttt{Y} that represents the current state of the sequence. \texttt{T}
-is thus inserted at position 0 shifting \texttt{Y} to position 1, etc.
+in an identical sequence of characters \texttt{QWERTY}.  In the first case, we
+insert \texttt{Q} at position 0, followed by \texttt{W} at position 1, followed
+by \texttt{E} at position 2, etc.  In the second case, the sequence starts empty
+and we insert \texttt{Y} at position 0. Then, we insert \texttt{T}. However, as
+the intended word is \texttt{QWERTY}, we insert \texttt{T} before
+\texttt{Y}. Thus, we insert \texttt{T} at position 0 shifting \texttt{Y} to
+position 1, etc.
 
 
-\begin{itemize}
-\item Figure~\ref{fig:allocpathexampleA}: In this case, the insertion order
-  exactly follows the expectations of the allocation function. The depth of the
-  tree never grows. The execution of operations remain efficient.
+%\begin{itemize}
+In Figure~\ref{fig:allocpathexampleA}, the insertion order exactly follows the
+expectations of the allocation function. The depth of the tree never grows. The
+execution of operations remain efficient.
 
-\item Figure~\ref{fig:allocpathexampleB}: In this case, the insertion order goes
-  against the expectations of the allocation function. The depth of the tree
-  increase at each insertion. Indeed, as an element gets the smallest value at
-  its level, there is no room for a new element at the same level, hence the
-  creation of a new level. The depth of the tree grows very fast decreasing the
-  efficiency of operations.
-\end{itemize}
+In Figure~\ref{fig:allocpathexampleB} the insertion order goes against the
+expectations of the allocation function. The depth of the tree increase at each
+insertion. Indeed, as an element gets the smallest value at its level, there is
+no room for a new element at the same level, hence the creation of a new
+level. The depth of the tree grows very fast decreasing the efficiency of
+operations.
+
 
 This example shows how the insertion order impacts the length of the allocated
 paths. Unfortunately, the insertion order cannot be predicted nor the size of
