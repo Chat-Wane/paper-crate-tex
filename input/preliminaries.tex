@@ -56,9 +56,9 @@ Such growing identifiers are called variable-size identifiers. The main
 objective is to keep the growth of the size of the identifiers under a sublinear
 boundary.
 
-\subsection{Encoding a position in the sequence}
-\label{subsec:variable}
-
+\paragraph{Encoding a position in the sequence}
+%\subsection{Encoding a position in the sequence}
+%\label{subsec:variable}
 Each \textsc{insert} operation generates an identifier that encodes the position
 of the new character in the sequence using a dense order. Concatenations of
 comparable elements constitute a mean to represent such dense order.
@@ -125,10 +125,9 @@ sequence \texttt{QWERTY}.
 % Assuming a 10-ary tree, the new path would be $[3.0.X]$ where $0<X<10$.
 
 
-
-\subsection{Disambiguation of concurrent cases}
-\label{subsec:disambiguation}
-
+\paragraph{Disambiguation of concurrent cases}
+%\subsection{Disambiguation of concurrent cases}
+%\label{subsec:disambiguation}
 The order among paths $(\mathcal{P},\,<_\mathcal{P})$ is a total order when a
 single collaborator edits. However, it becomes a partial order when the editing
 session involves several collaborators and concurrent operations exist. For
@@ -161,7 +160,8 @@ $[\langle u_2,\, 1\rangle]$ is associated with \texttt{T}. The disambiguator of
 the character \texttt{R} inserted between \texttt{E} and \texttt{T} is
 $[\langle u_1,\, 6\rangle.\langle u_1,\, 7\rangle]$.
 
-\subsection{Allocating variable-size identifiers}
+\paragraph{Allocating variable-size identifiers}
+%\subsection{Allocating variable-size identifiers}
 
 Unique and immutable identifiers comprise both a path and a disambiguator in
 order to preserve a dense total order, even in presence of concurrent
@@ -268,9 +268,9 @@ $id_\texttt{R} <_\mathcal{I} id_{e} <_\mathcal{I} id_\texttt{T}$.
 \noindent Finally, the editor broadcasts $id_{e}$ to all editors. Minimizing the
 size of $id_e$ is important, for it directly impacts the generated traffic.
 
-
-\subsection{Choosing the smallest path}
-\label{subsec:choosing}
+\paragraph{Choosing the smallest path}
+%\subsection{Choosing the smallest path}
+%\label{subsec:choosing}
 
 The most critical part of sequences with variable-size identifiers consists in
 creating the paths. The function that allocates identifiers must provide the
