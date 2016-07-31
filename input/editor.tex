@@ -216,9 +216,11 @@ operations (e.g. the removal of an element with its insertion). If the
 operations arrives to an editor out of order, the removal waits for the
 corresponding insertion. On the opposite, it immediately integrates received
 insertions.
-
-
-
+The structure also serves as a tool to identify differences between replicas
+when an editor needs to catch up with the current state of the document in the
+live editing session.  Each editor periodically performs an
+anti-entropy~\cite{demers1987epidemic} round ensuring that no operations went
+missing due to an unreliable network or offline writing.
 
 % \begin{figure}
 %   \centering
@@ -251,13 +253,6 @@ insertions.
 % immediately, $u_2$ waits, for the targeted operation belongs to its
 % exceptions. Once it receives the missing operation of $u_1$, the exception
 % disappears and the delete operation is delivered.
-
-The structure also serves as a tool to identify differences between replicas
-when an editor needs to catch up with the current state of the document in the
-live editing session.  Each editor periodically performs an
-anti-entropy~\cite{demers1987epidemic} round ensuring that no operations went
-missing due to an unreliable network or offline writing.
-
 
 While the local overhead implied by such structure is upper-bounded by
 $\mathcal{O}(W)$, the communication overhead is constant $\mathcal{O}(1)$.
