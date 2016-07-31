@@ -93,27 +93,26 @@ only require to track semantically related operations. For instance, the removal
 of a particular element must follow its insertion. 
 
 %ccI
-Intentions for sequence are defined with the help of a dense
+Intentions for sequences are defined with the help of a dense
 order~\cite{weiss2010logootundo}.
 %
 %\begin{definition}[Intention of operations of sequences]
-  A sequence is a set of elements paired with a dense order, i.e., elements are
-  ordered and inserting between two elements is always possible.
-  \begin{itemize}[noitemsep]
-  \item Inserting the element $e$ at position $i$ in the sequence becomes
-    inserting the element $e$ between the element at position $i-1$ and the
-    element at position $i$;
-  \item Deletion an element at position $i$ in the sequence removes the element
-    from the set without impairing the order of other elements.
-  \end{itemize}
-%\end{definition}
+A sequence is a set of elements paired with a dense order, i.e., elements are
+ordered and inserting between two elements is always possible.
+\begin{itemize}
+\item Inserting the element $e$ at position $i$ in the sequence becomes
+  inserting the element $e$ between the element at position $i-1$ and the
+  element at position $i$;
+\item Deletion an element at position $i$ in the sequence removes the element
+  from the set without impairing the order of other elements.
+\end{itemize}
+% \end{definition}
 
-CRDTs implements this dense order by associating a unique and
-immutable identifier to each element of the sequence. 
-
-%cCi
-Convergence property is obtained by making insert and delete
-operations commutative.
+CRDTs implements this dense total order by associating a unique and immutable
+identifier to each element of the sequence.
+% cCi
+% Convergence property is obtained by making insert and delete
+% operations commutative.
 
 % To guarantee the properties of convergence and intention preservation, they
 % defines a dense total order among identifiers. Using this order retrieves the

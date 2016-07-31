@@ -1,4 +1,4 @@
-
+\newcommand{\PARAGRAPH}{-20pt}
 
 \section{LSeq: a polylogarithmic path allocator}
 \label{sec:proposal}
@@ -247,21 +247,21 @@ worst case in \LSEQ, the insertions must saturate the small gap left between
 identifiers (see Lines~\ref{line:plus} and~\ref{line:minus} of
 Algorithm~\ref{algo:allocpath}). The editing behavior that produces such worst
 case with \LSEQ is the following:
-\begin{enumerate}[noitemsep]
+\begin{inparaenum}[(1)]
 \item The user types \texttt{A} followed by \texttt{B}. The gap left between
   \texttt{A} and \texttt{B} corresponds to the $boundary$ (see
   Line~\ref{line:boundary} of Algorithm~\ref{algo:allocpath});
 \item The user types $boundary$ characters between the two lastly inserted
   characters. At least the last identifier has grown;
 \item Repeat the second step.
-\end{enumerate}
+\end{inparaenum}
 The editing behavior that produces such worst case with the
 state-of-the-art~\cite{preguica2009commutative, weiss2009logoot} is the
 following:
-\begin{enumerate}[noitemsep]
+\begin{inparaenum}[(1)]
 \item The user types a character at the beginning of the document;
 \item Repeat the first step.
-\end{enumerate}
+\end{inparaenum}
 
 
 % Such editing behavior remains unlikely in collaborative editing and can be
@@ -290,6 +290,9 @@ of \LSEQ{} -- stays the same regardless of the chosen structure.
   \caption{\label{fig:complexity} \LSEQ tree filled with the studied editing
     behaviors and in the worst case.}
 \end{figure}
+
+
+%\vspace{\PARAGRAPH}
 
 \paragraph{Space complexity.}
 %\subsubsection{Space complexity}
@@ -363,6 +366,8 @@ a small overhead on the full structure, i.e. from $\mathcal{O}(I)$ to
 $\mathcal{O}(I\log I)$. The tradeoff is beneficial since the communication
 complexity of editors inherits from the improvement: as shown in
 Algorithm~\ref{algo:crdtabstract}, each identifier is broadcast to all editors.
+
+%\vspace{\PARAGRAPH}
 
 \paragraph{Time complexity.}
 %\subsubsection{Time complexity}
@@ -469,6 +474,8 @@ worst case scenario where the access grows linearly. Fortunately,
   the cost of the lookup, for the repeated insertions -- if monotonic -- alone
   can maintain these fast accesses up-to-date.
 \end{inparaenum}
+
+%\vspace{\PARAGRAPH}
 
 \paragraph{Summary.}
 %\subsubsection{Summary}
