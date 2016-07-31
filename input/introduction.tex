@@ -38,19 +38,18 @@ complexities. Among others, achieving a sublinear communication
 complexity compared to the number of participants is crucial for
 supporting large groups.
 
-We consider variable-size Conflict-Free Replicated Data
-Types~\cite{shapiro2011comprehensive} (CRDTs) for sequences such as
-Logoot~\cite{weiss2010logootundo} and Treedoc~\cite{preguica2009commutative} as the most promising
-approaches to handle large groups. However, as the size of unique and
-immutable allocated identifiers associated to each character of the
-sequence grows linearly, their performance decreases. It eventually
-affects the responsiveness of the editor. A sublinear upper bound on
-the size of identifiers solves the problem and allows real-time
-editors to be used in crowdsourcing context.  In previous works, we
-proposed an identifier allocation strategy called
-\LSEQ~\cite{nedelec2013concurrency, nedelec2013lseq} where a sublinear
-upper-bound is observed on simulations. However, there is no formal
-proof of such property and  conditions upon which it applies.
+We consider variable-size conflict-free replicated data
+types~\cite{shapiro2011comprehensive} for sequences such as
+Logoot~\cite{weiss2010logootundo} and Treedoc~\cite{preguica2009commutative} as
+the most promising approaches to handle large groups. However, as the size of
+unique and immutable allocated identifiers associated to each character of the
+sequence grow linearly, their performance decreases. It eventually affects the
+responsiveness of the editor. A sublinear upper bound on the size of identifiers
+solves the problem and enables real-time editing in crowdsourcing context.  In
+previous works~\cite{nedelec2013concurrency, nedelec2013lseq}, we proposed an
+allocation strategy and observed a sublinear upper-bound empirically. However,
+there is no formal proof of such property.
+% nor conditions upon which it applies.
 
 
 % To provide availability of documents and responsiveness, real-time editors use
@@ -103,26 +102,27 @@ proof of such property and  conditions upon which it applies.
 
 \noindent The contributions of this paper are threefold:
 \begin{itemize}
-\item Compared to previous works~\cite{nedelec2013concurrency,
-    nedelec2013lseq}, we prove the upper bounds on space and time complexities
-  of \LSEQ and the conditions upon which they apply. The size of the
-identifiers grows up to $\mathcal{O}((\log I)^2)$ where $I$ is the number of
-insertions performed on the document. This result opens the way
-  for building decentralized and scalable real-time editors.
+\item Compared to previous works~\cite{nedelec2013concurrency, nedelec2013lseq},
+  we prove the upper bounds on space and time complexities of \LSEQ and the
+  conditions upon which they apply. The size of the identifiers grows up to
+  $\mathcal{O}((\log I)^2)$ where $I$ is the number of insertions in the
+  document. This result opens the way for building decentralized and scalable
+  real-time editors.
 \item To measure the overall performance of a real working system, we built
   \CRATE: a real-time decentralized editor running in web
   browsers~\cite{nedelec2016crate}. Compared to Google Docs, \CRATE enables
-  real-time editing whatever the number of participants. To better preserve
+  real-time editing regardless of the number of participants. To better preserve
   privacy of users, \CRATE ensures that shared documents only exist within
   browsers participating to the editing session. In this paper, we describe the
   complete architecture of \CRATE and review the contribution of each component
   to the scalability of the system. %% analyse the complexity of each component.
 \item To validate our complexity analysis, we provide experiments characterizing
-  \LSEQ's behavior and we compare it to state-of-the-art approaches. Results
-  show that \LSEQ achieves an original tradeoff between time and space
-  complexities. In the Grid'5000 testbed, we launched \CRATE editing sessions
-  involving up till 600 connected web browsers. The generated traffic inherits
-  from the scalability of both \LSEQ and messages dissemination. The resulting
+  \LSEQ's behavior and we compare it to the state-of-the-art
+  approaches~\cite{preguica2009commutative, weiss2009logoot}. Results show that
+  \LSEQ achieves an original tradeoff between time and space complexities. In
+  the Grid'5000 testbed, we launched \CRATE editing sessions involving up to 600
+  connected web browsers. The generated traffic inherits from the scalability of
+  both \LSEQ and messages dissemination~\cite{nedelec2015spray}. The resulting
   documents reach millions of characters. It validates the scalability of a full
   working editor built on top of \LSEQ.
 \end{itemize}
