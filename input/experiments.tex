@@ -19,9 +19,9 @@ The objective of this experiment section is twofold:
   the number of users and the number of operations.
 \end{itemize}
 
-We conducted the experiments using a JavaScript implementation directly usable
-within web browsers. Part of the experiments ran on the \emph{Grid'5000} testbed
-involving up to 601 instances of the editor distributed among 101 machines.
+% We conducted the experiments using a JavaScript implementation directly usable
+% within web browsers. Part of the experiments ran on the \emph{Grid'5000} testbed
+% involving up to 601 instances of the editor distributed among 101 machines.
 
 
 \subsection{Space complexity}
@@ -203,13 +203,15 @@ involving up to 601 instances of the editor distributed among 101 machines.
   expect the traffic to grow polylogarithmically compared to the document size
   (contribution of \LSEQ), and logarithmically compared to the number of
   participants (contribution of \SPRAY).
-\item [Description:] This experimentation concerns editing sessions involving
-  from 101 members to 601 members. The members of each session collaboratively
-  write a document by repeatedly inserting new characters at the end of the
-  document. We measure the average outgoing traffic of members, the average size
-  and variance of partial views. An arbitrary number of 100 operations per
-  second are uniformly distributed among participants. The editing sessions last
-  7 hours. The documents reach millions of characters.
+\item [Description:] This experiment was conducted on the Grid'5000 testbed with
+  101 machines running from 1 to 6 web browsers. The results concern editing
+  sessions involving from 101 members to 601 members. The members of each
+  session collaboratively write a document by repeatedly inserting new
+  characters at the end of the document. We measure the average outgoing traffic
+  of members, the average size and variance of partial views. An arbitrary
+  number of 100 operations per second are uniformly distributed among
+  participants. The editing sessions last 7 hours. The documents reach millions
+  of characters.
 
 \begin{figure}
   \centering
