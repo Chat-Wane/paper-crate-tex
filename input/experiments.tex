@@ -1,12 +1,17 @@
+\newcommand{\FIGUREWIDTH}{0.75}
+
 \section{Experiments}
 \label{sec:experiments}
 
 The objective of this experiment section is twofold:
 \begin{itemize}
 \item To confirm the complexity of \LSEQ. Monotonic editing behavior should lead
-  to a polylogarithmic growth of identifiers compared to the number of
-  insertions. Time complexity should be logarithmic except for the lookup which
-  is expected to be linear after monotonic editing.
+  \begin{inparaenum}[(i)]
+  \item to a polylogarithmic growth of identifiers compared to the number of
+    insertions;
+  \item to a logarithmic increasing of execution time except for the lookup
+    which is expected to be linear.
+  \end{inparaenum}
 \item To show the impact on the generated traffic on a real decentralized
   collaborative editor. We expect that both the identifier size and neighborhood
   size impact the traffic. Since the former grows polylogarithmically, and the
@@ -37,7 +42,7 @@ involving up to 601 instances of the editor distributed among 101 machines.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{./img/space.eps}
+  \includegraphics[width=\FIGUREWIDTH\textwidth]{./img/space.eps}
   \caption{\label{fig:space}Size of paths allocated by Treedoc, Logoot, and
     \LSEQ.}
 \end{figure}
@@ -96,7 +101,7 @@ involving up to 601 instances of the editor distributed among 101 machines.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{./img/time.eps}
+  \includegraphics[width=\FIGUREWIDTH\textwidth]{./img/time.eps}
   \caption{\label{fig:time} Performance of the umptieth operation performed in
     \LSEQ.}
 \end{figure}
@@ -208,7 +213,7 @@ involving up to 601 instances of the editor distributed among 101 machines.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.8\textwidth]{./img/communication.eps}
+  \includegraphics[width=\FIGUREWIDTH\textwidth]{./img/communication.eps}
   \caption{\label{fig:traffic} Average traffic per second at each editor during
     real-time editing sessions.}
 \end{figure}
