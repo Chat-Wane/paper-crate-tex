@@ -12,7 +12,7 @@ structures that can implement a shared document.
 \end{definition}
 
 \begin{definition}[Replicated sequence]
-  Let $d(H)$ the document produced by the series of operations $H$. A replicated
+  Let $d(H)$ be the document produced by the series of operations $H$. A replicated
   sequence of $d(H)$ is a structure $r(H)$ with a projection $\pi$ such that
   $\pi(r(H)) \rightarrow d(H)$.
 \end{definition}
@@ -108,7 +108,7 @@ the \emph{path} of an identifier.
 \end{figure*}
 
 Figure~\ref{fig:treemodelexample} shows the underlying 10-ary tree representing
-a sequence. Like in the previous scenario, the initial sequence is \texttt{QWTY}
+a sequence. As in the previous scenario, the initial sequence is \texttt{QWTY}
 with the respective paths $[1]$, $[2]$, $[4]$ and $[8]$. The insertion of the
 character \texttt{E} between the pairs $\langle [2],\, \texttt{W}\rangle$ and
 $\langle [4],\, \texttt{T}\rangle$ results in the following pair:
@@ -348,7 +348,7 @@ editing~\cite{nedelec2013lseq}. The problem is the following:
   that: \hspace{30pt} $|s(I+1)| - |s(I)| < \mathcal{O}(I)$ %% ugly spacing
 \end{problem}
 
-\noindent Large scale collaborative editors need of an allocation function that
+\noindent Large scale collaborative editors need an allocation function that
 provides identifiers with a sublinear space complexity compared to the number of
 insertions whatever is the editing sequence that produced the document. Such
 allocation function would avoid the need for consensus
