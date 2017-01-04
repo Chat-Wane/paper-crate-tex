@@ -28,14 +28,16 @@ to ensure the CCI properties:
 \item Space complexity: complexity to store a local copy of the shared sequence.
 \item Communication complexity: complexity of messages transiting the network.
 \end{itemize}
-Solving scalability issues requires finding a balance between communication,
-space and time complexities where the communication complexity plays the most
-important role. The challenge consists in providing a sublinear upper bound on
-communication complexity without making other complexities impracticable.
+Solving scalability issues requires finding an original balance between
+communication, space and time complexities.
+% where the communication complexity
+% plays the most important role.
+The challenge consists in providing a sublinear upper bound on communication
+complexity without making other complexities impracticable.
 
 
-Operational transformation (OT) constitutes the core of both centralized and
-decentralized real-time editors. OT ensures the CCI
+Operational transformation (OT) constitutes the mainstream of both centralized
+and decentralized real-time editors. OT ensures the CCI
 properties~\cite{sun1998achieving}. At generation, the processing time of
 operations is constant. At integration, OT transforms the received operations
 according to concurrent ones which were generated on the same state. An

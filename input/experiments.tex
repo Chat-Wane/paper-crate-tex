@@ -21,6 +21,7 @@ The objective of this experiment section is twofold:
 
 
 \subsection{Space complexity}
+\label{subsec:space}
 
 \begin{asparadesc}
 \item [Objective:] To confirm the space complexity of \LSEQ's identifiers and to
@@ -167,7 +168,10 @@ The objective of this experiment section is twofold:
   \end{inparaenum}
   In addition, the load is balanced among participants thanks to \SPRAY.  Hence,
   \CRATE scales well in terms of number of participants and number of
-  insertions.
+  insertions. It is worth noting that Treedoc- and Logoot-based collaborative
+  editors would have linear growth, for both Treedoc and Logoot allocate
+  linearly growing identifiers during left-to-right editing (as shown in
+  Section~\ref{subsec:space}).
 \item [Reason:] When an outsider joins the network, \SPRAY injects a logarithmic
   number of connections compared to the network size. Since it does not use any
   global knowledge, this number is a rough estimation and may lead to a small

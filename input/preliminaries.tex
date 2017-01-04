@@ -119,7 +119,7 @@ replicas.
 \end{definition}
 
 Figure~\ref{fig:disexample} depicts a tree containing 6 elements with only 5
-distinct paths. First, the collaborator $u_1$ inserts \texttt{QW}.  Then, the
+distinct paths. The collaborator $u_1$ inserts \texttt{QW}.  Then, the
 collaborators $u_1$ and $u_2$ concurrently insert \texttt{E} and \texttt{T}
 respectively. This happens to generate an identical path: [$3$]. To solve any
 ambiguity about the order of characters, each identifier includes a
@@ -128,8 +128,10 @@ identifiers and counters:
 $[\langle s_1,\, c_1 \rangle.\langle s_2,\, c_2 \rangle \ldots \langle s_e,\,
 c_e \rangle]$
 where $e$ is the size of the path.  The disambiguator
-$[\langle u_1,\, 6\rangle]$ is associated with \texttt{E}; the disambiguator
-$[\langle u_2,\, 1\rangle]$ is associated with \texttt{T}. The disambiguator of
+$[\langle u_1,\, 6\rangle]$ is associated with \texttt{E} -- meaning $u_1$
+already performed 3 operations before inserting \texttt{Q}, \texttt{W}, and
+\texttt{E}; the disambiguator $[\langle u_2,\, 1\rangle]$ is associated with
+\texttt{T} -- meaning this is the first operation of $u_2$. The disambiguator of
 the character \texttt{R} inserted between \texttt{E} and \texttt{T} is
 $[\langle u_1,\, 6\rangle.\langle u_1,\, 7\rangle]$.
 
