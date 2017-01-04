@@ -24,126 +24,12 @@ such scenarios?  \CRATE allows clients to contribute to their editing sessions
 by sharing their resources (e.g. bandwidth).  It makes real-time editing cheap
 for any web applications, for web application providers do not spend further
 resources. For instance, \CRATE could be embedded in Wikipedia to solve peaks of
-concurrent changes resulting in
-conflicts. %% In this case, any Wikipedia article can be observed in real time.
+concurrent changes resulting in conflicts.
 
 Finally, we demonstrated how a well-known collaborative application can be
 provided without collaboration providers. We aim to explore if other
 collaborative applications such as distributed calendars or crowdsourcing
 platforms can be deployed on a network of browsers.
-
-
-%% In this paper, we described how it is possible to build a decentralized
-%% collaborative editor that allow real-time editing anytime, anywhere, whatever
-%% the number of participants.
-
-% First, we demonstrated that a decentralized editor can be deployed by just
-% clicking on a http link as for google doc. We made decentralized editors easy
-% to use.
-
-% Second, thanks to a new trade-off on different complexities, real-time sessions
-% are established at affordable cost without a cloud provider. Hence, shared
-% documents belongs only to participants without a collaboration provider.
-
-% Third, we removed any limitations on the number of participants allowing
-% real-time editing to be used not only for small groups but also in large
-% events such as conferences, massive online lectures. CRATE can smoothly handle
-% the transitions from small groups to large groups enlarging the affordance of
-% real-time editing.
-
-% Compared to previous work, we established a new tradeoff on
-% communication, time and space complexities by first upper-bounding
-% communication complexity to a sublinear complexity and keep time and space
-% complexities in acceptable classes of complexities.  We validated
-% experimentally this new tradeoff on a real working system publicly
-% available.
-
-% In perspective, we aim to study how users behave when editing in large
-% group. Does current user interfaces can handle such scenario? 
-% CRATE allow to provide real-time editing on client ressources. It
-% makes real-time editing cheap for any web applications because it does
-% not require additional ressources from web application provider. We
-% aim to see how CRATE can be embedded in well-known applications such as
-% Wikipedia. In this case, any wikipedia article can be observed in real
-% time.
-
-% Finally, we demonstrated how one well-known collaborative application
-% can be provided without a collaboration provider. We aim to explore if
-% other collaborative applications such as shared calendar or
-% crowdsourcing platforms can deployed on a network of browsers.
-
-
-
-% \section{Conclusion}
-% \label{sec:conclusion}
-
-% This paper provides the complexity analysis of the allocation function
-% \LSEQ. Among others, \LSEQ enjoys logarithmic, polylogarithmic, and quadratic
-% growth of identifiers for respectively, random, monotonic, and worst-case
-% insertions. The worst-case is made non-trivial using two sub-allocation
-% functions with antagonist designs. The experiments validates the complexity
-% analysis in space and time.  Using \LSEQ, decentralized collaborative editors
-% scale in terms of number of insertions performed on the document. This paper
-% provided the outlines to build such editor. In particular, we introduced \CRATE
-% as the composition of \LSEQ, \SPRAY, and a version vector with exceptions. Such
-% composition allows large scale editing of documents in real-time. The
-% experiments involving up till 600 browsers confirmed the scalability of such
-% composition. Since it settles privacy issues brought by centralized solutions,
-% and alleviates scalability issues, such editor competes with current trending
-% editors such as Google Docs, Etherpad, or SubEthaEdit. In particular, it allows
-% massive collaborative editing of large documents without service
-% providers. Hence, it opens the field to a new range of distributed applications
-% such as massive editing of online courses, collaborative reviewing of co-located
-% events, or webinars.
-
-
-
-% In the context of collaborative editing, this paper proposed an identifier
-% allocation function \LSEQ for building sequence replicated data structures. The
-% obtained sequences enjoy good space and time complexities. The proof on space
-% complexity demonstrates logarithmic, polylogarithmic, and quadratic for
-% respectively, random, monotonic, and worst-case insertions.  Using this
-% allocation function and interval version vectors to track causality, we
-% developed a distributed collaborative editor called \CRATE. This editor is fully
-% decentralised and scales in terms of the number of peers, concurrency, and
-% document size. We validated the approach on a setup close of the real life
-% conditions and using extreme parameters: low startup values, high number of
-% insertions, high number of peers and high latency. The experiments confirmed the
-% space complexity of \LSEQ and the scalability of \CRATE. As such, it alleviates
-% the issues brought by centralised approaches: single point of failure, privacy
-% issues, economic intelligence issues, limitations in terms of service,
-% etc. Also, it alleviates the scalability issues of decentralised approaches. As
-% such, it can be seen as a serious competitor for current trending editors
-% (e.g. Google Docs, SubEthaEdit,~\ldots), allowing massive collaborative editing
-% without any service providers. More specifically, it opens the field to a new
-% range of distributed applications such as massive editing of online courses, or
-% collaborative reviewing of co-located events, webinars etc.
-
-
-%% Future work concerns the improvement of our prototype
-%% CRATE: \begin{enumerate} \item We aim to develop of a truly tree-based
-%% implementation of \LSEQ. Indeed, the current version uses a data structure
-%% which is a linearisation of the tree. As a consequence, each element is
-%% linked to its identifier without factorising the common parts of the
-%% latter. Therefore, the memory usage is currently higher than the one
-%% suggested by the theoretical analysis of Section~\ref{sec:proposal}. The
-%% network load would remain unchanged.  \item Currently, CRATE only includes
-%% the core functionalities described in this paper. However, we intend to add
-%% common functionalities such as the modifications of document style, the
-%% group awareness, etc.  \item Recent technological advances finally allow to
-%% build peer-to-peer applications within the web browser without any
-%% additional plug-ins. The real strength of current editors hosted by service
-%% providers is their ease of access. Nevertheless, the aforementioned progress
-%% puts distributed editors on an equal footing in that regard. Furthermore, it
-%% extends the tool to a range of users equipped with small devices but still
-%% embedding a web browser such as smartphone users, or Raspberry Pi users
-%% etc.  \end{enumerate}
-
-% Future work concerns the causality tracking issue. Indeed, the chosen
-% trade-off proposed by the interval version vectors allows scaling in number
-% of peers. Nevertheless, when the network is subject to churn, the local
-% memory used to store the vector can grow quickly. We envision an approach
-% trading accuracy for memory without sacrificing on correctness.
 
 %%% Local Variables: 
 %%% mode: latex

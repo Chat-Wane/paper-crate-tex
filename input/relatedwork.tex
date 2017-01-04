@@ -21,18 +21,6 @@ to ensure the CCI properties:
   re-observed at integration time regardless of concurrent operations. 
 \end{itemize}
 
-
-
-% To ensure that participants read
-% identical documents, strong eventual consistency~\cite{bailis2013eventual,
-%   shapiro2011comprehensive, sun1998achieving} states that a system is correct if
-% and only if editors integrating a same set of operations converge to an
-% equivalent state. Furthermore, operations must preserve the intention of users,
-% i.e. effects observed at generation time must be re-observed at integration time
-% regardless of concurrent operations. Finally, the integration order of
-% operations must follow the \emph{happen before}
-% relationship~\cite{lamport1978time} stated at generation.
-
 \noindent Four complexities characterize collaborative editors:
 \begin{itemize}
 \item Generation time: complexity to generate locally an operation.
@@ -41,18 +29,9 @@ to ensure the CCI properties:
 \item Communication complexity: complexity of messages transiting the network.
 \end{itemize}
 Solving scalability issues requires finding a balance between communication,
-space and time complexities %  Among others, the communication complexity is the
-% most discriminant and depends of metadata required to ensure strong eventual
-% consistency as well as messages dissemination in the network.
-where the communication complexity plays the most important role. The challenge
-consists in providing a sublinear upper bound on communication complexity
-without making other complexities impracticable.
-
-% It requires $\mathcal{O}(m.\ln{R})$ where ($\ln{R}$) is a minimal multiplicative
-% factor induced by the broadcasting mechanism which depends of the session size
-% $R$ including both readers and writers; where $m$ is the message embedding
-% metadata necessary to maintain consistency. To scale, the space complexity of
-% these metadata must be sublinear.
+space and time complexities where the communication complexity plays the most
+important role. The challenge consists in providing a sublinear upper bound on
+communication complexity without making other complexities impracticable.
 
 
 Operational transformation (OT) constitutes the core of both centralized and
@@ -73,30 +52,17 @@ compared to the number of members $W$ who ever participated in the
 authoring. Since each message carries such a vector, decentralized OT approaches
 are not practicable in large and dynamic groups where people frequently join and
 leave the editing session.
-% As for space complexity, OT approaches require an historic of operations $H$,
-% each operation being linked to their state vector, hence
-% $\mathcal{O}(W.H)$. Such monotonically growing historic can be cut at the
-% price of consensus which, once again, does not
-% scale~\cite{mostefaoui2015signature}. Thus, OT approaches are the best in
-% humble confined environment like local area networks. However, their
-% performance degrades when the network size grows and becomes unpredictable
-% like wide area networks.
 
 Conflict-free replicated data types (CRDTs) for
 sequences~\cite{shapiro2011comprehensive, shapiro2011conflict} constitute the
 latter approaches which solve concurrent cases by providing commutative,
-associative, and idempotent operations. 
-% Cci
-The causality property of CCI that
+associative, and idempotent operations.  The causality property of CCI that
 precludes editors to reach large scale can be relaxed. Contrarily to OT, CRDTs
 only require to track semantically related operations. For instance, the removal
-of a particular element must follow its insertion. 
+of a particular element must follow its insertion.
 
-%ccI
 Intentions for sequences are defined with the help of a dense
 order~\cite{weiss2010logootundo}.
-%
-%\begin{definition}[Intention of operations of sequences]
 A sequence is a set of elements paired with a dense order, i.e., elements are
 ordered and inserting between two elements is always possible.
 \begin{itemize}
@@ -106,17 +72,10 @@ ordered and inserting between two elements is always possible.
 \item Deletion an element at position $i$ in the sequence removes the element
   from the set without impairing the order of other elements.
 \end{itemize}
-% \end{definition}
+
 
 CRDTs implements this dense total order by associating a unique and immutable
 identifier to each element of the sequence.
-% cCi
-% Convergence property is obtained by making insert and delete
-% operations commutative.
-
-% To guarantee the properties of convergence and intention preservation, they
-% defines a dense total order among identifiers. Using this order retrieves the
-% sequence of characters.
 
 \noindent CRDTs propose an interesting tradeoff, for they can balance
 complexities depending on the type of structure that represents the document.
@@ -137,8 +96,6 @@ requires running consensus algorithms to determine if everyone received the
 removal and agrees on definitely throw out the element. Such algorithms are
 prohibitively costly and do not scale in terms of number of members, especially
 in networks subject to churn~\cite{mostefaoui2015signature}.
-% Since the structure contains the full history of the document, such approaches
-% do not require further information to track causally related operations.
 
 Variable-size identifiers CRDTs~\cite{nedelec2013lseq, preguica2009commutative,
   weiss2009logoot} such as Logoot~\cite{weiss2009logoot} truly destroy elements
@@ -159,11 +116,6 @@ linear compared to the number of insertions $I$ in the sequence,
 i.e. $\mathcal{O}(I)$. Both Treedoc~\cite{preguica2009commutative} and
 Logoot~\cite{weiss2009logoot, weiss2010logootundo} suffer from the growth of
 identifiers which negatively impacts the generated traffic.
-% If the structure stores each identifier in a flat array, it grants fast
-% access
-% at the price of quadratic space complexity $\mathcal{O}(I^2)$. If it
-% factorizes common parts of identifiers as a tree structure, it achieves a
-% linear space complexity.
 To provide small identifiers, these approaches eventually require balancing the
 structure, i.e., relocating identifiers. This requires a global agreement which is
 akin to run a distributed consensus

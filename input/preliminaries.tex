@@ -45,40 +45,21 @@ characters is, as expected, \texttt{QWERTY}. Inserting a new character between
 \texttt{E} and \texttt{R} would result in another space extension : $3.0.X$,
 where $X$ is an integer.
 
-% If a new character has to be inserted between \texttt{E} and
-% \texttt{R}, a new identifier will be allocated between $3$ and $3.1$. Again, the
-% space will be extended resulting in a new identifier $3.0$ suffixed by any non
-% null integer. Let $X$ be this suffix, the order of the elements of the sequence
-% is preserved since $(3 < 3.0.X < 3.1)$.
-
-%% (TODO) are the paths of variable-size identifiers ?
 Such growing identifiers are called variable-size identifiers. The main
 objective is to keep the growth of the size of the identifiers under a sublinear
 boundary.
 
 \paragraph{Encoding a position in the sequence.}
-%\subsection{Encoding a position in the sequence}
-%\label{subsec:variable}
+
 Each \textsc{insert} operation generates an identifier that encodes the position
 of the new character in the sequence using a dense order. Concatenations of
 comparable elements constitute a mean to represent such dense order.
-% can be represented as a concatenation of basic elements (e.g. integers).
 The union of these identifiers creates a tree. Its nodes store the elements of
 the sequence and its edges are labeled such that a path from the root to a node
 containing an element represents the main part of the latter's identifier. For
 instance, the character \texttt{R} in the previous example is accessible
 following the path composed of the edges labeled $3$ then $1$.  This represents
 the \emph{path} of an identifier.
-
-
-% More formally, a sequence is a tree where each node contains a value i.e. an
-% element of the sequence (over an alphabet $\mathcal{A}$). The tree is a set of
-% pairs $\langle\mathcal{P}\subset\{\mathbb{N}\}^*,\, \mathcal{A} \rangle$, i.e.,
-% each element is associated with a path. Additionally, a total order
-% ($\mathcal{P}$,$<_{\mathcal{P}}$) provides an ordering among the paths which
-% allows to retrieve the order of the elements in the sequence. Notation: a path
-% composed of $e$ edges labeled $\ell_1,\ell_2,\ldots,\ell_e$ will be noted
-% $[\ell_1.\ell_2\ldots\ell_e]$.
 
 \begin{definition}[Path]
   A path is a series of integers noted $[\ell_1.\ell_2\ldots \ell_e]$ chosen in a
@@ -87,7 +68,6 @@ the \emph{path} of an identifier.
   $\mathbb{N}_{<X_i}$. The binary representation of a path of size $e$ requires
   $\textstyle \sum\nolimits_{i=1}^e \lceil \log_2 X_i\rceil$ bits.
 \end{definition}
-
 
 \begin{figure*}
   \centering
@@ -118,16 +98,9 @@ the first level of the tree for any paths between these bounds. In this example,
 the resulting path is $[3.1]$. Using the total order of paths, we retrieve the
 sequence \texttt{QWERTY}.
 
-% if label $1$ is chosen for the element \texttt{R} at the second level.
-%% \noindent Again, inserting a character between \texttt{E} and \texttt{R}
-%% would increase the depth of the tree.
-% in case there is an insertion between the elements \texttt{E} and \texttt{R}.
-% Assuming a 10-ary tree, the new path would be $[3.0.X]$ where $0<X<10$.
-
 
 \paragraph{Disambiguation of concurrent cases.}
-%\subsection{Disambiguation of concurrent cases}
-%\label{subsec:disambiguation}
+
 The order among paths $(\mathcal{P},\,<_\mathcal{P})$ is a total order when a
 single collaborator edits. However, it becomes a partial order when the editing
 session involves several collaborators and concurrent operations exist. For
@@ -160,8 +133,9 @@ $[\langle u_2,\, 1\rangle]$ is associated with \texttt{T}. The disambiguator of
 the character \texttt{R} inserted between \texttt{E} and \texttt{T} is
 $[\langle u_1,\, 6\rangle.\langle u_1,\, 7\rangle]$.
 
+
 \paragraph{Allocating variable-size identifiers.}
-%\subsection{Allocating variable-size identifiers}
+
 Unique and immutable identifiers comprise both a path and a disambiguator in
 order to preserve a dense total order, even in presence of concurrent
 operations.
@@ -185,7 +159,7 @@ counters. It is defined as :
   id_i <_\mathcal{I} id_j \iff & \exists (m > 0)(\forall n < m),\, (t^i_n = t^j_n) \wedge                             (t^i_m < t^j_m) %\\
  % id_i =_\mathcal{I} id_j \iff & \forall m,\, t^i_m = t^j_m
 \end{align*}
-% Retrieving the order of elements simply consists in comparing 
+
 In this example, the paths order most of characters. Nevertheless, \texttt{E}
 precedes \texttt{T} because $p^\texttt{E}_1=p^\texttt{T}_1$ and
 $s^\texttt{E}_1 < s^\texttt{T}_1$. Then, $u_1$ inserts \texttt{Y} at the end of
@@ -196,11 +170,6 @@ path $[3.X]$ where $0<X<10$. By copying the disambiguator of \texttt{E} at the
 first level, it ensures that the new identifier will follow \texttt{E} and
 precede \texttt{T}.
 
-% Collaborators cannot influence the final position of the character in the
-% sequence using disambiguators, for disambiguators are automatically computed
-% without concerns about positions. The sequence of the example could have ended
-% in \texttt{QWTREY} and it would have needed a correction.
-%It is worth noting that 
 
 \begin{algorithm}
   \input{input/crdtabstractalgo.tex}
@@ -220,9 +189,6 @@ operations as soon as it receives it and that its precondition is checked.
 insertion where it generates a path and a disambiguator. Firstly, to simplify
 readability in the rest of this paper, \textsc{convert2Path} immediately gets
 rid of the disambiguator contained in each identifier to keep paths only.
-% Without evidence of concurrency, it simply returns the paths contained in
-%the identifiers.
-% Otherwise, 
 It translates the identifiers into the closest paths that maintain their order
 using only the order among paths, i.e.,
 $(\mathcal{I},\, <_\mathcal{I}) \rightarrow (\mathcal{P},\, <_{\mathcal{P}})$.
@@ -239,10 +205,6 @@ path [$4$], for its first triple $t_1^{\texttt{T}}$ is greater than the
 $id_\texttt{R}$'s one; and any path allocated between [$3.1$] and [$4$] builds
 an identifier between $id_\texttt{R}$ and $id_\texttt{T}$.
 
-
-% in Figure~\ref{fig:disexample}, the result of \textsc{convert2Path} with the
-% identifiers of the character \texttt{E} and the character \texttt{T} is the pair
-% $\langle [3.0],\, [3.9]\rangle$. 
 
 \noindent Secondly, \textsc{allocPath} allocates a new path between these
 bounds. It should choose among the paths with the smallest size for performance
@@ -261,15 +223,11 @@ $id_e = \langle [3.2],\, e, \, [\langle u_1,\,6 \rangle .\langle u_3,\, 1\rangle
 \rangle$.
 As expected, we obtain
 $id_\texttt{R} <_\mathcal{I} id_{e} <_\mathcal{I} id_\texttt{T}$.
-% The space complexity of disambiguators is upper-bounded by their respective
-% path. Therefore, we focus on paths in the rest of the paper.
 
 \noindent Finally, the editor broadcasts $id_{e}$ to all editors. Minimizing the
 size of $id_e$ is important, for it directly impacts the generated traffic.
 
 \paragraph{Choosing the smallest path.}
-%\subsection{Choosing the smallest path}
-%\label{subsec:choosing}
 
 The most critical part of sequences with variable-size identifiers consists in
 creating the paths. The function that allocates identifiers must provide the
@@ -278,15 +236,6 @@ Algorithm~\ref{algo:crdtabstract} at Lines~\ref{line:broadcastinsert}
 and~\ref{line:broadcastdelete}, each identifier is broadcast to all editors. As
 consequence, their size directly impacts the communication complexity of the
 editor.
-
-% The function \textsc{allocPath} chooses a path in the tree between two other paths
-% $p$ and $q$ where $p$ precedes $q$: $p<_{\mathcal{P}}q$. The new path $n$ must
-% fall between $p$ and $q$: $p<_\mathcal{P}n<_\mathcal{P}q$.
-% However, the number of paths between two paths is infinite, for the order is
-% dense, and so is the number of \textsc{allocPath} strategies. Nevertheless,
-
-% This observation reduces considerably the number of possible allocation
-% strategies.
 
 \begin{figure*}
   \centering
@@ -316,8 +265,6 @@ the intended word is \texttt{QWERTY}, we insert \texttt{T} before
 \texttt{Y}. Thus, we insert \texttt{T} at position 0 shifting \texttt{Y} to
 position 1, etc.
 
-
-%\begin{itemize}
 In Figure~\ref{fig:allocpathexampleA}, the insertion order exactly follows the
 expectations of the allocation function. The depth of the tree never grows. The
 execution of operations remain efficient.
@@ -337,9 +284,6 @@ left-to-right editing due to observations made on
 corpora~\cite{preguica2009commutative, weiss2009logoot}. However, there exist
 human edited documents that do not correspond to this kind of
 editing~\cite{nedelec2013lseq}. The problem is the following:
-%% Indeed, the editing depends on the type of the document and to the activity
-%% for example when correcting a document the editing in mainly random as the
-%% insertions and deletions corresponds to errors distributed in the document.
 \begin{problem}[Size of allocated identifiers]
   Let $s(I)= id_1.id_2\ldots id_I$ be a sequence of identifiers, and
   $s(I+1) = s(I) \cup \textsc{insert}(p,\, \_,\, n)$, with $p,q \in s(I)$ and

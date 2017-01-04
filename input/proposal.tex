@@ -6,19 +6,10 @@
 
 \LSEQ (poly\textsc{L}ogarithmic \textsc{SEQ}uence) is the name of the proposed
 allocation function.
-%Any sequence data structure using
-%variable-size identifiers~\cite{preguica2009commutative, weiss2009logoot} can
-%use \LSEQ.  
 Our prior works~\cite{nedelec2013concurrency, nedelec2013lseq} empirically
 showed that \LSEQ allocates identifiers with a sublinear upper bound on space
 complexity.  However, we did not provide any complexity analysis to support
 these observations.
-
-% \LSEQ improves the space complexity of identifiers by degrading its worst case
-% complexity. However, the worst case is made non-trivial. If a malicious user
-% tries to produce the worst case scenario, other editors can detect her easily,
-% for there is a large difference between the expected space complexity and the
-% worst case space complexity.
 
 This section starts by describing the allocation strategy. Then, it provides the
 proof of the polylogarithmic growth of \LSEQ's identifiers and states the
@@ -42,11 +33,6 @@ Algorithm~\ref{algo:crdtabstract}).
 position of the new element regarding its adjacent elements in the sequence
 using a dense space. For the sake of performance, it aims to keep the paths
 small.
-
-% General idea is coming... (as winter...)
-% \noindent The general idea behind \LSEQ is that it agrees to be temporarily
-% inefficient in order to reach a state where it will be efficient enough to
-% compensate its past temporary inefficiency.
 
 \begin{algorithm}
 \input{input/allocpathalgo.tex}
@@ -94,22 +80,6 @@ between \LSEQ and the state-of-the-art~\cite{preguica2009commutative,
   Figure~\ref{fig:lseqtreeexampleB} that level $h(2)$ allocates from right to
   left. The allocated paths decrease from 57 down to 44.
   
-% % Thus, paths are series of integers [$\ell_1.\ell_2\ldots\ell_e$] with, for
-% % example, $\ell_1\in\mathbb{N}_{<2^5}$, then $\ell_2\in \mathbb{N}_{<2^6}$, and
-% % $\ell_{e}\in\mathbb{N}_{<2^{e+4}}$.  Figure~\ref{fig:lseqtreeexample} shows
-% % that
-% Characters in the first level have a path between [1] and [31] while characters
-% in the second level have a path between [0.1] and [31.63]. 
-% Pascal: keep that for complexity analysis.
-%\noindent The binary
-% size of a path becomes
-% $\textstyle\sum\nolimits_{i=1}^{e}\log_2{2^i}=\sum\nolimits_{i=1}^{e}i=
-% {e^2-e\over{2}}$.
-% For instance, in Figure~\ref{fig:lseqtreeexampleB}, the path of character
-% \texttt{T} [$0.57$] requires $5 + 6 = 11$ bits.  Such quadratic growth forbids
-% the existence of obvious editing behaviors leading to the worst case allocation
-% as in Figure~\ref{fig:allocpathexample}.
-
 \end{itemize}
 
 % General idea.
@@ -120,24 +90,12 @@ Thanks to the exponential growth of paths over levels, \LSEQ compensates the
 sacrificed levels.  Combining an exponential tree with different allocation
 strategies solves our problem statement.
 
-
-% inserting \texttt{T} between the beginning of the sequence and \texttt{Y}
-% implies finding a path between [0] and [1]. Since there is not enough space
-% at this level, the new path  There are not enough space
-
-
-% the number of available paths between [$3.1$] and [$4.0$] is 62: from [$3.2$] up
-% till [$3.63$].
-
 % Pascal: And lets go for detail explanation.
 Algorithm~\ref{algo:allocpath} firstly processes the size of the new path by
 progressively exploring the available paths between the adjacent paths. For
 instance, in Figure~\ref{fig:lseqtreeexampleB}, the character \texttt{T} needs a
 path between the paths [$0$] and [$1$]. There is not enough room for a new path
 between [$0$] and [$1$], but there are $63$ available paths
-%\footnote{For now, we
-%  assume that there are only 10 possible values for each concatenation of the
-%  path.}
 between [$0.0$] and [$1.0$]. Thus, the new path will comprise 2 concatenations:
 [$0.X$] where $X$ is yet to determine.
 
@@ -152,17 +110,6 @@ session use the sub-allocation function \textsc{left-to-right} to choose the
 paths of size 1. In addition, the choices between the sub-allocation functions
 must follow a uniform distribution, for we do not know the future editing
 behaviors, and we do not want to favor any.
-
-% First, \textsc{allocPath} processes the distance between the two paths in order
-% to retrieve the smallest level of the tree that contains enough room for the new
-% element.
-
-% Then, a \emph{hash function} $h$ defers the path allocation to a \emph{sub-allocation
-% function} depending on the depth found for the new path. The hash function of
-% every participant must give identical results~\cite{nedelec2013concurrency}.
-% A hidden seed within the replicated document initializes it, for that all
-% participants must make identical choices~\cite{nedelec2013concurrency}.
-
 
 \noindent Thirdly, \LSEQ uses one of its two sub-allocation functions. One is
 designed to handle left-to-right editing (Line~\ref{line:lefttoright}), i.e.,
@@ -194,38 +141,6 @@ paths.  The randomness aims to leave a small gap between paths -- to handle
 users' minor corrections -- even in presence of concurrent insertions. The
 resulting path of \texttt{T} is $[1.0] - 7 = [0.57]$.
 
-% There exists a major difference between \LSEQ and the
-% state-of-the-art~\cite{preguica2009commutative, weiss2009logoot}: the set of
-% possible paths in \LSEQ can be represented as an exponential
-% tree~\cite{andersson1996faster,andersson2007dynamic} instead of a tree of
-% constant arity. An exponential tree allows each node to have twice as many
-% children as its parent. For instance, if the root of the tree can have up to 32
-% children, each of these children can have up to 64 children, etc. Thus, the
-% results of \textsc{getDepthInterval} change slightly: the paths are series of
-% integers [$\ell_1.\ell_2\ldots\ell_e$] with, for example,
-% $\ell_1\in\mathbb{N}_{<2^5}$, then $\ell_2\in \mathbb{N}_{<2^6}$, and
-% $\ell_{e}\in\mathbb{N}_{<2^{e+4}}$. Thus, the number of available paths between
-% [$3.1$] and [$4.0$] is 62: from [$3.2$] up till [$3.63$].
-
-% \noindent The binary size of a path becomes
-% $\textstyle\sum\nolimits_{i=1}^{e}\log_2{2^i}=\sum\nolimits_{i=1}^{e}i=
-% {e^2-e\over{2}}$.
-% For instance [$3.60$] requires $5 + 6 = 11$ bits.  Such quadratic growth forbids
-% the existence of obvious editing behaviors leading to the worst case allocation
-% (e.g. Figure~\ref{fig:allocpathexample}). This emphasizes the need of two
-% sub-allocation functions.
-
-
-% Similarly to the example of Figure~\ref{fig:allocpathexample} the example given
-% in Figure~\ref{fig:lseqtreeexample} depicts the resulting trees after two
-% antagonist scenarios creating the sequence \texttt{QWERTY}
-% \begin{inparaenum}[(i)]
-% \item the left-to-right insertions sequence [($\texttt{Q},\,0$), ($\texttt{W},\,1$),
-%   \ldots] and
-% \item the right-to-left insertions sequence [($\texttt{Y},\,0$),
-%   ($\texttt{T},\,0$), \ldots].
-% \end{inparaenum}
-
 In Figures~\ref{fig:lseqtreeexampleA} and~\ref{fig:lseqtreeexampleB}, the
 exponential tree of \LSEQ starts with a maximum arity $2^5$ and doubles it at
 each level. Also, it uses the left-to-right and right-to-left sub-allocation
@@ -237,10 +152,6 @@ presented in Figure~\ref{fig:allocpathexample} -- the antagonist scenario only
 leads to a tree of depth 2. Indeed, \LSEQ quickly reaches a level of the tree
 where the sub-allocation function is designed to handle the right-to-left
 editing behavior.
-
-%If such editing behavior
-%continues, the new allocated paths will compensate the loss of the first level.
-
 
 \subsection{Complexity analysis}
 \label{subsec:complexity}
@@ -287,7 +198,6 @@ editing behavior represents an unfavorable case since it tends to unbalance the
 underlying tree storing the replicated sequence. As soon as the participants
 start to edit at different positions -- which is closer from a real-life use
 case -- the tree becomes more balanced.
-% and operations become more efficient proportionally.
 The analysis does not include an average case, for it requires knowing
 the average distribution of the position of edits performed by humans which is
 obviously complex.
@@ -314,23 +224,13 @@ following:
 \item Repeat the first step.
 \end{inparaenum}
 
-
-% Such editing behavior remains unlikely in collaborative editing and can be
-% easily detected, for the difference between the expected growth and the actual
-% growth is large.
-
 The complexity analysis depends of the chosen structure to represent the
 replica. In this section, we focus on a tree structure but other structures
 (e.g. lists~\cite{weiss2009logoot}) exposing different tradeoffs could be
 used. Nevertheless, the space complexity of identifiers -- the main contribution
 of \LSEQ{} -- stays the same regardless of the chosen structure.
 
-
-
-%\vspace{\PARAGRAPH}
-
 \paragraph{Space complexity.}
-%\subsubsection{Space complexity}
 
 We distinguish the space complexity of each identifier from the space complexity
 of the tree. The former is important since it directly impacts the communication
@@ -338,12 +238,10 @@ complexity, for that each identifier is broadcast to all editors; The latter is
 important since it represents the replicated document stored locally by each
 editor.
 
-As stated in Section~\ref{subsec:lseqallocation}, paths
-% require 1 additional bit per concatenation. In turn, paths
-require $\mathcal{O}(e^2)$ bits to be encoded,
-where $e$ is the depth of the element in the tree. Fortunately, the depth is
-upper-bounded depending on the editing behavior that filled the exponential
-tree.
+As stated in Section~\ref{subsec:lseqallocation}, paths require
+$\mathcal{O}(e^2)$ bits to be encoded, where $e$ is the depth of the element in
+the tree. Fortunately, the depth is upper-bounded depending on the editing
+behavior that filled the exponential tree.
 
 The random editing behavior fills the tree at random. The repeated insertions
 progressively fill the gaps in the tree without favoring any position in the
@@ -404,11 +302,7 @@ $\mathcal{O}(I\log I)$. The tradeoff is beneficial since the communication
 complexity of editors inherits from the improvement: as shown in
 Algorithm~\ref{algo:crdtabstract}, each identifier is broadcast to all editors.
 
-%\vspace{\PARAGRAPH}
-
 \paragraph{Time complexity.}
-%\subsubsection{Time complexity}
-%\label{subsubsec:time}
 
 Time complexity provides insights about the performance evolution of each
 operation over insertions. They are divided between their local execution and
@@ -516,10 +410,7 @@ worst case scenario where the access grows linearly. Fortunately,
   can maintain these fast accesses up-to-date.
 \end{inparaenum}
 
-%\vspace{\PARAGRAPH}
-
 \paragraph{Summary.}
-%\subsubsection{Summary}
 
 The complexity analysis reveals the improvements brought by \LSEQ as well as
 their cost.  \LSEQ sacrifices on its worst case complexity to improve on other
