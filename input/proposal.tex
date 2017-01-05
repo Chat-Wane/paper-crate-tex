@@ -123,14 +123,16 @@ of the new path for the future insertions assumed at the right (resp. at the
 left) of the newest element. Each sub-allocation function has 3 instructions. It
 starts by processing the number of available paths between the adjacent
 paths. For instance, there are $63$ available paths between [$0.0$] and
-[$1.0$]. Then, it shrinks the range of allocation with a $boundary$ value. Set
-to $10$, the function only considers $10$ among the $63$ available paths. Then,
-depending on the design of the sub-allocation function, it chooses among the
-paths in the processed range starting from one of the adjacent paths. For
-instance, in Figure~\ref{fig:lseqtreeexampleB}, \textsc{left-to-right} chooses
-the path of \texttt{Y} among the paths [1], [2], \ldots, [10];
-\textsc{right-to-left} chooses the path of \texttt{T} among the paths [0.54]
-[0.55], \ldots, [0.63].
+[$1.0$]. Then, it shrinks the range of allocation using a $boundary$
+value. Without such variable, each new allocation would consume half the
+available space in average making it inefficient to handle left-to-right or
+right-to-left editing. With this variable set to $10$, the function only
+considers $10$ among the $63$ available paths. Then, depending on the design of
+the sub-allocation function, it chooses among the paths in the processed range
+starting from one of the adjacent paths. For instance, in
+Figure~\ref{fig:lseqtreeexampleB}, \textsc{left-to-right} chooses the path of
+\texttt{Y} among the paths [1], [2], \ldots, [10]; \textsc{right-to-left}
+chooses the path of \texttt{T} among the paths [0.54] [0.55], \ldots, [0.63].
 
 \noindent Finally, the sub-allocation function uses \textsc{subPath} to truncate
 or prolong the path in argument to reach the desired size. In
