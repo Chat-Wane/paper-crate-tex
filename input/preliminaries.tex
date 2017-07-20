@@ -153,14 +153,16 @@ operations.
 In Figure~\ref{fig:disexample}, the dense total order is also lexicographic: at
 each level we compare the paths, then the site identifiers, then the
 counters. It is defined as :
+\begin{small}
 \begin{align*}
-  t_i < t_j \iff & (p_i < p_j) \vee  %\\
-                  ((p_i = p_j) \wedge (s_i<s_j)) \vee %\\
+  t_i < t_j \iff & (p_i < p_j) \vee \\ &
+                  ((p_i = p_j) \wedge (s_i<s_j)) \vee \\ &
                   ((p_i = p_j) \wedge (s_i = s_j) \wedge (c_i < c_j)) \\
   t_i = t_j \iff & \neg (t_i < t_j) \wedge \neg (t_j < t_i) \\
   id_i <_\mathcal{I} id_j \iff & \exists (m > 0)(\forall n < m),\, (t^i_n = t^j_n) \wedge                             (t^i_m < t^j_m) %\\
  % id_i =_\mathcal{I} id_j \iff & \forall m,\, t^i_m = t^j_m
 \end{align*}
+\end{small}
 
 In this example, the paths order most of characters. Nevertheless, \texttt{E}
 precedes \texttt{T} because $p^\texttt{E}_1=p^\texttt{T}_1$ and
