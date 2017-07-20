@@ -1,17 +1,17 @@
-\documentclass[times]{cpeauth}
+\documentclass{class-for-drafts}
 
 \usepackage{hyperref}
 %% url
 \usepackage{url}
 %% maths
 \usepackage{bm}
-%\usepackage[cmex10]{amsmath}
-%\usepackage{amsfonts}
-%\usepackage{amssymb}
+\usepackage[cmex10]{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
 %% algorithms
 \usepackage{algorithm}
 \usepackage{algorithmicx}
-\usepackage{algpseudocode}
+\usepackage[noend]{algpseudocode}
 %% images
 \usepackage{graphicx}
 \usepackage{subfig}
@@ -66,24 +66,27 @@
 
 \title{A scalable sequence encoding for collaborative editing}
 
-\author{Brice N{\'e}delec\corrauth, Pascal Molli\corrauth, Achour
-  Most{\'e}faoui\corrauth}
+\numberOfAuthors{3} \author{Brice N{\'e}delec \hspace{1cm} Pascal Molli
+  \hspace{1cm} Achour Most{\'e}faoui \aff \address}
 
-\address{\centering%
-  LINA, 2 rue de la Houssini{\`e}re,\\
+\proceedings{Concurrency and Computation: practice and experience, special issue}
+
+\def\address{LS2N, University of Nantes\\
+  2 rue de la Houssini{\`e}re\\
   BP92208, 44322 Nantes Cedex 03, France\\
   \url{first.last@univ-nantes.fr}
 }
 
-\corraddr{LINA, 2 rue de la Houssini{\`e}re, BP92208, 44322 Nantes Cedex 03,
-  FRANCE, E-mail: \url{first.last@univ-nantes.fr}}
+% \corraddr{LINA, 2 rue de la Houssini{\`e}re, BP92208, 44322 Nantes Cedex 03,
+%   FRANCE, E-mail: \url{first.last@univ-nantes.fr}}
 
-\runningheads{B. N{\'e}delec, P. Molli, A. Mostefaoui}{Scalable sequence encoding}
+% \runningheads{B. N{\'e}delec, P. Molli, A. Mostefaoui}{Scalable sequence encoding}
+
+
+\maketitle
 
 \input{input/abstract.tex}
 \input{input/keywordsandcategory.tex}
-
-\maketitle
 
 \input{input/introduction.tex}
 \input{input/relatedwork.tex}
@@ -94,7 +97,7 @@
 \input{input/conclusion.tex}
 \input{input/acknowledgements.tex}
 
-\bibliographystyle{abbrv}
+%\bibliographystyle{abbrv}
 \bibliography{bibliographie}
 
 \input{input/biography.tex}

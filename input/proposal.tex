@@ -49,7 +49,7 @@ i.e. [($\texttt{Q},\,0$), ($\texttt{W},\,1$),
 insertions of characters resulting in \texttt{QWERTY} i.e.  [($\texttt{Y},\,0$),
 ($\texttt{T},\,0$), \ldots].
 
-\begin{figure}
+\begin{figure*}
   \centering
   \subfloat[Left-to-right case with \LSEQ.]
   [\label{fig:lseqtreeexampleA} Left-to-right editing behavior.]
@@ -62,7 +62,7 @@ insertions of characters resulting in \texttt{QWERTY} i.e.  [($\texttt{Y},\,0$),
     \texttt{QWERTY}. Contrarily to the example of
     Figure~\ref{fig:allocpathexample}, the depth of trees does not grow
     linearly.}
-\end{figure}
+\end{figure*}
 
 As shown in Figure~\ref{fig:lseqtreeexample}, there exists two major differences
 between \LSEQ and the state-of-the-art~\cite{preguica2009commutative,
@@ -158,7 +158,7 @@ editing behavior.
 \subsection{Complexity analysis}
 \label{subsec:complexity}
 
-\begin{figure}
+\begin{figure*}
   \centering
   \subfloat[\LSEQ tree filled using random editing.]
   [\label{fig:randomlseq} \LSEQ tree filled using random editing]
@@ -173,7 +173,7 @@ editing behavior.
   {\input{input/figworstlseqtree.tex}}
   \caption{\label{fig:complexity} \LSEQ tree filled with the studied editing
     behaviors and in the worst case.}
-\end{figure}
+\end{figure*}
 
 
 In text editing, most of the editing behaviors can be empirically summarized as
@@ -279,15 +279,13 @@ the first allocated path is [$31$], the second one is [$31.63$], the third one
 is [$31.63.127$], etc.  Overall, the space complexity of the tree is
 $\mathcal{O}(I^2)$ too.
 
-\begin{table}
-  \vspace{\ABOVETABLES}
+\begin{table*}
   \caption{\label{table:lseqspace}
     Upper bounds on space complexity of \LSEQ, Logoot and Treedoc. Where
     $I$ is the number of insertions performed on the replicated sequence.}
   \centering
   \input{input/lseqspacetable.tex}
-  \vspace{-\ABOVETABLES}
-\end{table}
+\end{table*}
 
 Table~\ref{table:lseqspace} summarizes the space complexity of \LSEQ. In
 particular, the expected growth of identifiers is bounded between an optimal
@@ -348,15 +346,13 @@ respectively. In the worst case, the algorithms perform one comparison per
 element, i.e. per level, in the tree until they reach the deepest leaf.
 
 
-\begin{table}
-  \vspace{\ABOVETABLES}
+\begin{table*}
   \caption{\label{table:lseqtime}
     Upper bounds on time complexity of \LSEQ. Where $I$ is the number of 
     insertions performed on the replicated sequence.}
   \centering
   \input{input/lseqtimetable.tex}
-  \vspace{-\ABOVETABLES}
-\end{table}
+\end{table*}
 
 To interface the user's view of the document with the underlying replicated
 sequence, an additional lookup operation is necessary. Its goal is to retrieve
@@ -389,13 +385,11 @@ elements where half of them must be checked leading to
 $\mathcal{O}(I)$.
 
 \begin{table}
-  \vspace{\ABOVETABLES}
   \caption{\label{table:lseqlookup}
     Upper bounds on time complexity of the lookup on a \LSEQ structure.
     Where $I$ is the number of insertions performed on the replicated sequence.}
   \centering
   \input{input/lseqlookuptable.tex}
-  \vspace{-\ABOVETABLES}
 \end{table}
 
 Tables~\ref{table:lseqtime} and~\ref{table:lseqlookup} summarize the time
