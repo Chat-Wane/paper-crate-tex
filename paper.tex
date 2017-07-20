@@ -1,8 +1,10 @@
 \documentclass{class-for-drafts}
 
-\usepackage{hyperref}
 %% url
+\usepackage{hyperref}
 \usepackage{url}
+\def\UrlBreaks{\do\/\do_\do-}
+%\def\UrlBreaks{\do\/\do_}
 %% maths
 \usepackage{bm}
 \usepackage[cmex10]{amsmath}
@@ -28,6 +30,7 @@
 \usepackage{epsfig}
 
 \usepackage{hyphenat}
+\hypersetup{breaklinks=true}
 
 \usepackage{enumitem}
 \setlist[itemize]{noitemsep, topsep=0pt}
@@ -71,7 +74,7 @@
 \numberOfAuthors{3} \author{Brice N{\'e}delec \hspace{1cm} Pascal Molli
   \hspace{1cm} Achour Most{\'e}faoui \aff \address}
 
-\proceedings{Concurrency and Computation: practice and experience, special issue, 2017}
+\proceedings{Concurrency and Computation: Practice and Experience, special issue, 2017}
 
 \def\address{LS2N, University of Nantes\\
   2 rue de la Houssini{\`e}re\\
@@ -100,7 +103,6 @@
 %   FRANCE, E-mail: \url{first.last@univ-nantes.fr}}
 
 % \runningheads{B. N{\'e}delec, P. Molli, A. Mostefaoui}{Scalable sequence encoding}
-
 
 \maketitle
 
